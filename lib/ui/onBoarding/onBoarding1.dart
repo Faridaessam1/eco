@@ -23,19 +23,19 @@ class OnBoardingPage1 extends StatelessWidget {
                 },
                 child: Text(
                   "Skip",
-                  style: TextStyle(color: Colors.black, fontSize: size.width * 0.01),
+                  style: TextStyle(color: AppColors.black, fontSize: size.width * 0.03),
                 ),
               ),
             ),
             Image.asset(
               AppAssets.onBoardingLogo,
-              width: size.width * 0.3,
+              width: size.width * 0.2,
             ),
             Image.asset(
               AppAssets.onBoardingImg,
               width: size.width * 0.7,
             ),
-            SizedBox(height: size.height * 0.03),
+            SizedBox(height: size.height * 0.04),
             Text(
               "Welcome to EcoEaters",
               style: TextStyle(

@@ -25,7 +25,7 @@ class OnBoardingPage2 extends StatelessWidget {
               },
               child: Text(
                 "Skip",
-                style: TextStyle(color: Colors.black, fontSize: size.width * 0.01),
+                style: TextStyle(color: AppColors.black, fontSize: size.width * 0.03),
               ),
             ),
           ),

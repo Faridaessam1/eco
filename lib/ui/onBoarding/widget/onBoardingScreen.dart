@@ -22,7 +22,7 @@ class _OnboardingScreenState extends State<OnBoardingScreen> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final double buttonWidth = size.width * 0.8;
-    final double buttonHeight = size.height * 0.06;
+    final double buttonHeight = size.height * 0.05;
 
     return Scaffold(
       body: Container(

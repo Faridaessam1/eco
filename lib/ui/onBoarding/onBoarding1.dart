@@ -57,7 +57,7 @@ class OnBoardingPage1 extends StatelessWidget {
             SizedBox(height: size.height * 0.05),
             Wrap(
               spacing: size.width * 0.08,
-              runSpacing: size.height * 0.02,
+              runSpacing: size.height * 0.01,
               alignment: WrapAlignment.center,
               children: [
                 _buildFeatureChip(

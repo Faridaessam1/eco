@@ -62,7 +62,6 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
               children: [
                 Image.asset(
                   AppAssets.appLogo,
-                  height: height * 0.02,
                 ),
                 const SizedBox(width: 20),
                 Expanded(

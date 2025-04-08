@@ -29,7 +29,7 @@ class ProfileView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         leading: Image.asset(AppAssets.ecoEaterIcon),
-        title: Text(
+        title: const Text(
           "EcoEaters",
           style: TextStyle(
             fontSize: 20,
@@ -39,15 +39,20 @@ class ProfileView extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.close_rounded,
+            icon: const Icon(
+              Icons.add_circle_outlined,
               color: AppColors.green,
               weight: 1,
             ),
             onPressed: () {},
           ),
-          SizedBox(
-            width: 20,
+          IconButton(
+            icon: const Icon(
+              Icons.close_rounded,
+              color: AppColors.green,
+              weight: 1,
+            ),
+            onPressed: () {},
           ),
         ],
       ),
@@ -55,7 +60,7 @@ class ProfileView extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
@@ -64,27 +69,27 @@ class ProfileView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
-                  Text(
+                  const Text(
                     "Basic information",
                     style: TextStyle(
                         color: AppColors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.w600),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  Text(
+                  const Text(
                     "Business Name",
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: AppColors.black),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   CustomTextFormField(
@@ -93,17 +98,17 @@ class ProfileView extends StatelessWidget {
                     filledColor: AppColors.white,
                     borderColor: AppColors.grey,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  Text(
+                  const Text(
                     "Contact person",
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: AppColors.black),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   CustomTextFormField(
@@ -112,23 +117,23 @@ class ProfileView extends StatelessWidget {
                     filledColor: AppColors.white,
                     borderColor: AppColors.grey,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  Row(),
+                  const Row(),
                   Row(
                     children: [
                       Expanded(
                         child: Column(
                           children: [
-                            Text(
+                            const Text(
                               "Phone",
                               style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.black),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             CustomTextFormField(
@@ -140,20 +145,20 @@ class ProfileView extends StatelessWidget {
                           ],
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       Expanded(
                         child: Column(
                           children: [
-                            Text(
+                            const Text(
                               "Email",
                               style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.black),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             CustomTextFormField(
@@ -170,11 +175,11 @@ class ProfileView extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
@@ -183,27 +188,27 @@ class ProfileView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
-                  Text(
+                  const Text(
                     "Business Details",
                     style: TextStyle(
                         color: AppColors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.w600),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  Text(
+                  const Text(
                     "Business type",
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: AppColors.black),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   CustomDropdown<String>(
@@ -217,29 +222,29 @@ class ProfileView extends StatelessWidget {
                         width: 1.8,
                       ),
                       closedBorderRadius: BorderRadius.circular(18),
-                      closedSuffixIcon: Icon(
+                      closedSuffixIcon: const Icon(
                         Icons.arrow_drop_down_rounded,
                         color: AppColors.green,
                         size: 28,
                       ),
-                      expandedSuffixIcon: Icon(
+                      expandedSuffixIcon: const Icon(
                         Icons.arrow_drop_up_rounded,
                         color: AppColors.green,
                         size: 28,
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  Text(
+                  const Text(
                     "Location",
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: AppColors.black),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   CustomTextFormField(
@@ -249,17 +254,17 @@ class ProfileView extends StatelessWidget {
                     borderColor: AppColors.grey,
                     iconPath: AppAssets.locationIcon,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  Text(
+                  const Text(
                     "Operating hours",
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: AppColors.black),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   CustomDropdown<String>(
@@ -273,19 +278,19 @@ class ProfileView extends StatelessWidget {
                         width: 1.8,
                       ),
                       closedBorderRadius: BorderRadius.circular(18),
-                      closedSuffixIcon: Icon(
+                      closedSuffixIcon: const Icon(
                         Icons.arrow_drop_down_rounded,
                         color: AppColors.green,
                         size: 28,
                       ),
-                      expandedSuffixIcon: Icon(
+                      expandedSuffixIcon: const Icon(
                         Icons.arrow_drop_up_rounded,
                         color: AppColors.green,
                         size: 28,
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                 ],

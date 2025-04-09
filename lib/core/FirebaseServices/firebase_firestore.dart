@@ -11,36 +11,36 @@ abstract class FireBaseFirestoreServices {
     return FirebaseFirestore.instance
         .collection(RestaurantDataModel.collectionName)
         .withConverter<RestaurantDataModel>(
-          //snapshot da el doc el gy mn firesotre(map<string , dynamic >) btakhdo w thawelo l object mn no3 eventDataModel
+          //snapshot da el doc el gy mn firesotre(map<string , dynamic >) btakhdo w thawelo l object mn no3 restaurantDataModel
           // from firestore 3ndha parameter map string w dynamic
           // badeha el snapshot.data 3shan el parameter
           fromFirestore: (snapshot, _) =>
               RestaurantDataModel.fromFireStore(snapshot.data()!),
-          toFirestore: (eventModel, _) => eventModel.toFireStore(),
+          toFirestore: (restaurantModel, _) => restaurantModel.toFireStore(),
         ); // bstkhdmha 3shan a read w write data
   }
 
   // function t create new Restaurant
-  // static Future<bool> createNewRestaurant(RestaurantDataModel eventData) async {
-  //   try {
-  //     //awl haga a3mlha eni ageb el collection ref
-  //     var collectionRef = getCollectionRef();
-  //
-  //     var docRef = collectionRef.doc(); //create new doc in collection
-  //
-  //     eventData.eventID = docRef.id;
-  //     //b2olo yhotele el value bt3t el id fl object mn l id el hwa auto generated fe el firestore
-  //
-  //     docRef.set(eventData);
-  //     //b2olo y create el data bl object el m3aia mn eventDataModel
-  //     // yroh yb3to l function to firestore w thawelo l map w tb3to
-  //     // mesh 7ata await hna 3shan ana msh mestnya data trg3 lw kan fe haga rg3a kan lazm await
-  //
-  //     return Future.value(true);
-  //   } catch (error) {
-  //     return Future.value(false);
-  //   }
-  // }
+  static Future<bool> createNewRestaurant(RestaurantDataModel restaurantData) async {
+    try {
+      //awl haga a3mlha eni ageb el collection ref
+      var collectionRef = getCollectionRef();
+
+      var docRef = collectionRef.doc(); //create new doc in collection
+
+     restaurantData.restaurantId = docRef.id;
+      //b2olo yhotele el value bt3t el id fl object mn l id el hwa auto generated fe el firestore
+
+      docRef.set(restaurantData);
+      //b2olo y create el data bl object el m3aia mn eventDataModel
+      // yroh yb3to l function to firestore w thawelo l map w tb3to
+      // mesh 7ata await hna 3shan ana msh mestnya data trg3 lw kan fe haga rg3a kan lazm await
+
+      return Future.value(true);
+    } catch (error) {
+      return Future.value(false);
+    }
+  }
 
   //functions trg3 el data mn database (read data)
 //   static Future <List<RestaurantDataModel>> getDataFromFirestore(String categoryName) async {

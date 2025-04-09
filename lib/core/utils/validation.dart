@@ -51,6 +51,12 @@ abstract class Validations {
     }
     return null;
   }
+  static String? ValidateBusinessName(String? businessName){
+    if(businessName == null || businessName.isEmpty){
+      return "Required";
+    }
+    return null;
+  }
 
   static String? ValidatePhoneNumber(String? number){
     if(number == null || number.isEmpty){

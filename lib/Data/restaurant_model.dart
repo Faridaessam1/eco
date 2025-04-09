@@ -1,5 +1,5 @@
 class RestaurantDataModel {
-  static const String collectionName = "RestaurantDataCollection";
+  static const String collectionName = "EcoEatersRestaurants";
   String restaurantId;
   String restaurantName;
   String restaurantImage;
@@ -14,7 +14,7 @@ class RestaurantDataModel {
   bool deliveryAvailability;
 
   RestaurantDataModel({
-    required this.restaurantId,
+    this.restaurantId = "",
     required this.restaurantName,
     required this.restaurantImage,
     required this.contactPersonName,

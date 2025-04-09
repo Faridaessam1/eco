@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eco_eaters_app_3/core/data/dish_data_model.dart';
 import '../../Data/restaurant_model.dart';
 
 abstract class FireBaseFirestoreServices {
@@ -18,6 +19,32 @@ abstract class FireBaseFirestoreServices {
               RestaurantDataModel.fromFireStore(snapshot.data()!),
           toFirestore: (eventModel, _) => eventModel.toFireStore(),
         ); // bstkhdmha 3shan a read w write data
+  }
+
+
+              // Dish Data Model
+  static CollectionReference<DishDataModel> getDishCollectionRef() {
+    return FirebaseFirestore.instance
+        .collection(DishDataModel.collectionName)
+        .withConverter<DishDataModel>(
+      fromFirestore: (snapshot, _) =>
+          DishDataModel.fromFireStore(snapshot.data()!),
+      toFirestore: (dishModel, _) => dishModel.toFireStore(),
+    );
+  }
+
+           // create new dish
+  static Future<void> createNewDish(DishDataModel dishData) async {
+    try {
+      var collectionRef = getDishCollectionRef();
+      var docRef = collectionRef
+          .doc(); // Creates a new document reference with auto-generated ID
+      dishData.dishId =
+          docRef.id; // Assign the generated document ID to the eventId
+      await docRef.set(dishData); // Save the event data with the eventId set
+    } catch (error) {
+      print("Error creating event: $error");
+    }
   }
 
   // function t create new Restaurant

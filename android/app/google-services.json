@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "748910278372",
+    "project_id": "ecoeaters2025",
+    "storage_bucket": "ecoeaters2025.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:748910278372:android:0efeffae95817440791ef1",
+        "android_client_info": {
+          "package_name": "com.example.eco_eaters_app_3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkdvw1Hbt1dz-gOIjvb-NYaDt3gs2zRZY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

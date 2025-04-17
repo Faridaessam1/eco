@@ -1,7 +1,8 @@
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
+import 'package:eco_eaters_app_3/ui/auth/seller_sign_up_screen.dart';
 import 'package:flutter/material.dart';
 import '../../ui/auth/login_screen.dart';
-import '../../ui/auth/sign_up_screen.dart';
+import '../../ui/auth/customer_sign_up_screen.dart';
 import '../../ui/auth/user_type.dart';
 import '../../ui/customer/layout/layout.dart';
 import '../../ui/customer/orders/customer_order_screen.dart';
@@ -29,9 +30,14 @@ class AppRoutes {
           builder: (context) => LoginScreen(),
           settings: settings,
         );
-      case PagesRouteName.signUp:
+      case PagesRouteName.customerSignUp:
         return MaterialPageRoute(
-          builder: (context) => SignUpScreen(),
+          builder: (context) => CustomerSignUpScreen(),
+          settings: settings,
+        );
+      case PagesRouteName.sellerSignUp:
+        return MaterialPageRoute(
+          builder: (context) => SellerSignUpScreen(),
           settings: settings,
         );
 

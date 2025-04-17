@@ -1,5 +1,6 @@
 
-import 'package:eco_eaters_app_3/ui/auth/sign_up_screen.dart';
+import 'package:eco_eaters_app_3/ui/auth/customer_sign_up_screen.dart';
+import 'package:eco_eaters_app_3/ui/auth/seller_sign_up_screen.dart';
 import 'package:eco_eaters_app_3/ui/auth/widget/user_type_card.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_assets.dart';
@@ -60,7 +61,7 @@ class UserTypeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignUpScreen()),
+                        MaterialPageRoute(builder: (context) =>CustomerSignUpScreen ()),
                       );
                     },
                     child: UserTypeCard(
@@ -71,7 +72,7 @@ class UserTypeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignUpScreen()),
+                        MaterialPageRoute(builder: (context) => SellerSignUpScreen()),
                       );
                     },
                     child:
@@ -91,7 +92,7 @@ class UserTypeScreen extends StatelessWidget {
                         fontSize: screenWidth * 0.04, color: Colors.black54)),
                 GestureDetector(
                   onTap:(){
-                    Navigator.pushNamed(context, PagesRouteName.onBoarding);
+                    Navigator.pushNamed(context, PagesRouteName.login);
                   },
                   child: Text(
                     " Sign in",

@@ -19,7 +19,7 @@ class FoodItemCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
             child: Image.asset(AppAssets.recentlyAddedImg),
           ),
-          Text(
+          const Text(
             "Buddha Bowl",
             style: TextStyle(
                 color: AppColors.black,
@@ -27,7 +27,7 @@ class FoodItemCard extends StatelessWidget {
                 fontWeight: FontWeight.w500,
             ),
           ),
-          Text(
+          const Text(
             "Organic • Vegan",
             style: TextStyle(
               color: AppColors.darkGrey,
@@ -37,21 +37,21 @@ class FoodItemCard extends StatelessWidget {
           ),
           Row(
             children: [
-              Text("100 L.E",
+              const Text("100 L.E",
                 style: TextStyle(
                 color: AppColors.black,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),),
-              Spacer(),
+              const Spacer(),
               Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.primaryColor,
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.add,
                     color: AppColors.black,
                   ),

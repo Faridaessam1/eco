@@ -13,6 +13,8 @@ class HomeTab extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
+        centerTitle: true,
+        title: Image.asset(AppAssets.appLogo),
         actions: [
           IconButton(
               onPressed: () {},

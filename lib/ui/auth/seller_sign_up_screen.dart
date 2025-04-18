@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/routes/page_route_names.dart';
+import '../../core/utils/validation.dart';
 import '../../core/widgets/custom_text_form_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -15,24 +17,28 @@ class SellerSignUpScreen extends StatefulWidget {
 class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  var businessNameController = TextEditingController();
-  var contactPersonController = TextEditingController();
-  var phoneController = TextEditingController();
-  var emailController = TextEditingController();
-  var passwordController = TextEditingController();
-  var rePasswordController = TextEditingController();
+  final TextEditingController businessNameController = TextEditingController();
+  final TextEditingController contactPersonController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController rePasswordController = TextEditingController();
 
   String selectedBusinessType = 'Restaurant';
   String selectedOperatingHours = '9:00 AM - 5:00 PM';
   String? selectedCity;
 
-  final businessTypes = ['Restaurant', 'Grocery', 'Bakery', 'Cafe'];
+  final businessTypes = [
+    'Restaurant',
+    'Grocery',
+    'Bakery',
+    'Cafe',
+  ];
   final operatingHours = [
     '9:00 AM - 5:00 PM',
     '10:00 AM - 6:00 PM',
     '12:00 PM - 8:00 PM',
   ];
-
   final cairoCities = [
     'Nasr City',
     'Heliopolis',
@@ -77,16 +83,14 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                       filledColor: Colors.white,
                       controller: businessNameController,
                       hintText: "Enter business name",
-                      validator: (text) =>
-                      text == null || text.isEmpty ? "Required" : null,
+                      validator:  Validations.ValidateBusinessName,
                     ),
                     SizedBox(height: verticalSpacing * 1.2),
                     CustomTextFormField(
                       filledColor: Colors.white,
                       controller: contactPersonController,
                       hintText: "Full name",
-                      validator: (text) =>
-                      text == null || text.isEmpty ? "Required" : null,
+                      validator:  Validations.ValidateFullName,
                     ),
                     SizedBox(height: verticalSpacing * 1.2),
                     Row(
@@ -96,8 +100,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                             filledColor: Colors.white,
                             controller: phoneController,
                             hintText: "Phone number",
-                            validator: (text) =>
-                            text == null || text.isEmpty ? "Required" : null,
+                            validator: Validations.ValidatePhoneNumber,
                           ),
                         ),
                         SizedBox(width: size.width * 0.03),
@@ -106,8 +109,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                             filledColor: Colors.white,
                             controller: emailController,
                             hintText: "Email address",
-                            validator: (text) =>
-                            text == null || text.isEmpty ? "Required" : null,
+                            validator: Validations.validateEmail,
                           ),
                         ),
                       ],
@@ -121,8 +123,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                             controller: passwordController,
                             hintText: "Password",
                             isPassword: true,
-                            validator: (text) =>
-                            text == null || text.isEmpty ? "Required" : null,
+                            validator:  Validations.validatePassword,
                           ),
                         ),
                         SizedBox(width: size.width * 0.03),
@@ -164,7 +165,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                       ),
                       validator: (value) =>
                       value == null || value.isEmpty ? "Required" : null,
@@ -189,7 +190,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                       ),
                     ),
                     SizedBox(height: verticalSpacing * 1.2),
@@ -212,7 +213,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                       ),
                     ),
                   ],
@@ -246,6 +247,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                             });
 
                          SnackBarServices.showSuccessMessage("Account Created Successfully");
+                         Navigator.pushNamed(context, PagesRouteName.login);
                           }
                         } catch (e) {
                           SnackBarServices.showErrorMessage("Failed to Create Account");

@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/routes/page_route_names.dart';
+import '../../core/utils/validation.dart';
 import '../../core/widgets/custom_text_form_field.dart';
 import '../../main.dart';
 import 'login_screen.dart';
@@ -16,11 +17,11 @@ class CustomerSignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<CustomerSignUpScreen> {
-  var nameController = TextEditingController();
-  var emailController = TextEditingController();
-  var phoneController = TextEditingController();
-  var passwordController = TextEditingController();
-  var rePasswordController = TextEditingController();
+   final TextEditingController nameController = TextEditingController();
+   final TextEditingController emailController = TextEditingController();
+   final TextEditingController phoneController = TextEditingController();
+   final TextEditingController passwordController = TextEditingController();
+   final TextEditingController rePasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -60,7 +61,7 @@ class _SignUpScreenState extends State<CustomerSignUpScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black12,
                             blurRadius: 10,
@@ -82,12 +83,7 @@ class _SignUpScreenState extends State<CustomerSignUpScreen> {
                           SizedBox(height: size.height * 0.03),
                           CustomTextFormField(
                             controller: nameController,
-                            validator: (text) {
-                              if (text == null || text.trim().isEmpty) {
-                                return 'Please Enter Your Name';
-                              }
-                              return null; //valid
-                            },
+                            validator: Validations.ValidateFullName,
                             hintTextColor: AppColors.grey,
                             hintText: "Enter your full name",
                             iconColor: AppColors.black,
@@ -96,18 +92,7 @@ class _SignUpScreenState extends State<CustomerSignUpScreen> {
                           SizedBox(height: size.height * 0.015),
                           CustomTextFormField(
                             controller: emailController,
-                            validator: (text) {
-                              if (text == null || text.trim().isEmpty) {
-                                return 'Please Enter Your Email';
-                              }
-                              final bool emailValid = RegExp(
-                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                  .hasMatch(text);
-                              if (!emailValid) {
-                                return 'Please Enter Valid Email';
-                              }
-                              return null; //valid
-                            },
+                            validator:  Validations.validateEmail,
                             hintTextColor: AppColors.grey,
                             hintText: "your@email.com",
                             iconColor: AppColors.black,
@@ -116,12 +101,7 @@ class _SignUpScreenState extends State<CustomerSignUpScreen> {
                           SizedBox(height: size.height * 0.018),
                           CustomTextFormField(
                             controller: phoneController,
-                            validator: (text) {
-                              if (text == null || text.trim().isEmpty) {
-                                return 'Please Enter Your Phone';
-                              }
-                              return null; //valid
-                            },
+                            validator: Validations.ValidatePhoneNumber,
                             hintTextColor: AppColors.grey,
                             hintText: "Enter phone number",
                             iconColor: AppColors.black,
@@ -130,15 +110,7 @@ class _SignUpScreenState extends State<CustomerSignUpScreen> {
                           SizedBox(height: size.height * 0.018),
                           CustomTextFormField(
                             controller: passwordController,
-                            validator: (text) {
-                              if (text == null || text.trim().isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              if (text.trim().length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              return null; // valid
-                            },
+                            validator:  Validations.validatePassword,
                             hintTextColor: AppColors.grey,
                             hintText: "Create password",
                             filledColor: Colors.white,

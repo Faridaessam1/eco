@@ -1,109 +1,73 @@
-//
-// import 'package:flutter_easyloading/flutter_easyloading.dart';
-//
-// import '../utils/snack_bar_services.dart';
-//
-// class FirebaseFunctions {
-//
-//
-//
-//   static Future<bool> createAccount(String email, String password) async{
-//     EasyLoading.show();
-//
-//     try{
-//       UserCredential credential=
-//       await FirebaseAuth.instance.createUserWithEmailAndPassword(
-//         email: email,
-//         password: password,
-//       );
-//       String userID = credential.user?.uid ?? "";
-//       SnackBarServices.showSuccessMessage("Account Created Successfully");
-//
-//       return Future.value(true);
-//     }
-//     on FirebaseAuthException catch(e){
-//       if (e.code == 'weak-password') {
-//         SnackBarServices.showErrorMessage(e.message ?? "The password provided is too weak.");
-//         return Future.value(false);
-//
-//       } else if (e.code == 'email-already-in-use') {
-//         SnackBarServices.showErrorMessage(e.message ?? "The account already exists for that email.");
-//         return Future.value(false);
-//
-//       }
-//       return Future.value(false);
-//
-//     } catch (e){
-//       return Future.value(false);
-//     }
-//
-//   }
-//
-//
-//   static Future<bool> login(String email, String password) async{
-//     EasyLoading.show();
-//
-//     try{
-//       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-//           email: email,
-//           password: password
-//       );
-//       String userID = credential.user?.uid ?? "";
-//
-//       SnackBarServices.showSuccessMessage("Logged In Successfully");
-//       return Future.value(true);
-//     }
-//     on FirebaseAuthException catch(e){
-//       if (e.code == 'invalid-credential') {
-//         SnackBarServices.showErrorMessage(e.message ?? "User Is Not Found");
-//         return Future.value(false);
-//
-//       } else if (e.code == ' invalid-credential') {
-//         SnackBarServices.showErrorMessage("Wrong password");
-//         return Future.value(false);
-//
-//       }else if (e.code == 'network-request-failed') {
-//         SnackBarServices.showErrorMessage("Network error");
-//         return Future.value(false);
-//         }
-//       return Future.value(false);
-//
-//     }
-//      catch (e){
-//       print(e.toString());
-//       return Future.value(false);
-//     }
-//
-//   }
-//
-//
-//   static Future<UserCredential?> signInWithGoogle() async {
-//     try {
-//       // await GoogleSignIn().signIn(); de btft7le window google 3shan ykhtar el account bta3o
-//       // lw ekhtar htrg3 value ttkhzn fl variable lw mkhtrsh btrg3 null
-//       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-//       if (googleUser == null) return null; // User canceled sign-in
-//
-//       // lw luser ekhtar account bstkhdm googleUser.authentication;
-//       // 3shan at2ked en byanat el user sah
-//       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-//
-//       // ay user 3ndo hagten awl ma by3ml sign in b google
-//       //accesstoken wda b2dar a access be hagat f account l shakhs w bykon haga mo2kata
-//       //idtoken w da bykon fe byanat asasya 3shan a3rf hawyt lshakhs el dkhal
-//       // 3shan at2ked mn hawyt lshakhs el dkhal byhtag letnen w letnnakhdthom wna b3ml sign in
-//       final OAuthCredential credential = GoogleAuthProvider.credential(
-//         accessToken: googleAuth.accessToken,
-//         idToken: googleAuth.idToken,
-//       );
-//       SnackBarServices.showSuccessMessage("Logged In Successfully");
-//       // 4️⃣ Sign in to Firebase and Return User
-//       return await FirebaseAuth.instance.signInWithCredential(credential);
-//
-//     } catch (e) {
-//       SnackBarServices.showErrorMessage(e.toString());
-//       print(e);
-//     }
-//   }
-//
-// }
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import '../utils/snack_bar_services.dart';
+
+class FirebaseFunctions {
+  static Future<bool> createAccount(String email, String password) async {
+    EasyLoading.show();
+    try {
+      UserCredential credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      String userID = credential.user?.uid ?? "";
+      SnackBarServices.showSuccessMessage("Account Created Successfully");
+      return Future.value(true);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        SnackBarServices.showErrorMessage(e.message ?? "The password provided is too weak.");
+      } else if (e.code == 'email-already-in-use') {
+        SnackBarServices.showErrorMessage(e.message ?? "The account already exists for that email.");
+      } else {
+        SnackBarServices.showErrorMessage(e.message ?? "An error occurred.");
+      }
+      return Future.value(false);
+    } catch (e) {
+      return Future.value(false);
+    }
+  }
+
+  static Future<bool> login(String email, String password) async {
+    EasyLoading.show();
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      String userID = credential.user?.uid ?? "";
+      SnackBarServices.showSuccessMessage("Logged In Successfully");
+      return Future.value(true);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-credential' || e.code == 'wrong-password') {
+        SnackBarServices.showErrorMessage(e.message ?? "Invalid credentials");
+      } else if (e.code == 'network-request-failed') {
+        SnackBarServices.showErrorMessage("Network error");
+      } else {
+        SnackBarServices.showErrorMessage(e.message ?? "An error occurred.");
+      }
+      return Future.value(false);
+    } catch (e) {
+      print(e.toString());
+      return Future.value(false);
+    }
+  }
+  static Future<String?> getUserType(String? uid) async {
+    if (uid == null) return null;
+    try {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      if (doc.exists) {
+        return doc.data()?['userType'] as String?;
+      } else {
+        SnackBarServices.showErrorMessage("User data not found.");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching userType: $e");
+      SnackBarServices.showErrorMessage("Failed to fetch user type.");
+      return null;
+    }
+  }
+}
+

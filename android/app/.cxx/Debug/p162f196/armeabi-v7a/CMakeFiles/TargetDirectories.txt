@@ -1,0 +1,2 @@
+C:/Users/Lenovo/EcoEatersApp3/android/app/.cxx/Debug/p162f196/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Lenovo/EcoEatersApp3/android/app/.cxx/Debug/p162f196/armeabi-v7a/CMakeFiles/rebuild_cache.dir

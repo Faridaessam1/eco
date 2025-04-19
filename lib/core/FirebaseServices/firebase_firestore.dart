@@ -3,7 +3,6 @@ import 'package:eco_eaters_app_3/Data/dish_data_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import '../../Data/order_data_model.dart';
-import '../../Data/restaurant_model.dart';
 
 abstract class FireBaseFirestoreServices {
 
@@ -28,29 +27,33 @@ abstract class FireBaseFirestoreServices {
     required TextEditingController contactPersonController,
     required TextEditingController phoneController,
     required TextEditingController emailController,
-    required TextEditingController addressController,
+    required Function(String) onAddressSelected,
     required Function(String?) onBusinessTypeSelected,
     required Function(String?) onOperatingHoursSelected,
   }) async {
     final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+try{
+  final doc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(currentUserId)
+      .get();
 
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUserId)
-        .get();
+  if (doc.exists) {
+    final data = doc.data()!;
 
-    if (doc.exists) {
-      final data = doc.data()!;
-      print("businessType: ${data['businessType']}");
-      print("operatingHours: ${data['operatingHours']}");
-      businessNameController.text = data['businessName'];
-      contactPersonController.text = data['contactPerson'];
-      phoneController.text = data['phone'];
-      emailController.text = data['email'];
-      addressController.text = data['address'];
-      onBusinessTypeSelected(data['businessType']);
-      onOperatingHoursSelected(data['operatingHours']);
-    }
+
+    businessNameController.text = data['businessName'];
+    contactPersonController.text = data['contactPerson'];
+    phoneController.text = data['phone'];
+    emailController.text = data['email'];
+    onAddressSelected (data['address']) ;
+    onBusinessTypeSelected(data['businessType']);
+    onOperatingHoursSelected(data['operatingHours']);
+  }
+} catch(e){
+  print(e);
+}
+
   }
 
 //functions trg3 el data mn database (read data)

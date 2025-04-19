@@ -26,11 +26,25 @@ class SellerProfileView extends StatefulWidget {
 class _SellerProfileViewState extends State<SellerProfileView> {
   String? selectedBusinessType;
   String? selectedOperatingHours;
+  String? selectedAddress;
+  String? selectedCity;
+  final cairoCities = [
+    'Nasr City',
+    'Heliopolis',
+    'Maadi',
+    'Zamalek',
+    'New Cairo',
+    '6th of October',
+    'Mohandessin',
+    'El Abbasia',
+    'Shubra',
+    'Downtown',
+  ];
+
   final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _contactPersonController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -38,11 +52,16 @@ class _SellerProfileViewState extends State<SellerProfileView> {
     super.initState();
 
     FireBaseFirestoreServices.getSellerProfileData(
+
       businessNameController: _businessNameController,
       contactPersonController: _contactPersonController,
       phoneController: _phoneController,
       emailController: _emailController,
-      addressController: _addressController,
+      onAddressSelected: (value) {
+        setState(() {
+          selectedAddress = value;
+        });
+      },
       onBusinessTypeSelected: (value) {
         setState(() {
           selectedBusinessType = value;
@@ -288,30 +307,35 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                     const SizedBox(
                       height: 20,
                     ),
-                    const Text(
-                      "Location",
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.black),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    CustomTextFormField(
-                      controller: _addressController,
-                      hintText: "Enter Address",
-                      hintTextColor: AppColors.textGreyColor,
-                      filledColor: AppColors.white,
-                      borderColor: AppColors.grey,
-                      iconPath: AppAssets.locationIcon,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your address';
-                        }
-                        return null;
+                    CustomDropdown<String>(
+                      hintText: 'Select location',
+                      items: cairoCities,
+                      initialItem: selectedCity,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCity = value;
+                        });
                       },
+                      decoration: CustomDropdownDecoration(
+                        closedBorder: Border.all(
+                          color: AppColors.grey,
+                          width: 1.8,
+                        ),
+                        closedBorderRadius: BorderRadius.circular(18),
+                        closedSuffixIcon: const Icon(
+                          Icons.arrow_drop_down_rounded,
+                          color: AppColors.green,
+                          size: 28,
+                        ),
+                        expandedSuffixIcon: const Icon(
+                          Icons.arrow_drop_up_rounded,
+                          color: AppColors.green,
+                          size: 28,
+                        ),
+                      ),
                     ),
+
+
                     const SizedBox(
                       height: 20,
                     ),

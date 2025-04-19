@@ -5,7 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../home/home_view.dart';
 import '../new dish/new_dish_view.dart';
 import '../orders/orders_view.dart';
-import '../profile/profile_view.dart';
+import '../profile/seller_profile_view.dart';
 
 class LayOutViewSeller extends StatefulWidget {
   const LayOutViewSeller({super.key});
@@ -18,10 +18,10 @@ class _LayOutViewSellerState extends State<LayOutViewSeller> {
 
   int selectedIndex=0;
   List <Widget> tabs =[
-    HomeView(),
-    OrdersView(),
-    NewDishView(),
-    ProfileView()
+    const HomeView(),
+    const OrdersView(),
+    const NewDishView(),
+    const SellerProfileView()
   ];
 
   @override

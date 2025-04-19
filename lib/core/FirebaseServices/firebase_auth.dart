@@ -69,5 +69,10 @@ class FirebaseFunctions {
       return null;
     }
   }
+
+  static Future<void> logOut() async {
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+  }
 }
 

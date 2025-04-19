@@ -1,12 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class DishDataModel{
   static const String collectionName = "dishDataCollection";
+  String dishId;
   final String dishName;
-        String dishId;
   final String? dishImage;
-  final String dishQuantity;
-  final String dishPrice;
+  final int dishQuantity;
+  final double dishPrice;
   final String dishCategory;
   final String? dishAdditionalInfo;
+  final Timestamp? createdAt;
 
    DishDataModel({
     required this.dishName,
@@ -16,18 +19,19 @@ class DishDataModel{
     required this.dishPrice,
     required this.dishCategory,
     required this.dishAdditionalInfo,
+     this.createdAt,
 });
 
 
   Map <String, dynamic> toFireStore(){
     return {
       "dishName" : dishName,
-      "dishId" : dishId,
       "dishImage":dishImage,
       "dishQuantity": dishQuantity,
       "dishPrice": dishPrice,
       "dishCategory": dishCategory,
-      "dishAdditionalInfo" : dishCategory,
+      "dishAdditionalInfo" :dishAdditionalInfo,
+      "createdAt": Timestamp.now(),
     };
   }
 
@@ -39,7 +43,8 @@ class DishDataModel{
         dishQuantity: json["dishQuantity"],
         dishPrice: json["dishPrice"],
         dishCategory: json["dishCategory"],
-        dishAdditionalInfo: json["dishAdditionalInfo"]
+        dishAdditionalInfo: json["dishAdditionalInfo"],
+        createdAt: json["createdAt"],
     );
   }
 }

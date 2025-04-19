@@ -1,33 +1,74 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
-import 'package:eco_eaters_app_3/Data/restaurant_model.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
+import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:eco_eaters_app_3/core/utils/validation.dart';
-
+import 'package:eco_eaters_app_3/core/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+import '../../../core/FirebaseServices/firebase_auth.dart';
 import '../../../core/FirebaseServices/firebase_firestore.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/utils/snack_bar_services.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 
-class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
+class SellerProfileView extends StatefulWidget {
+  const SellerProfileView({super.key});
 
   @override
-  State<ProfileView> createState() => _ProfileViewState();
+  State<SellerProfileView> createState() => _SellerProfileViewState();
 }
 
-class _ProfileViewState extends State<ProfileView> {
+class _SellerProfileViewState extends State<SellerProfileView> {
   String? selectedBusinessType;
   String? selectedOperatingHours;
+  String? selectedAddress;
+  String? selectedCity;
+  final cairoCities = [
+    'Nasr City',
+    'Heliopolis',
+    'Maadi',
+    'Zamalek',
+    'New Cairo',
+    '6th of October',
+    'Mohandessin',
+    'El Abbasia',
+    'Shubra',
+    'Downtown',
+  ];
+
   final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _contactPersonController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    FireBaseFirestoreServices.getSellerProfileData(
+
+      businessNameController: _businessNameController,
+      contactPersonController: _contactPersonController,
+      phoneController: _phoneController,
+      emailController: _emailController,
+      onAddressSelected: (value) {
+        setState(() {
+          selectedAddress = value;
+        });
+      },
+      onBusinessTypeSelected: (value) {
+        setState(() {
+          selectedBusinessType = value;
+        });
+      },
+      onOperatingHoursSelected: (value) {
+        setState(() {
+          selectedOperatingHours = value;
+        });
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,47 +99,6 @@ class _ProfileViewState extends State<ProfileView> {
             ),
           ),
           actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.add_circle_outlined,
-                color: AppColors.green,
-                weight: 1,
-              ),
-              onPressed: () {
-                var restaurantData = RestaurantDataModel(
-                  restaurantName: _businessNameController.text,
-                  restaurantImage: "",
-                  contactPersonName: _contactPersonController.text,
-                  restaurantCategory: "",
-                  deliveryAvailability: true,
-                  restaurantRating: "4.4",
-                  restaurantAddress: _addressController.text,
-                  phoneNumber: _phoneController.text,
-                  operatingHours: selectedOperatingHours ?? "",
-                  businessType: selectedBusinessType ?? "",
-                );
-
-                  try{
-                  if (_formKey.currentState!.validate()) {
-                    EasyLoading.show();
-                    FireBaseFirestoreServices.createNewRestaurant(restaurantData)
-                        .then((value) {
-                      EasyLoading.dismiss();
-                      if(value == true){
-                        SnackBarServices.showSuccessMessage("Restaurant Created Successfully");
-
-                      }
-                    });
-                  }
-                }catch(e){
-                    EasyLoading.dismiss();
-                    SnackBarServices.showErrorMessage("An error occurred");
-
-                  }
-
-
-              },
-            ),
             IconButton(
               icon: const Icon(
                 Icons.close_rounded,
@@ -275,7 +275,7 @@ class _ProfileViewState extends State<ProfileView> {
                     CustomDropdown<String>(
                       hintText: 'Select business type',
                       items: _sellerCategoriesList,
-                      initialItem: null,
+                      initialItem: selectedBusinessType,
                       onChanged: (value) {
                         setState(() {
                           selectedBusinessType = value;
@@ -302,30 +302,35 @@ class _ProfileViewState extends State<ProfileView> {
                     const SizedBox(
                       height: 20,
                     ),
-                    const Text(
-                      "Location",
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.black),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    CustomTextFormField(
-                      controller: _addressController,
-                      hintText: "Enter Address",
-                      hintTextColor: AppColors.textGreyColor,
-                      filledColor: AppColors.white,
-                      borderColor: AppColors.grey,
-                      iconPath: AppAssets.locationIcon,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your address';
-                        }
-                        return null;
+                    CustomDropdown<String>(
+                      hintText: 'Select location',
+                      items: cairoCities,
+                      initialItem: selectedCity,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCity = value;
+                        });
                       },
+                      decoration: CustomDropdownDecoration(
+                        closedBorder: Border.all(
+                          color: AppColors.grey,
+                          width: 1.8,
+                        ),
+                        closedBorderRadius: BorderRadius.circular(18),
+                        closedSuffixIcon: const Icon(
+                          Icons.arrow_drop_down_rounded,
+                          color: AppColors.green,
+                          size: 28,
+                        ),
+                        expandedSuffixIcon: const Icon(
+                          Icons.arrow_drop_up_rounded,
+                          color: AppColors.green,
+                          size: 28,
+                        ),
+                      ),
                     ),
+
+
                     const SizedBox(
                       height: 20,
                     ),
@@ -342,7 +347,7 @@ class _ProfileViewState extends State<ProfileView> {
                     CustomDropdown<String>(
                       hintText: 'Operating hours',
                       items: _operatingHoursList,
-                      initialItem: null,
+                      initialItem:selectedOperatingHours,
                       onChanged: (value) {
                         setState(() {
                           selectedOperatingHours = value;
@@ -372,6 +377,75 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(height: 15,),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomElevatedButton(
+                      onPressed: () async {
+                        // Validate the form before updating
+                        if (_formKey.currentState?.validate() ?? false) {
+                          // If the form is valid, proceed with the update
+                          bool success = await FireBaseFirestoreServices
+                              .updateSellerProfile(
+                            businessName: _businessNameController.text,
+                            contactPerson: _contactPersonController.text,
+                            phone: _phoneController.text,
+                            email: _emailController.text,
+                            city: _addressController.text,
+                            operatingHours: selectedOperatingHours ?? '',
+                            businessType:
+                                selectedBusinessType, // Optional, can be null if not selected
+                          );
+
+                          if (success) {
+                            // Show a success message or navigate to another screen
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Profile updated successfully!')),
+                            );
+                          } else {
+                            // Show an error message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Failed to update profile.')),
+                            );
+                          }
+                        } else {
+                          // If the form is not valid, show a message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Please fill in all fields correctly.')),
+                          );
+                        }
+                      },
+                      text: "Update Profile",
+                      buttonColor: AppColors.primaryColor,
+                      textColor: AppColors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      borderRadius: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: CustomElevatedButton(
+                      onPressed: () async {
+                        await FirebaseFunctions.logOut();
+                        Navigator.pushReplacementNamed(context,PagesRouteName.login);
+                        },
+                      text: "Logout",
+                      buttonColor: AppColors.primaryColor,
+                      textColor: AppColors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      borderRadius: 18,
+                    ),
+                  ),
+                ],
               )
             ],
           ).setPadding(context, vertical: 0.01, horizontal: 0.03),

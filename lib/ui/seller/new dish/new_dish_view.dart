@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/core/FirebaseServices/firebase_firestore.dart';
-import 'package:eco_eaters_app_3/core/data/dish_data_model.dart';
+import 'package:eco_eaters_app_3/Data/dish_data_model.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
+import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -46,7 +48,7 @@ class _NewDishViewState extends State<NewDishView> {
       backgroundColor: AppColors.white,
       appBar: AppBar(
         backgroundColor: AppColors.white,
-        title: Text(
+        title: const Text(
           "Add New Item",
           style: TextStyle(
             fontSize: 20,
@@ -56,23 +58,25 @@ class _NewDishViewState extends State<NewDishView> {
         ),
         actions: [
           GestureDetector(
-            onTap: (){
-              var dishData = DishDataModel(
-                  dishName: _dishNameController.text,
-                  dishImage: _imageUrl,
-                  dishQuantity: _dishQuantityController.text,
-                  dishPrice: _dishPriceController.text,
-                  dishCategory: _dishCategoryController.value?? 'Uncategorized',
-                  dishAdditionalInfo: _dishAdditionalInfoController.text
+            onTap:() async {
+              if (!formKey.currentState!.validate()) return;
+              String sellerId = FirebaseAuth.instance.currentUser!.uid;
+              final dish = DishDataModel(
+                dishName: _dishNameController.text.trim(),
+                dishQuantity: int.parse(_dishQuantityController.text.trim()),
+                dishPrice: double.parse(_dishPriceController.text.trim()),
+                dishCategory: _dishCategoryController.value ?? "",
+                dishAdditionalInfo: _dishAdditionalInfoController.text.trim(),
+                dishImage: _imageUrl ?? "",
               );
-              if (formKey.currentState!.validate()){
-                EasyLoading.show();
-                FireBaseFirestoreServices.createNewDish(dishData).then(
-                   (value) {
-                     EasyLoading.dismiss();
-                   }
-                );
-              }
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(sellerId)
+                  .collection("dishes")
+                  .add(dish.toFireStore());
+
+              EasyLoading.showSuccess("Dish Added Successfully!");
+              Navigator.pushNamed(context,PagesRouteName.sellerHomeLayout);
             },
             child: CustomStatusContainer(
               orderStatus: "Save",
@@ -80,7 +84,7 @@ class _NewDishViewState extends State<NewDishView> {
               orderStatusColor: AppColors.white,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
         ],
@@ -110,8 +114,8 @@ class _NewDishViewState extends State<NewDishView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.insert_photo_outlined),
-                    Text(
+                    const Icon(Icons.insert_photo_outlined),
+                    const Text(
                       "Upload food image",
                       style: TextStyle(
                           fontSize: 14,
@@ -120,7 +124,7 @@ class _NewDishViewState extends State<NewDishView> {
                     ),
                     GestureDetector(
                       onTap: _pickImage,
-                      child: Text(
+                      child: const Text(
                         "Choose image",
                         style: TextStyle(
                             fontSize: 14,
@@ -130,7 +134,7 @@ class _NewDishViewState extends State<NewDishView> {
                     ),
                     GestureDetector(
                       onTap: _uploadImage,
-                      child: Text(
+                      child: const Text(
                         "Upload image",
                         style: TextStyle(
                             fontSize: 14,
@@ -138,16 +142,16 @@ class _NewDishViewState extends State<NewDishView> {
                             color: AppColors.green),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     _imageUrl != null
-                        ? Text(
+                        ? const Text(
                             "Image uploaded successfully!",
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.white),
                           )
-                        : Text(
+                        : const Text(
                             "No image uploaded yet",
                             style: TextStyle(
                                 fontSize: 14,
@@ -157,17 +161,17 @@ class _NewDishViewState extends State<NewDishView> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
-              Text(
+              const Text(
                 "Dish Name",
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: AppColors.black),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               CustomTextFormField(
@@ -177,17 +181,17 @@ class _NewDishViewState extends State<NewDishView> {
                 borderColor: AppColors.grey,
                 controller: _dishNameController,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
-              Text(
+              const Text(
                 "Quantity",
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: AppColors.black),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               CustomTextFormField(
@@ -197,17 +201,17 @@ class _NewDishViewState extends State<NewDishView> {
                 borderColor: AppColors.grey,
                 controller: _dishQuantityController,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
-              Text(
+              const Text(
                 "Price",
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: AppColors.black),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               CustomTextFormField(
@@ -217,17 +221,17 @@ class _NewDishViewState extends State<NewDishView> {
                 borderColor: AppColors.grey,
                 controller: _dishPriceController,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
-              Text(
+              const Text(
                 "Category",
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: AppColors.black),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               CustomDropdown<String>(
@@ -242,29 +246,29 @@ class _NewDishViewState extends State<NewDishView> {
                     width: 1.8,
                   ),
                   closedBorderRadius: BorderRadius.circular(18),
-                  closedSuffixIcon: Icon(
+                  closedSuffixIcon: const Icon(
                     Icons.arrow_drop_down_rounded,
                     color: AppColors.green,
                     size: 28,
                   ),
-                  expandedSuffixIcon: Icon(
+                  expandedSuffixIcon: const Icon(
                     Icons.arrow_drop_up_rounded,
                     color: AppColors.green,
                     size: 28,
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
-              Text(
+              const Text(
                 "Additional information",
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: AppColors.black),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               CustomTextFormField(

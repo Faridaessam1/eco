@@ -1,75 +1,111 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eco_eaters_app_3/core/data/dish_data_model.dart';
-import '../../Data/restaurant_model.dart';
+import 'package:eco_eaters_app_3/Data/dish_data_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+
+import '../../Data/order_data_model.dart';
 
 abstract class FireBaseFirestoreServices {
-// function 3shan tt3aml m3 firestore w trg3 esm el collection
-  static CollectionReference<RestaurantDataModel> getCollectionRef() {
-    //singelton class bakhod mno object w a3del 3aleh
-    // b set esm el collection (table) ,
-    // w byrg3le el collection kolo bkol el docs el feh,
-    // do converter
-    return FirebaseFirestore.instance
-        .collection(RestaurantDataModel.collectionName)
-        .withConverter<RestaurantDataModel>(
-          //snapshot da el doc el gy mn firesotre(map<string , dynamic >) btakhdo w thawelo l object mn no3 restaurantDataModel
-          // from firestore 3ndha parameter map string w dynamic
-          // badeha el snapshot.data 3shan el parameter
-          fromFirestore: (snapshot, _) =>
-              RestaurantDataModel.fromFireStore(snapshot.data()!),
-          toFirestore: (restaurantModel, _) => restaurantModel.toFireStore(),
-        ); // bstkhdmha 3shan a read w write data
+
+  Future<void> addDishSubCollection(String sellerId, DishDataModel dish) async {
+    DocumentReference sellerDocRef = FirebaseFirestore.instance.collection('users').doc(sellerId);
+    await sellerDocRef.collection('dishes').add(dish.toFireStore());
   }
 
+  Future<void> createOrderSubCollection(String sellerId, String customerId, OrderDataModel order) async {
+    DocumentReference sellerDocRef = FirebaseFirestore.instance.collection('users').doc(sellerId);
+    DocumentReference customerDocRef = FirebaseFirestore.instance.collection('users').doc(customerId);
 
-              // Dish Data Model
-  static CollectionReference<DishDataModel> getDishCollectionRef() {
-    return FirebaseFirestore.instance
-        .collection(DishDataModel.collectionName)
-        .withConverter<DishDataModel>(
-      fromFirestore: (snapshot, _) =>
-          DishDataModel.fromFireStore(snapshot.data()!),
-      toFirestore: (dishModel, _) => dishModel.toFireStore(),
-    );
+    // إضافة الطلب في مجموعة "orders" الخاصة بـ Seller
+    await sellerDocRef.collection('orders').add(order.toFireStore());
+
+    // إضافة الطلب في مجموعة "orders" الخاصة بـ Customer
+    await customerDocRef.collection('orders').add(order.toFireStore());
   }
 
-           // create new dish
-  static Future<void> createNewDish(DishDataModel dishData) async {
+  static Future<void> getSellerProfileData({
+    required TextEditingController businessNameController,
+    required TextEditingController contactPersonController,
+    required TextEditingController phoneController,
+    required TextEditingController emailController,
+    required Function(String) onAddressSelected,
+    required Function(String?) onBusinessTypeSelected,
+    required Function(String?) onOperatingHoursSelected,
+  }) async {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+try{
+  final doc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(currentUserId)
+      .get();
+
+  if (doc.exists) {
+    final data = doc.data()!;
+
+
+    businessNameController.text = data['businessName'];
+    contactPersonController.text = data['contactPerson'];
+    phoneController.text = data['phone'];
+    emailController.text = data['email'];
+    onAddressSelected (data['address']) ;
+    onBusinessTypeSelected(data['businessType']);
+    onOperatingHoursSelected(data['operatingHours']);
+  }
+} catch(e){
+  print(e);
+}
+
+  }
+
+  // update function
+  static Future<bool> updateSellerProfile({
+    required String businessName,
+    required String contactPerson,
+    required String phone,
+    required String email,
+    required String city,
+    required String operatingHours,
+    String? businessType,
+  }) async {
     try {
-      var collectionRef = getDishCollectionRef();
-      var docRef = collectionRef
-          .doc(); // Creates a new document reference with auto-generated ID
-      dishData.dishId =
-          docRef.id; // Assign the generated document ID to the eventId
-      await docRef.set(dishData); // Save the event data with the eventId set
-    } catch (error) {
-      print("Error creating event: $error");
+      var userId =
+          FirebaseAuth.instance.currentUser?.uid; // Get the current user's ID
+
+      if (userId != null) {
+        // Reference to the user document
+        var userDocRef =
+            FirebaseFirestore.instance.collection('users').doc(userId);
+
+        // Check if the document exists
+        var docSnapshot = await userDocRef.get();
+        if (!docSnapshot.exists) {
+          print("No document found for the current user.");
+          return false;
+        }
+
+        // Update the fields inside the user document
+        await userDocRef.update({
+          'businessName': businessName,
+          'contactPerson': contactPerson,
+          'phone': phone,
+          'email': email,
+          'city': city,
+          'operatingHours': operatingHours,
+          'businessType': businessType ?? docSnapshot.data()?['businessType'],
+          // Retains old value if businessType is null
+        });
+
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('Error updating profile: $e');
+      return false;
     }
   }
+}
 
-  // function t create new Restaurant
-  static Future<bool> createNewRestaurant(RestaurantDataModel restaurantData) async {
-    try {
-      //awl haga a3mlha eni ageb el collection ref
-      var collectionRef = getCollectionRef();
-
-      var docRef = collectionRef.doc(); //create new doc in collection
-
-     restaurantData.restaurantId = docRef.id;
-      //b2olo yhotele el value bt3t el id fl object mn l id el hwa auto generated fe el firestore
-
-      docRef.set(restaurantData);
-      //b2olo y create el data bl object el m3aia mn eventDataModel
-      // yroh yb3to l function to firestore w thawelo l map w tb3to
-      // mesh 7ata await hna 3shan ana msh mestnya data trg3 lw kan fe haga rg3a kan lazm await
-
-      return Future.value(true);
-    } catch (error) {
-      return Future.value(false);
-    }
-  }
-
-  //functions trg3 el data mn database (read data)
+//functions trg3 el data mn database (read data)
 //   static Future <List<RestaurantDataModel>> getDataFromFirestore(String categoryName) async {
 //     var collectionRef = getCollectionRef().where(
 //       "eventCategory" , isEqualTo: categoryName,
@@ -165,6 +201,3 @@ abstract class FireBaseFirestoreServices {
   //   }
   //
   // }
-
-
-}

@@ -1,9 +1,10 @@
 import 'package:eco_eaters_app_3/core/FirebaseServices/firebase_auth.dart';
 import 'package:eco_eaters_app_3/ui/auth/user_type.dart';
+import 'package:eco_eaters_app_3/ui/auth/widget/forgot_password_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/routes/page_route_names.dart';
@@ -137,11 +138,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: () {},
-                              child: Text(
-                                "Forgot Password?",
-                                style: TextStyle(
-                                  color: AppColors.primaryColor,
-                                  fontSize: size.width * 0.035,
+                              child: GestureDetector(
+                                onTap: () {
+                                  navigatorKey.currentState?.push(
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            const ForgotPasswordScreen()),
+                                  );
+                                },
+                                child: Text(
+                                  "Forgot Password?",
+                                  style: TextStyle(
+                                    color: AppColors.primaryColor,
+                                    fontSize: size.width * 0.035,
+                                  ),
                                 ),
                               ),
                             ),

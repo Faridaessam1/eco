@@ -1,4 +1,3 @@
-
 import 'package:eco_eaters_app_3/ui/auth/customer_sign_up_screen.dart';
 import 'package:eco_eaters_app_3/ui/auth/seller_sign_up_screen.dart';
 import 'package:eco_eaters_app_3/ui/auth/widget/user_type_card.dart';
@@ -6,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/routes/page_route_names.dart';
-import 'login_screen.dart';
 
 class UserTypeScreen extends StatelessWidget {
   @override

@@ -31,7 +31,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
     'Restaurant',
     'Hotel',
     'Patisserie',
-    'Cafe',
+    'Fast Food',
   ];
   final operatingHours = [
     '9:00 AM - 5:00 PM',

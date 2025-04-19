@@ -1,0 +1,2 @@
+D:/data cleint/data c/AndroidStudioProjects/EcoEatersApp/android/app/.cxx/Debug/4v6k5y3e/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/data cleint/data c/AndroidStudioProjects/EcoEatersApp/android/app/.cxx/Debug/4v6k5y3e/armeabi-v7a/CMakeFiles/rebuild_cache.dir

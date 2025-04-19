@@ -1,4 +1,5 @@
 import 'package:eco_eaters_app_3/core/FirebaseServices/firebase_auth.dart';
+import 'package:eco_eaters_app_3/ui/auth/phone_login.dart';
 import 'package:eco_eaters_app_3/ui/auth/user_type.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,9 +21,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final size = MediaQuery
+        .of(context)
+        .size;
 
     return Scaffold(
       body: Container(
@@ -93,7 +97,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           CustomTextFormField(
                             controller: emailController,
                             validator: (text) {
-                              if (text == null || text.trim().isEmpty) {
+                              if (text == null || text
+                                  .trim()
+                                  .isEmpty) {
                                 return 'Please enter your email';
                               }
                               final bool emailValid = RegExp(
@@ -116,10 +122,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           CustomTextFormField(
                             controller: passwordController,
                             validator: (text) {
-                              if (text == null || text.trim().isEmpty) {
+                              if (text == null || text
+                                  .trim()
+                                  .isEmpty) {
                                 return 'Please enter your password';
                               }
-                              if (text.trim().length < 6) {
+                              if (text
+                                  .trim()
+                                  .length < 6) {
                                 return 'Password must be at least 6 characters';
                               }
                               return null;
@@ -153,7 +163,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () async {
-                                if (_formKey.currentState?.validate() ?? false) {
+                                if (_formKey.currentState?.validate() ??
+                                    false) {
                                   EasyLoading.show(status: 'Logging in...');
 
                                   final success = await FirebaseFunctions.login(
@@ -162,26 +173,33 @@ class _LoginScreenState extends State<LoginScreen> {
                                   );
 
                                   if (success) {
-                                    final uid = FirebaseAuth.instance.currentUser?.uid;
+                                    final uid = FirebaseAuth.instance
+                                        .currentUser?.uid;
 
                                     if (uid != null) {
-                                      final userType = await FirebaseFunctions.getUserType(uid);
+                                      final userType = await FirebaseFunctions
+                                          .getUserType(uid);
                                       EasyLoading.dismiss();
 
                                       if (userType == 'customer') {
-                                        navigatorKey.currentState?.pushNamed(PagesRouteName.customerHomeLayout);
+                                        navigatorKey.currentState?.pushNamed(
+                                            PagesRouteName.customerHomeLayout);
                                       } else if (userType == 'seller') {
-                                        navigatorKey.currentState?.pushNamed(PagesRouteName.sellerHomeLayout);
+                                        navigatorKey.currentState?.pushNamed(
+                                            PagesRouteName.sellerHomeLayout);
                                       } else {
-                                        EasyLoading.showError('Unknown user type');
+                                        EasyLoading.showError(
+                                            'Unknown user type');
                                       }
                                     } else {
                                       EasyLoading.dismiss();
-                                      EasyLoading.showError('User ID not found');
+                                      EasyLoading.showError(
+                                          'User ID not found');
                                     }
                                   } else {
                                     EasyLoading.dismiss();
-                                    EasyLoading.showError('Login failed. Please check your credentials.');
+                                    EasyLoading.showError(
+                                        'Login failed. Please check your credentials.');
                                   }
                                 }
                               },
@@ -218,10 +236,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => UserTypeScreen()),
-                          ),
+                          onPressed: () =>
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => UserTypeScreen()),
+                              ),
                           child: Text(
                             "Sign Up",
                             style: TextStyle(
@@ -244,34 +264,54 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: size.height * 0.02),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _socialButton(AppAssets.googleIcon),
-                        SizedBox(width: size.width * 0.04),
-                        _socialButton(AppAssets.appleIcon),
-                        SizedBox(width: size.width * 0.04),
-                        _socialButton(AppAssets.fbIcon),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _socialButton(AppAssets.googleIcon, () async {
+                              try {
+                                UserCredential userCredential = await FirebaseFunctions.signInWithGoogle();
+                                print("Signed in as: ${userCredential.user?.displayName}");
+                              } catch (e) {
+                                print("Google sign-in failed: $e");
+                              }
+                            }),
+                            SizedBox(width: size.width * 0.04),
+
+                            // Phone login button
+                            _socialButton(AppAssets.phoneIcon, () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => PhoneLoginScreen()),
+                              );
+                            }),
+                            SizedBox(width: size.width * 0.04),
+                          ],
+
+                        ),
                       ],
                     ),
-                  ],
+              ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
     );
   }
 
-  Widget _socialButton(String assetPath) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.black),
-        borderRadius: BorderRadius.circular(10),
+  Widget _socialButton(String assetPath, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: AppColors.black),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       ),
-      child: Image.asset(assetPath, height: 25),
+      child: Image.asset(assetPath, height: 24),
     );
   }
 }

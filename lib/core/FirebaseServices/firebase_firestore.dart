@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/Data/dish_data_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+
 import '../../Data/order_data_model.dart';
-import '../../Data/restaurant_model.dart';
 
 abstract class FireBaseFirestoreServices {
 
@@ -52,6 +52,54 @@ abstract class FireBaseFirestoreServices {
       onOperatingHoursSelected(data['operatingHours']);
     }
   }
+
+  // update function
+  static Future<bool> updateSellerProfile({
+    required String businessName,
+    required String contactPerson,
+    required String phone,
+    required String email,
+    required String city,
+    required String operatingHours,
+    String? businessType,
+  }) async {
+    try {
+      var userId =
+          FirebaseAuth.instance.currentUser?.uid; // Get the current user's ID
+
+      if (userId != null) {
+        // Reference to the user document
+        var userDocRef =
+            FirebaseFirestore.instance.collection('users').doc(userId);
+
+        // Check if the document exists
+        var docSnapshot = await userDocRef.get();
+        if (!docSnapshot.exists) {
+          print("No document found for the current user.");
+          return false;
+        }
+
+        // Update the fields inside the user document
+        await userDocRef.update({
+          'businessName': businessName,
+          'contactPerson': contactPerson,
+          'phone': phone,
+          'email': email,
+          'city': city,
+          'operatingHours': operatingHours,
+          'businessType': businessType ?? docSnapshot.data()?['businessType'],
+          // Retains old value if businessType is null
+        });
+
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('Error updating profile: $e');
+      return false;
+    }
+  }
+}
 
 //functions trg3 el data mn database (read data)
 //   static Future <List<RestaurantDataModel>> getDataFromFirestore(String categoryName) async {
@@ -149,6 +197,3 @@ abstract class FireBaseFirestoreServices {
   //   }
   //
   // }
-
-
-}

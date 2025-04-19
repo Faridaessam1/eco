@@ -1,19 +1,14 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
-import 'package:eco_eaters_app_3/Data/restaurant_model.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:eco_eaters_app_3/core/utils/validation.dart';
 import 'package:eco_eaters_app_3/core/widgets/custom_elevated_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import '../../../core/FirebaseServices/firebase_auth.dart';
 import '../../../core/FirebaseServices/firebase_firestore.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/utils/snack_bar_services.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 
 class SellerProfileView extends StatefulWidget {
@@ -364,7 +359,45 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                 children: [
                   Expanded(
                     child: CustomElevatedButton(
-                      onPressed: (){print("");},
+                      onPressed: () async {
+                        // Validate the form before updating
+                        if (_formKey.currentState?.validate() ?? false) {
+                          // If the form is valid, proceed with the update
+                          bool success = await FireBaseFirestoreServices
+                              .updateSellerProfile(
+                            businessName: _businessNameController.text,
+                            contactPerson: _contactPersonController.text,
+                            phone: _phoneController.text,
+                            email: _emailController.text,
+                            city: _addressController.text,
+                            operatingHours: selectedOperatingHours ?? '',
+                            businessType:
+                                selectedBusinessType, // Optional, can be null if not selected
+                          );
+
+                          if (success) {
+                            // Show a success message or navigate to another screen
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Profile updated successfully!')),
+                            );
+                          } else {
+                            // Show an error message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Failed to update profile.')),
+                            );
+                          }
+                        } else {
+                          // If the form is not valid, show a message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Please fill in all fields correctly.')),
+                          );
+                        }
+                      },
                       text: "Update Profile",
                       buttonColor: AppColors.primaryColor,
                       textColor: AppColors.white,

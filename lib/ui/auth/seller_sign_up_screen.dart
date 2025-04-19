@@ -1,6 +1,5 @@
 import 'package:eco_eaters_app_3/core/utils/snack_bar_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
@@ -30,8 +29,8 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
 
   final businessTypes = [
     'Restaurant',
-    'Grocery',
-    'Bakery',
+    'Hotel',
+    'Patisserie',
     'Cafe',
   ];
   final operatingHours = [
@@ -47,6 +46,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
     'New Cairo',
     '6th of October',
     'Mohandessin',
+    'El Abbasia',
     'Shubra',
     'Downtown',
   ];

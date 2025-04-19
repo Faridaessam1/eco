@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../Data/order_data_model.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/data/order_data_model.dart';
 import '../../widgets/custom_status_container.dart';
 
 

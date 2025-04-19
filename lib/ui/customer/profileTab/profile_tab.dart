@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../core/FirebaseServices/firebase_auth.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/routes/page_route_names.dart';
@@ -27,7 +28,7 @@ class ProfileTab extends StatelessWidget{
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 " Hello ,\n Farida Essam",
                 style: TextStyle(
                   color: AppColors.black,
@@ -54,7 +55,7 @@ class ProfileTab extends StatelessWidget{
                 ],
               ),
               SizedBox(height: height * 0.03,),
-              Text("Account Information" ,
+              const Text("Account Information" ,
                 style: TextStyle(
                 color: AppColors.black,
                 fontWeight: FontWeight.bold,
@@ -63,7 +64,7 @@ class ProfileTab extends StatelessWidget{
               SizedBox(height: height * 0.03,),
 
 
-              Text("FullName" ,
+              const Text("FullName" ,
                 style: TextStyle(
                   color: AppColors.black,
                   fontWeight: FontWeight.w300,
@@ -78,7 +79,7 @@ class ProfileTab extends StatelessWidget{
               ),
               SizedBox(height: height * 0.03,),
 
-              Text("Email" ,
+              const Text("Email" ,
                 style: TextStyle(
                   color: AppColors.black,
                   fontWeight: FontWeight.w300,
@@ -93,7 +94,7 @@ class ProfileTab extends StatelessWidget{
               ),
               SizedBox(height: height * 0.03,),
 
-              Text("Phone Number" ,
+              const Text("Phone Number" ,
                 style: TextStyle(
                   color: AppColors.black,
                   fontWeight: FontWeight.w300,
@@ -108,7 +109,7 @@ class ProfileTab extends StatelessWidget{
               ),
               SizedBox(height: height * 0.03,),
 
-              Text("Password" ,
+              const Text("Password" ,
                 style: TextStyle(
                   color: AppColors.black,
                   fontWeight: FontWeight.w300,
@@ -128,6 +129,20 @@ class ProfileTab extends StatelessWidget{
                     child: CustomElevatedButton(
                       onPressed: (){print("");},
                       text: "Update Profile",
+                      buttonColor: AppColors.primaryColor,
+                      textColor: AppColors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      borderRadius: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: CustomElevatedButton(
+                      onPressed: (){
+                        FirebaseFunctions.logOut();
+                      },
+                      text: "Logout",
                       buttonColor: AppColors.primaryColor,
                       textColor: AppColors.white,
                       fontWeight: FontWeight.w600,

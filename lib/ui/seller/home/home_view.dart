@@ -4,9 +4,9 @@ import 'package:eco_eaters_app_3/ui/seller/home/widgets/custom_recent_order_cont
 import 'package:eco_eaters_app_3/ui/seller/home/widgets/custom_text_button.dart';
 import 'package:flutter/material.dart';
 
+import '../../../Data/order_data_model.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/data/insights_data_model.dart';
-import '../../../core/data/order_data_model.dart';
+import '../../../Data/insights_data_model.dart';
 
 
 class HomeView extends StatefulWidget {

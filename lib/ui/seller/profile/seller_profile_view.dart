@@ -4,11 +4,13 @@ import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:eco_eaters_app_3/core/utils/validation.dart';
 import 'package:eco_eaters_app_3/core/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import '../../../core/FirebaseServices/firebase_auth.dart';
-import '../../../core/FirebaseServices/firebase_firestore.dart';
+import '../../../core/FirebaseServices/firebase_firestore_seller.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/snack_bar_services.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 
 class SellerProfileView extends StatefulWidget {
@@ -22,19 +24,6 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   String? selectedBusinessType;
   String? selectedOperatingHours;
   String? selectedAddress;
-  String? selectedCity;
-  final cairoCities = [
-    'Nasr City',
-    'Heliopolis',
-    'Maadi',
-    'Zamalek',
-    'New Cairo',
-    '6th of October',
-    'Mohandessin',
-    'El Abbasia',
-    'Shubra',
-    'Downtown',
-  ];
 
   final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _contactPersonController = TextEditingController();
@@ -46,7 +35,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   void initState() {
     super.initState();
 
-    FireBaseFirestoreServices.getSellerProfileData(
+    FireBaseFirestoreServicesSeller.getSellerProfileData(
 
       businessNameController: _businessNameController,
       contactPersonController: _contactPersonController,
@@ -63,6 +52,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
         });
       },
       onOperatingHoursSelected: (value) {
+
         setState(() {
           selectedOperatingHours = value;
         });
@@ -72,15 +62,28 @@ class _SellerProfileViewState extends State<SellerProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    var mediaQuery = MediaQuery.of(context);
-    final List<String> _sellerCategoriesList = [
-      "Restaurant",
-      "Hotel",
+    final List<String> sellerCategoriesList = [
+      'Restaurant',
+      'Hotel',
+      'Patisserie',
+      'Fast Food',
     ];
-    final List<String> _operatingHoursList = [
-      "8:00 AM - 4PM",
-      "9:00 AM - 5:00 PM",
-      "10:00 AM - 6:00 PM"
+    final List<String> operatingHoursList = [
+      '9:00 AM - 5:00 PM',
+      '10:00 AM - 6:00 PM',
+      '12:00 PM - 8:00 PM',
+    ];
+    final List<String> cairoCities = [
+      'Nasr City',
+      'Heliopolis',
+      'Maadi',
+      'Zamalek',
+      'New Cairo',
+      '6th of October',
+      'Mohandessin',
+      'El Abbasia',
+      'Shubra',
+      'Downtown',
     ];
 
     return Form(
@@ -274,7 +277,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                     ),
                     CustomDropdown<String>(
                       hintText: 'Select business type',
-                      items: _sellerCategoriesList,
+                      items: sellerCategoriesList,
                       initialItem: selectedBusinessType,
                       onChanged: (value) {
                         setState(() {
@@ -305,10 +308,10 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                     CustomDropdown<String>(
                       hintText: 'Select location',
                       items: cairoCities,
-                      initialItem: selectedCity,
+                      initialItem: selectedAddress,
                       onChanged: (value) {
                         setState(() {
-                          selectedCity = value;
+                          selectedAddress = value;
                         });
                       },
                       decoration: CustomDropdownDecoration(
@@ -346,7 +349,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                     ),
                     CustomDropdown<String>(
                       hintText: 'Operating hours',
-                      items: _operatingHoursList,
+                      items: operatingHoursList,
                       initialItem:selectedOperatingHours,
                       onChanged: (value) {
                         setState(() {
@@ -387,39 +390,33 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                         // Validate the form before updating
                         if (_formKey.currentState?.validate() ?? false) {
                           // If the form is valid, proceed with the update
-                          bool success = await FireBaseFirestoreServices
+                          bool success = await FireBaseFirestoreServicesSeller
                               .updateSellerProfile(
                             businessName: _businessNameController.text,
                             contactPerson: _contactPersonController.text,
                             phone: _phoneController.text,
                             email: _emailController.text,
-                            city: _addressController.text,
+                            city: selectedAddress ?? "",
                             operatingHours: selectedOperatingHours ?? '',
-                            businessType:
-                                selectedBusinessType, // Optional, can be null if not selected
+                            businessType: selectedBusinessType,
                           );
 
                           if (success) {
                             // Show a success message or navigate to another screen
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content:
-                                      Text('Profile updated successfully!')),
-                            );
+                            EasyLoading.show();
+                            SnackBarServices.showSuccessMessage("Account Updated Successfully");
+                            EasyLoading.dismiss();
                           } else {
                             // Show an error message
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Failed to update profile.')),
-                            );
+                            EasyLoading.show();
+                            SnackBarServices.showErrorMessage("Failed to update profile. Try again.");
+                            EasyLoading.dismiss();
                           }
                         } else {
                           // If the form is not valid, show a message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    'Please fill in all fields correctly.')),
-                          );
+                          EasyLoading.show();
+                          SnackBarServices.showWarningMessage('Please fill in all fields correctly.');
+                          EasyLoading.dismiss();
                         }
                       },
                       text: "Update Profile",
@@ -434,7 +431,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                   Expanded(
                     child: CustomElevatedButton(
                       onPressed: () async {
-                        await FirebaseFunctions.logOut();
+                        await FirebaseFunctions.logout();
                         Navigator.pushReplacementNamed(context,PagesRouteName.login);
                         },
                       text: "Logout",

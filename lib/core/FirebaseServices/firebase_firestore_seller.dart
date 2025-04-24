@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../../Data/order_data_model.dart';
 
-abstract class FireBaseFirestoreServices {
+abstract class FireBaseFirestoreServicesSeller {
 
   Future<void> addDishSubCollection(String sellerId, DishDataModel dish) async {
     DocumentReference sellerDocRef = FirebaseFirestore.instance.collection('users').doc(sellerId);
@@ -42,19 +42,19 @@ try{
   if (doc.exists) {
     final data = doc.data()!;
 
+      businessNameController.text = data['businessName'] ;
+      contactPersonController.text = data['contactPerson'];
+      phoneController.text = data['phone'] ;
+      emailController.text = data['email'] ;
 
-    businessNameController.text = data['businessName'];
-    contactPersonController.text = data['contactPerson'];
-    phoneController.text = data['phone'];
-    emailController.text = data['email'];
-    onAddressSelected (data['address']) ;
-    onBusinessTypeSelected(data['businessType']);
-    onOperatingHoursSelected(data['operatingHours']);
+      onAddressSelected(data['city']?.toString().trim() ?? 'No address available');
+      onBusinessTypeSelected(data['businessType']?.toString().trim());
+      onOperatingHoursSelected(data['operatingHours']?.toString().trim());
+
   }
 } catch(e){
-  print(e);
+  print("Error fetching seller data: $e");
 }
-
   }
 
   // update function

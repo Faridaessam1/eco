@@ -40,6 +40,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   final TextEditingController _contactPersonController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -434,7 +435,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                   Expanded(
                     child: CustomElevatedButton(
                       onPressed: () async {
-                        await FirebaseFunctions.logOut();
+                        await FirebaseFunctions.logout();
                         Navigator.pushReplacementNamed(context,PagesRouteName.login);
                         },
                       text: "Logout",

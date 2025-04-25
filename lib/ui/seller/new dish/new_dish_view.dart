@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eco_eaters_app_3/core/FirebaseServices/firebase_firestore.dart';
 import 'package:eco_eaters_app_3/Data/dish_data_model.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';

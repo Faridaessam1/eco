@@ -192,11 +192,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                       EasyLoading.dismiss();
 
                                       if (userType == 'customer') {
-                                        navigatorKey.currentState?.pushNamed(
-                                            PagesRouteName.customerHomeLayout);
+                                        navigatorKey.currentState
+                                            ?.pushNamedAndRemoveUntil(
+                                            PagesRouteName.customerHomeLayout,
+                                                (route) => false,
+                                        );
                                       } else if (userType == 'seller') {
-                                        navigatorKey.currentState?.pushNamed(
-                                            PagesRouteName.sellerHomeLayout);
+                                        navigatorKey.currentState
+                                            ?.pushNamedAndRemoveUntil(
+                                          PagesRouteName.sellerHomeLayout,
+                                              (route) => false,
+                                        );
                                       } else {
                                         EasyLoading.showError(
                                             'Unknown user type');

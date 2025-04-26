@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
@@ -5,6 +9,7 @@ import 'package:eco_eaters_app_3/core/utils/validation.dart';
 import 'package:eco_eaters_app_3/core/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/FirebaseServices/firebase_auth.dart';
 import '../../../core/FirebaseServices/firebase_firestore_seller.dart';
@@ -24,6 +29,8 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   String? selectedBusinessType;
   String? selectedOperatingHours;
   String? selectedAddress;
+  File? _image;
+  String? _imageUrl;
 
   final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _contactPersonController = TextEditingController();
@@ -62,6 +69,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context);
     final List<String> sellerCategoriesList = [
       'Restaurant',
       'Hotel',
@@ -115,6 +123,75 @@ class _SellerProfileViewState extends State<SellerProfileView> {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              Container(
+                width: mediaQuery.size.width * 0.948,
+                height: mediaQuery.size.height * 0.228,
+                decoration: BoxDecoration(
+                    color: AppColors.grey.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    image: _image != null
+                        ? DecorationImage(
+                      image: FileImage(_image!),
+                      fit: BoxFit.cover,
+                    )
+                        : null,
+                    border: Border.all(
+                      color: AppColors.grey,
+                      width: 2,
+                    )),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.insert_photo_outlined),
+                    const Text(
+                      "Upload your restaurant image",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.textGreyColor),
+                    ),
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: const Text(
+                        "Choose image",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.green),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: _uploadImage,
+                      child: const Text(
+                        "Upload image",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.green),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    _imageUrl != null
+                        ? const Text(
+                      "Image uploaded successfully!",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.white),
+                    )
+                        : const Text(
+                      "No image uploaded yet",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.white),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -449,5 +526,38 @@ class _SellerProfileViewState extends State<SellerProfileView> {
         ),
       ),
     );
+  }
+  void _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _image = File(image.path);
+      });
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_image == null) return;
+
+    final url = Uri.parse('https://api.cloudinary.com/v1_1/dbdwuvc3w/upload');
+    final request = http.MultipartRequest('POST', url)
+      ..fields['upload_preset'] = 'ml_default'
+      ..files.add(await http.MultipartFile.fromPath('file', _image!.path));
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseData = await response.stream.toBytes();
+      final responseString = String.fromCharCodes(responseData);
+      final jsonMap = jsonDecode(responseString);
+
+      setState(() {
+        _imageUrl = jsonMap['url'];
+      });
+    } else {
+      print("Upload failed: ${response.reasonPhrase}");
+    }
   }
 }

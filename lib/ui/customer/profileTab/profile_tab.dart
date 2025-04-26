@@ -140,7 +140,7 @@ class ProfileTab extends StatelessWidget{
                   Expanded(
                     child: CustomElevatedButton(
                       onPressed: (){
-                        FirebaseFunctions.logOut();
+                        FirebaseFunctions.logout();
                       },
                       text: "Logout",
                       buttonColor: AppColors.primaryColor,

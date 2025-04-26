@@ -78,7 +78,7 @@ class UserTypeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ), // **Closed Padding correctly**
+            ),
 
             SizedBox(height: screenHeight * 0.05), // **Moved outside Padding**
 

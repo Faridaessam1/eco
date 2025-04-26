@@ -36,6 +36,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   final TextEditingController _contactPersonController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override

@@ -11,6 +11,7 @@ class PagesRouteName {
   static const String sellerHomeLayout = "sellerHomeLayout";
   static const String restaurantFoodItem = "restaurantFoodItem";
   static const String customerOrdersScreen = "customerOrdersScreen";
+  static const String customerFeedbackScreen = "customerFeedbackScreen";
 
 
 }

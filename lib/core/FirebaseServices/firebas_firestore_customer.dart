@@ -89,27 +89,32 @@ abstract class FireBaseFirestoreServicesCustomer{
         return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains('Fast Food')).toList();
       case 2: // Hotel tab
         return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains('Hotel')).toList();
-      case 3: // Desserts tab
+      case 3: // Restaurants tab
+        return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains('Restaurants')).toList();
+     case 4: // Desserts tab
         return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains('Desserts')).toList();
       default: // All tab
         return restaurantsData;
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getAllDishesForRestaurants() async {
-    List<Map<String, dynamic>> allDishes = [];
+  static Future<List<Map<String, dynamic>>> getDishesForSpecificRestaurant(String restaurantName) async {
+    List<Map<String, dynamic>> restaurantDishes = [];
 
     try {
-      // الحصول على جميع المستخدمين الذين هم بائعين
+      // الحصول على جميع البائعين
       var usersSnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .where('userType', isEqualTo: 'seller') // تصفية البائعين فقط
+          .where('userType', isEqualTo: 'seller')
           .get();
 
       for (var userDoc in usersSnapshot.docs) {
-        String restaurantName = userDoc.exists ? userDoc['businessName'] : 'Unknown Restaurant'; // اسم المطعم من بيانات المستخدم
+        // التحقق من اسم المطعم
+        String fetchedRestaurantName = userDoc['businessName'] ?? 'Unknown Restaurant';
 
-        // الحصول على dishes من الـ sub-collection لكل بائع
+        if (fetchedRestaurantName != restaurantName) continue;
+
+        // الحصول على أطباق هذا المطعم فقط
         var dishesSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .doc(userDoc.id)
@@ -117,20 +122,18 @@ abstract class FireBaseFirestoreServicesCustomer{
             .get();
 
         for (var dishDoc in dishesSnapshot.docs) {
-          // تحقق من وجود الحقول الأساسية
           if (dishDoc.data().containsKey('dishName') && dishDoc.data().containsKey('dishPrice')) {
-            allDishes.add({
+            restaurantDishes.add({
               'restaurantId': userDoc.id,
-              'restaurantName': restaurantName, // افترض أن اسم المطعم مخزن في حقل "name"
-              'dishName': dishDoc['dishName'] ?? 'Unknown Dish', // اسم الطبق
-              'dishDescription': dishDoc['dishAdditionalInfo'] ?? 'No description', // وصف الطبق (إذا كان موجودًا)
-              'dishPrice': dishDoc['dishPrice'] ?? 0, // سعر الطبق (يجب التأكد أنه ليس null)
-              'dishImage': dishDoc['dishImage'] ?? "assets/images/recentlyAddedImg.png", // صورة الطبق (إذا كانت موجودة أو فارغة)
-              'dishQuantity': dishDoc['dishQuantity'] ?? 1, // كمية الطبق (افترض 1 إذا كانت فارغة)
-              'createdAt': dishDoc['createdAt'] ?? Timestamp.now(), // تاريخ إنشاء الطبق (إذا كان فارغًا أضف الوقت الحالي
+              'restaurantName': fetchedRestaurantName,
+              'dishName': dishDoc['dishName'],
+              'dishAdditionalInfo': dishDoc['dishAdditionalInfo'],
+              'dishPrice': dishDoc['dishPrice'],
+              'dishImage': dishDoc['dishImage'] ?? "assets/images/recentlyAddedImg.png",
+              'dishQuantity': dishDoc['dishQuantity'],
+              'createdAt': dishDoc['createdAt'] ?? Timestamp.now(),
+              'dishCategory': dishDoc['dishCategory']
             });
-          } else {
-            print("Missing required field in dish document: ${dishDoc.id}");
           }
         }
       }
@@ -138,7 +141,7 @@ abstract class FireBaseFirestoreServicesCustomer{
       print("Error fetching dishes: $e");
     }
 
-    return allDishes;
+    return restaurantDishes;
   }
 
 }

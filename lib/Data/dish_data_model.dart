@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DishDataModel{
-  static const String collectionName = "dishDataCollection";
   String dishId;
   final String dishName;
   final String? dishImage;
@@ -37,13 +36,13 @@ class DishDataModel{
 
   factory DishDataModel.fromFireStore(Map<String, dynamic> data) {
     return DishDataModel(
-      dishName: data['dishName'] ?? 'Unknown Dish',  // تأكد من أن القيمة ليست null
-      dishAdditionalInfo: data['dishAdditionalInfo'] ?? 'No description available',  // إذا كانت null، ضع وصف افتراضي
-      dishPrice: data['dishPrice'] ?? 0.0,  // إذا كانت null، ضع سعر افتراضي
-      dishImage: data['dishImage'] ?? 'assets/images/recentlyAddedImg.png',  // صورة افتراضية إذا كانت null
-      dishQuantity: data['dishQuantity'] ?? 1,  // إذا كانت null، ضع كمية افتراضية
+      dishName: data['dishName'] ?? 'Unknown Dish',
+      dishAdditionalInfo: data['dishAdditionalInfo'] ,
+      dishPrice: data['dishPrice'] ,
+      dishImage: data['dishImage'] ?? 'assets/images/recentlyAddedImg.png',
+      dishQuantity: data['dishQuantity'] ,
       createdAt: data['createdAt'] ?? Timestamp.now(),
-      dishCategory: data['dishCategory'] ?? "Hotel",
+      dishCategory: data['dishCategory'] ,
     );
   }
 }

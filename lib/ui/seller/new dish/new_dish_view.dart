@@ -38,6 +38,8 @@ class _NewDishViewState extends State<NewDishView> {
     final List<String> _sellerCategoriesList = [
       "Restaurant",
       "Hotel",
+      "Fast Food",
+      "Desserts",
     ];
 
     return Scaffold(

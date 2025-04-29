@@ -15,8 +15,7 @@ class FoodItemCard extends StatelessWidget {
     var width = MediaQuery.of(context).size.width;
 
     return SizedBox(
-      height: height * 0.31,
-      width: width * 0.41,
+      height: height * 0.35,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -48,7 +47,7 @@ class FoodItemCard extends StatelessWidget {
           Text(
             dishData.dishCategory,
             style: const TextStyle(
-              color: AppColors.darkGrey,
+              color: AppColors.textGreyColor,
               fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
@@ -59,9 +58,9 @@ class FoodItemCard extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              color: AppColors.darkGrey,
-              fontSize: 12,
-              fontWeight: FontWeight.w300,
+              color: AppColors.textGreyColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
             ),
           ),
           const Spacer(),

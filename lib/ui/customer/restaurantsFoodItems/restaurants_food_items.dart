@@ -16,19 +16,14 @@ class _RestaurantFoodItemState extends State<RestaurantFoodItem> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     restaurantName = ModalRoute.of(context)?.settings.arguments as String;  // استقبال اسم المطعم
-  }
+    futureDishes = FireBaseFirestoreServicesCustomer.getDishesForSpecificRestaurant(restaurantName);
 
-  late Future<List<Map<String, dynamic>>> futureDishes;
-  @override
-  void initState() {
-    super.initState();
-    futureDishes = FireBaseFirestoreServicesCustomer.getAllDishesForRestaurants(); // استدعاء الـ function اللي بتجيب الأطباق
   }
+  late Future<List<Map<String, dynamic>>> futureDishes;
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text(restaurantName,
@@ -52,29 +47,13 @@ class _RestaurantFoodItemState extends State<RestaurantFoodItem> {
               return const Center(child: Text("No dishes available")); // في حال مفيش أطباق
             } else {
               var dishes = snapshot.data!;
+              print(dishes);
               return ListView.separated(
-                itemCount: (dishes.length / 2).ceil(),
-                separatorBuilder: (context, index) => SizedBox(height: height * 0.05),
+                itemCount: dishes.length, // العدد الكلي للأطباق
+                separatorBuilder: (context, index) => SizedBox(height: height * 0.05), // المسافة بين كل طبق
                 itemBuilder: (context, index) {
-                  int firstIndex = index * 2;
-                  int secondIndex = firstIndex + 1;
-
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: FoodItemCard(
-                          dishData: DishDataModel.fromFireStore(dishes[firstIndex]),// عرض الطبق الأول
-                        ),
-                      ),
-                      SizedBox(width: width * 0.08),
-                      if (secondIndex < dishes.length) // التحقق من وجود طبق ثاني
-                        Expanded(
-                          child: FoodItemCard(
-                              dishData: DishDataModel.fromFireStore(dishes[secondIndex]), // عرض الطبق الثاني
-                          ),
-                        ),
-                    ],
+                  return FoodItemCard(
+                    dishData: DishDataModel.fromFireStore(dishes[index]), // عرض الطبق
                   );
                 },
               );

@@ -6,8 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../ui/auth/otp_screen.dart';
 import '../utils/snack_bar_services.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseFunctions {
   static Future<bool> createAccount(String email, String password) async {
@@ -117,7 +115,10 @@ class FirebaseFunctions {
     await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-
+  static Future<void> logout() async{
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+  }
 
 
 }

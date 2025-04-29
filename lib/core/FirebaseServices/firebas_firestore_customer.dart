@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../Data/restaurant_card_data.dart';
+
 abstract class FireBaseFirestoreServicesCustomer{
 
   static Future<void> getCustomerProfileData({
@@ -63,5 +65,23 @@ abstract class FireBaseFirestoreServicesCustomer{
       return false;
     }
   }
+
+  static Future<List<RestaurantCardData>> getAllRestaurants() async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('userType', isEqualTo: 'seller')
+          .get();
+
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return RestaurantCardData.fromFireStore(data);
+      }).toList();
+    } catch (e) {
+      print('Error in getAllRestaurants: $e');
+      return [];
+    }
+  }
+
 
 }

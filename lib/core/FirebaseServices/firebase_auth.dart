@@ -107,8 +107,6 @@ class FirebaseFunctions {
       codeAutoRetrievalTimeout: (String verificationId) {},
     );
   }
-
-
   static Future<void> verifyOtp(String verificationId, String smsCode) async {
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
       verificationId: verificationId,
@@ -117,7 +115,6 @@ class FirebaseFunctions {
 
     await FirebaseAuth.instance.signInWithCredential(credential);
   }
-
 
 
 

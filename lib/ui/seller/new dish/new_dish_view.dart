@@ -1,18 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/Data/dish_data_model.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 import '../widgets/custom_status_container.dart';
@@ -67,6 +64,7 @@ class _NewDishViewState extends State<NewDishView> {
                 dishCategory: _dishCategoryController.value ?? "",
                 dishAdditionalInfo: _dishAdditionalInfoController.text.trim(),
                 dishImage: _imageUrl ?? "",
+                dishId: '',
               );
               await FirebaseFirestore.instance
                   .collection("users")
@@ -102,9 +100,9 @@ class _NewDishViewState extends State<NewDishView> {
                     borderRadius: BorderRadius.circular(12),
                     image: _image != null
                         ? DecorationImage(
-                            image: FileImage(_image!),
-                            fit: BoxFit.cover,
-                          )
+                      image: FileImage(_image!),
+                      fit: BoxFit.cover,
+                    )
                         : null,
                     border: Border.all(
                       color: AppColors.grey,
@@ -144,19 +142,19 @@ class _NewDishViewState extends State<NewDishView> {
                     const SizedBox(height: 10),
                     _imageUrl != null
                         ? const Text(
-                            "Image uploaded successfully!",
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.white),
-                          )
+                      "Image uploaded successfully!",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.white),
+                    )
                         : const Text(
-                            "No image uploaded yet",
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.white),
-                          ),
+                      "No image uploaded yet",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.white),
+                    ),
                   ],
                 ),
               ),

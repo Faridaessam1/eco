@@ -83,6 +83,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
       '12:00 PM - 8:00 PM',
     ];
     final List<String> cairoCities = [
+      'Giza',
       'Nasr City',
       'Heliopolis',
       'Maadi',

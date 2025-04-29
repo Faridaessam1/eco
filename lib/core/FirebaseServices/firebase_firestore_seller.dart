@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/Data/dish_data_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-
 import '../../Data/order_data_model.dart';
 
 abstract class FireBaseFirestoreServicesSeller {

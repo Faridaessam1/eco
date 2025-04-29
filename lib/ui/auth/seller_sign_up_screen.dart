@@ -39,6 +39,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
     '12:00 PM - 8:00 PM',
   ];
   final cairoCities = [
+    'Giza' ,
     'Nasr City',
     'Heliopolis',
     'Maadi',

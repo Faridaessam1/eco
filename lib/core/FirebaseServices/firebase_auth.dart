@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -55,6 +54,10 @@ class FirebaseFunctions {
       print(e.toString());
       return Future.value(false);
     }
+  }
+  static Future<void> logout() async{
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
   }
   static Future<String?> getUserType(String? uid) async {
     if (uid == null) return null;

@@ -194,8 +194,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       if (userType == 'customer') {
                                         navigatorKey.currentState
                                             ?.pushNamedAndRemoveUntil(
-                                            PagesRouteName.customerHomeLayout,
-                                                (route) => false,
+                                          PagesRouteName.customerHomeLayout,
+                                              (route) => false,
                                         );
                                       } else if (userType == 'seller') {
                                         navigatorKey.currentState
@@ -204,14 +204,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                               (route) => false,
                                         );
                                       } else {
-                                        EasyLoading.showError(
-                                            'Unknown user type');
+                                        EasyLoading.dismiss();
                                       }
-                                    } else {
-                                      EasyLoading.dismiss();
-                                      EasyLoading.showError(
-                                          'User ID not found');
                                     }
+
                                   } else {
                                     EasyLoading.dismiss();
                                     EasyLoading.showError(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../Data/dish_data_model.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/cart_provider.dart';
 
 class FoodItemCard extends StatelessWidget {
   final DishDataModel dishData;
@@ -81,7 +83,10 @@ class FoodItemCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Provider.of<CartProvider>(context, listen: false).addToCart(dishData);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Added to cart')));
+                  },
                   icon: const Icon(
                     Icons.add,
                     color: AppColors.black,

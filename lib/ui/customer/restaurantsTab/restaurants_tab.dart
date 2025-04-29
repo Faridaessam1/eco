@@ -18,7 +18,7 @@ class RestaurantsTab extends StatefulWidget {
 class _RestaurantsTabState extends State<RestaurantsTab> {
   int SelectedIndex = 0;
   late Future<List<RestaurantCardData>> futureRestaurantsData;
-  List<String> tabNames = ["All", "Fast Food", "Hotel", "Desserts",];
+  List<String> tabNames = ["All", "Fast Food", "Hotel","Restaurants","Desserts",];
   List<RestaurantCardData> restaurantsData = [];
   @override
   void initState() {

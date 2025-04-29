@@ -118,7 +118,10 @@ class FirebaseFunctions {
     await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-
+  static Future<void> logout() async{
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+  }
 
 
 }

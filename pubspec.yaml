@@ -49,6 +49,7 @@ dependencies:
   google_sign_in: ^6.3.0
   cloud_firestore:
   flutter_rating_bar:
+  provider:
 
 
 

@@ -55,10 +55,7 @@ class FirebaseFunctions {
       return Future.value(false);
     }
   }
-  static Future<void> logout() async{
-    await FirebaseAuth.instance.signOut();
-    await GoogleSignIn().signOut();
-  }
+
   static Future<String?> getUserType(String? uid) async {
     if (uid == null) return null;
     try {
@@ -116,6 +113,9 @@ class FirebaseFunctions {
     await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-
+  static Future<void> logout() async{
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+  }
 }
 

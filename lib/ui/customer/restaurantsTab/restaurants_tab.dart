@@ -3,6 +3,7 @@ import 'package:eco_eaters_app_3/ui/customer/restaurantsTab/widgets/custom_tab_b
 import 'package:flutter/material.dart';
 
 import '../../../Data/restaurant_card_data.dart';
+import '../../../core/FirebaseServices/firebas_firestore_customer.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/routes/page_route_names.dart';
@@ -17,46 +18,19 @@ class RestaurantsTab extends StatefulWidget {
 
 class _RestaurantsTabState extends State<RestaurantsTab> {
   int SelectedIndex = 0;
-  List<RestaurantCardData> restaurantsData=[
-    RestaurantCardData(
-        imgPath: AppAssets.restaurantsCardImg,
-        restaurantName: "Green Kitchen",
-        restaurantCategory: "Organic - Vegan",
-        location: "2.1 KM away ",
-        deliveryEstimatedTime:" 25 - 35 min ",
-    ),
-    RestaurantCardData(
-        imgPath: AppAssets.restaurantsCardImg,
-        restaurantName: "Green Kitchen",
-        restaurantCategory: "Organic - Vegan",
-        location: "2.1 KM away ",
-        deliveryEstimatedTime:" 25 - 35 min ",
-    ),
-    RestaurantCardData(
-        imgPath: AppAssets.restaurantsCardImg,
-        restaurantName: "Green Kitchen",
-        restaurantCategory: "Organic - Vegan",
-        location: "2.1 KM away ",
-        deliveryEstimatedTime:" 25 - 35 min ",
-    ),
-    RestaurantCardData(
-        imgPath: AppAssets.restaurantsCardImg,
-        restaurantName: "Green Kitchen",
-        restaurantCategory: "Organic - Vegan",
-        location: "2.1 KM away ",
-        deliveryEstimatedTime:" 25 - 35 min ",
-    ),
-  ];
+  late Future<List<RestaurantCardData>> futureRestaurantsData;
   List<String> tabNames = ["All", "Fast Food", "Salad", "Healthy", "Desserts",];
-
+  @override
+  void initState() {
+    super.initState();
+    futureRestaurantsData = FireBaseFirestoreServicesCustomer.getAllRestaurants();
+  }
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(80),//bnzwed height el appbar
+          preferredSize: const Size.fromHeight(80),//bnzwed height el appbar
           child: AppBar(
             title:  Row(
               children: [
@@ -110,20 +84,33 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
                   }).toList(),
                 ),
               ),
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
               Expanded(
-                child: ListView.separated(
-
-                  itemBuilder:(context, index) => GestureDetector(
-                    onTap: (){
-                      Navigator.pushNamed(context, PagesRouteName.restaurantFoodItem);
-                    },
-                    child: RestaurantCard(
-                      restaurantCardData:restaurantsData[index] ,
-                    ),
-                  ),
-                  separatorBuilder: (context, index) => SizedBox(width:16 ,),
-                  itemCount: restaurantsData.length,
+                child: FutureBuilder<List<RestaurantCardData>>(
+                  future: futureRestaurantsData,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text("Error: ${snapshot.error}"));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text("No restaurants found"));
+                    } else {
+                      var restaurantsData = snapshot.data!;
+                      return ListView.separated(
+                        itemBuilder: (context, index) => GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, PagesRouteName.restaurantFoodItem);
+                          },
+                          child: RestaurantCard(
+                            restaurantCardData: restaurantsData[index],
+                          ),
+                        ),
+                        separatorBuilder: (context, index) => const SizedBox(width: 16),
+                        itemCount: restaurantsData.length,
+                      );
+                    }
+                  },
                 ),
               ),
             ],

@@ -1,4 +1,3 @@
-
 import 'package:eco_eaters_app_3/ui/customer/restaurantsTab/widgets/custom_tab_bar_item_customer.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +18,8 @@ class RestaurantsTab extends StatefulWidget {
 class _RestaurantsTabState extends State<RestaurantsTab> {
   int SelectedIndex = 0;
   late Future<List<RestaurantCardData>> futureRestaurantsData;
-  List<String> tabNames = ["All", "Fast Food", "Salad", "Healthy", "Desserts",];
+  List<String> tabNames = ["All", "Fast Food", "Hotel", "Desserts",];
+  List<RestaurantCardData> restaurantsData = [];
   @override
   void initState() {
     super.initState();
@@ -62,11 +62,13 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               DefaultTabController(
-                length: 5,
+                length:tabNames.length,
                 child: TabBar(
                   onTap: (index) {
-                    SelectedIndex = index;
-                    setState(() {});
+                    setState(() {
+                      SelectedIndex = index;
+
+                    });
                   },
                   splashFactory: NoSplash.splashFactory, //btshel el shadow el byb2a mawgod kol ma a select tab
                   isScrollable: true,
@@ -95,19 +97,27 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
                       return Center(child: Text("Error: ${snapshot.error}"));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return const Center(child: Text("No restaurants found"));
-                    } else {
-                      var restaurantsData = snapshot.data!;
+                    }
+                    else {
+                      var allRestaurants = snapshot.data!;
+                      var filteredRestaurants = FireBaseFirestoreServicesCustomer.filterRestaurantsByCategory(SelectedIndex, allRestaurants);
+                      if (filteredRestaurants.isEmpty) {
+                        return const Center(child: Text("No restaurants available for this category"));
+                      }
                       return ListView.separated(
                         itemBuilder: (context, index) => GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, PagesRouteName.restaurantFoodItem);
-                          },
+                            Navigator.pushNamed(
+                              context,
+                              PagesRouteName.restaurantFoodItem,
+                              arguments: filteredRestaurants[index].restaurantName,  // تمرير اسم المطعم
+                            );                          },
                           child: RestaurantCard(
-                            restaurantCardData: restaurantsData[index],
+                            restaurantCardData:filteredRestaurants[index],
                           ),
                         ),
                         separatorBuilder: (context, index) => const SizedBox(width: 16),
-                        itemCount: restaurantsData.length,
+                        itemCount:  filteredRestaurants.length,
                       );
                     }
                   },

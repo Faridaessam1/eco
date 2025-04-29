@@ -15,7 +15,7 @@ class RestaurantCardData {
 
   factory RestaurantCardData.fromFireStore(Map<String, dynamic> data) {
     return RestaurantCardData(
-      imgPath: data['imgPath'] ?? '',
+      imgPath: data['imgPath'] ?? 'assets/images/restaurantsCardImg.png',
       restaurantName: data['businessName'] ?? 'No Name',
       restaurantCategory: data['businessType'] ?? '',
       location: data['city'] ?? '',

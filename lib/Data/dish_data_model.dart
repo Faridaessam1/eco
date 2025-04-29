@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DishDataModel{
+class DishDataModel {
   static const String collectionName = "dishDataCollection";
-  String dishId;
+
+  final String dishId;
   final String dishName;
   final String? dishImage;
   final int dishQuantity;
@@ -11,40 +12,41 @@ class DishDataModel{
   final String? dishAdditionalInfo;
   final Timestamp? createdAt;
 
-   DishDataModel({
+  DishDataModel({
+    required this.dishId,
     required this.dishName,
-     this.dishId ="",
     required this.dishImage,
     required this.dishQuantity,
     required this.dishPrice,
     required this.dishCategory,
     required this.dishAdditionalInfo,
-     this.createdAt,
-});
+    this.createdAt,
+  });
 
-
-  Map <String, dynamic> toFireStore(){
+  Map<String, dynamic> toFireStore() {
     return {
-      "dishName" : dishName,
-      "dishImage":dishImage,
+      "dishName": dishName,
+      "dishImage": dishImage,
       "dishQuantity": dishQuantity,
       "dishPrice": dishPrice,
       "dishCategory": dishCategory,
-      "dishAdditionalInfo" :dishAdditionalInfo,
-      "createdAt": Timestamp.now(),
+      "dishAdditionalInfo": dishAdditionalInfo,
+      "createdAt": createdAt ?? Timestamp.now(),
     };
   }
 
-  factory DishDataModel.fromFireStore( Map <String, dynamic > json ){
+  factory DishDataModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
     return DishDataModel(
-        dishName: json["dishName"],
-        dishId:  json["dishId"],
-        dishImage: json["dishImage"],  //mtnsesh t3dleha
-        dishQuantity: json["dishQuantity"],
-        dishPrice: json["dishPrice"],
-        dishCategory: json["dishCategory"],
-        dishAdditionalInfo: json["dishAdditionalInfo"],
-        createdAt: json["createdAt"],
+      dishId: doc.id,
+      dishName: data["dishName"] ?? "",
+      dishImage: data["dishImage"],
+      dishQuantity: data["dishQuantity"] ?? 0,
+      dishPrice: (data["dishPrice"] as num).toDouble(),
+      dishCategory: data["dishCategory"] ?? "",
+      dishAdditionalInfo: data["dishAdditionalInfo"],
+      createdAt: data["createdAt"],
     );
   }
 }

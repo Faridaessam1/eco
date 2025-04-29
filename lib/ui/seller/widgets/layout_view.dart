@@ -23,8 +23,8 @@ class _LayOutViewSellerState extends State<LayOutViewSeller> {
   const HomeView(),
   const OrdersView(),
   const NewDishView(),
-  const SellerAvailableDish(),
-  const SellerProfileView(),
+    SellerAvailableDish(),
+    const SellerProfileView(),
   ];
 
   @override

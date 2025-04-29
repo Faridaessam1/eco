@@ -90,14 +90,14 @@ class HomeTab extends StatelessWidget {
               height: 30,
             ),
 
-            Expanded(
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemBuilder:(context, index) => FoodItemCard(),
-                separatorBuilder: (context, index) => SizedBox(width:16 ,),
-                itemCount: 6,
-              ),
-            ),
+            // Expanded(
+            //   child: ListView.separated(
+            //     scrollDirection: Axis.horizontal,
+            //     itemBuilder:(context, index) => FoodItemCard(),
+            //     separatorBuilder: (context, index) => SizedBox(width:16 ,),
+            //     itemCount: 6,
+            //   ),
+            // ),
           ],
         ),
       ),

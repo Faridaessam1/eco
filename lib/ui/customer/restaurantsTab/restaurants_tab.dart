@@ -62,7 +62,7 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               DefaultTabController(
-                length: 5,
+                length:tabNames.length,
                 child: TabBar(
                   onTap: (index) {
                     setState(() {
@@ -107,8 +107,11 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
                       return ListView.separated(
                         itemBuilder: (context, index) => GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, PagesRouteName.restaurantFoodItem);
-                          },
+                            Navigator.pushNamed(
+                              context,
+                              PagesRouteName.restaurantFoodItem,
+                              arguments: filteredRestaurants[index].restaurantName,  // تمرير اسم المطعم
+                            );                          },
                           child: RestaurantCard(
                             restaurantCardData:filteredRestaurants[index],
                           ),

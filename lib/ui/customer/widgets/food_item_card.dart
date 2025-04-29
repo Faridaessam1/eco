@@ -1,14 +1,19 @@
-
 import 'package:flutter/material.dart';
 
+import '../../../Data/dish_data_model.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 
 class FoodItemCard extends StatelessWidget {
+  final DishDataModel dishData;
+
+  FoodItemCard({required this.dishData});
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
+
     return SizedBox(
       height: height * 0.31,
       width: width * 0.41,
@@ -17,32 +22,59 @@ class FoodItemCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.asset(AppAssets.recentlyAddedImg),
-          ),
-          const Text(
-            "Buddha Bowl",
-            style: TextStyle(
-                color: AppColors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+            child: (dishData.dishImage != null && dishData.dishImage!.isNotEmpty)
+                ? Image.network(
+              dishData.dishImage!,
+              height: height * 0.18,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            )
+                : Image.asset(
+              AppAssets.recentlyAddedImg,
+              height: height * 0.18,
+              width: double.infinity,
+              fit: BoxFit.cover,
             ),
           ),
-          const Text(
-            "Organic • Vegan",
-            style: TextStyle(
-              color: AppColors.darkGrey,
+          const SizedBox(height: 8),
+          Text(
+            dishData.dishName,
+            style: const TextStyle(
+              color: AppColors.black,
               fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            dishData.dishCategory,
+            style: const TextStyle(
+              color: AppColors.darkGrey,
+              fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
           ),
+          const SizedBox(height: 5),
+          Text(
+            dishData.dishAdditionalInfo ?? '',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: AppColors.darkGrey,
+              fontSize: 12,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
+          const Spacer(),
           Row(
             children: [
-              const Text("100 L.E",
-                style: TextStyle(
-                color: AppColors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),),
+              Text(
+                "${dishData.dishPrice} L.E",
+                style: const TextStyle(
+                  color: AppColors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               const Spacer(),
               Container(
                 decoration: const BoxDecoration(
@@ -58,7 +90,7 @@ class FoodItemCard extends StatelessWidget {
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );

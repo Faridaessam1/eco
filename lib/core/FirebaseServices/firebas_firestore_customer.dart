@@ -83,5 +83,17 @@ abstract class FireBaseFirestoreServicesCustomer{
     }
   }
 
+  static List<RestaurantCardData> filterRestaurantsByCategory(int selectedIndex, List<RestaurantCardData> restaurantsData) {
+    switch (selectedIndex) {
+      case 1: // Fast Food tab
+        return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains('Fast Food')).toList();
+      case 2: // Hotel tab
+        return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains('Hotel')).toList();
+      case 3: // Desserts tab
+        return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains('Desserts')).toList();
+      default: // All tab
+        return restaurantsData;
+    }
+  }
 
 }

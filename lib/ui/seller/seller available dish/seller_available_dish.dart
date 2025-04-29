@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/core/constants/app_assets.dart';
 import 'package:eco_eaters_app_3/ui/seller/home/widgets/custom_text_button.dart';
 import 'package:eco_eaters_app_3/ui/seller/seller%20available%20dish/widgets/custom_available_dish_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../../../Data/dish_data_model.dart';
 import '../../../Data/insights_data_model.dart';
 import '../../../Data/seller_available_dish_data_model.dart';
 import '../../../core/constants/app_colors.dart';
@@ -15,19 +19,7 @@ class SellerAvailableDish extends StatefulWidget {
 }
 
 class _SellerAvailableDishState extends State<SellerAvailableDish> {
-  List<SellerAvailableDishDataModel> dishes = [
-    SellerAvailableDishDataModel(
-      dishImage: AppAssets.recentlyAddedImg,
-      dishName: "Quinoa Buddha Bowl",
-      dishPrice: "12.99",
-    ),
-    SellerAvailableDishDataModel(
-      dishImage:AppAssets.recentlyAddedImg,
-      dishName: "Berry Smoothie Bowl",
-      dishPrice: "9.99",
-    ),
-  ];
-
+  List<DishDataModel> dishes = [];
   List<bool> availability = [];
 
   List<InsightsDataModel> insights = [
@@ -46,7 +38,25 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
   @override
   void initState() {
     super.initState();
-    availability = List.generate(dishes.length, (index) => true);
+    fetchDishes();
+  }
+
+  Future<void> fetchDishes() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .collection(DishDataModel.collectionName)
+        .get();
+
+    final fetchedDishes =
+        snapshot.docs.map((doc) => DishDataModel.fromFirestore(doc)).toList();
+
+    setState(() {
+      dishes = fetchedDishes;
+      availability = List.generate(dishes.length, (index) => true);
+    });
   }
 
   @override
@@ -57,7 +67,7 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
       backgroundColor: AppColors.white,
       appBar: AppBar(
         backgroundColor: AppColors.white,
-        title: Text(
+        title: const Text(
           "EcoEaters",
           style: TextStyle(
             fontSize: 20,
@@ -118,10 +128,16 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: dishes.length,
                 itemBuilder: (context, index) {
+                  final dish = dishes[index];
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: CustomAvailableDishWidget(
-                      availableDishDataModel: dishes[index],
+                      availableDishDataModel: SellerAvailableDishDataModel(
+                        dishImage: dish.dishImage ?? AppAssets.recentlyAddedImg,
+                        dishName: dish.dishName,
+                        dishPrice: dish.dishPrice.toStringAsFixed(2),
+                      ),
                       isAvailable: availability[index],
                       onToggle: (value) {
                         setState(() {

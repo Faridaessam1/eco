@@ -27,7 +27,7 @@ abstract class FireBaseFirestoreServicesSeller {
     return FirebaseFirestore.instance
         .collection("users")
         .doc(userId)
-        .collection(DishDataModel.collectionName)
+        .collection('dishes')
         .withConverter<DishDataModel>(
           fromFirestore: (snapshot, _) => DishDataModel.fromFirestore(snapshot),
           toFirestore: (model, _) => model.toFireStore(),

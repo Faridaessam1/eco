@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../Data/recently_added_dish_data_model.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/cart_provider.dart';
+import '../../../core/utils/snack_bar_services.dart';
 class RecentlyAddedCard extends StatelessWidget {
-  final Map<String, dynamic> dishData;
+  RecentlyAddedDishDataModel dishData;
 
   RecentlyAddedCard({required this.dishData});
 
@@ -27,7 +31,7 @@ class RecentlyAddedCard extends StatelessWidget {
             ),
           ),
           Text(
-            dishData["dishName"] ?? "no name",
+            dishData.dishName,
             style: const TextStyle(
               color: AppColors.black,
               fontSize: 16,
@@ -38,7 +42,7 @@ class RecentlyAddedCard extends StatelessWidget {
           Row(
             children: [
                Text(
-                 "${(dishData["dishPrice"] as double).toStringAsFixed(0)} L.E",
+                 "${(dishData.dishPrice ).toStringAsFixed(0)} L.E",
                 style: const TextStyle(
                   color: AppColors.black,
                   fontSize: 16,
@@ -52,8 +56,8 @@ class RecentlyAddedCard extends StatelessWidget {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    // Provider.of<CartProvider>(context, listen: false).addToCart(dishData as DishDataModel);
-                    // SnackBarServices.showSuccessMessage('Added to cart');
+                    Provider.of<CartProvider>(context, listen: false).addToCart(dishData);
+                    SnackBarServices.showSuccessMessage('Added to cart');
                   },
                   icon: const Icon(
                     Icons.add,

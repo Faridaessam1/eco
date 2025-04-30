@@ -13,7 +13,7 @@ class CustomerHomeTab extends StatefulWidget {
 
 class _CustomerHomeTabState extends State<CustomerHomeTab> {
   // late RecentlyAddedDishDataModel dishData;
-  Future<List<Map<String, dynamic>>>? _recentDishesFuture;
+  Future<List<RecentlyAddedDishDataModel>>? _recentDishesFuture;
 
   @override
   void initState() {
@@ -146,7 +146,7 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
               const SizedBox(
                 height: 10,
               ),
-              FutureBuilder<List<Map<String, dynamic>>>(
+              FutureBuilder<List<RecentlyAddedDishDataModel>>(
                 future: _recentDishesFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -156,9 +156,8 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text('No recently added dishes'));
                   } else {
-                    List<RecentlyAddedDishDataModel> dishes = snapshot.data!
-                        .map((dishMap) => RecentlyAddedDishDataModel.fromFireStore(dishMap))
-                        .toList();
+                    List<RecentlyAddedDishDataModel> dishes = snapshot.data!;
+
 
                     return SizedBox(
                       height: 220, // عشان تبقي الكروت أفقية في صف واحد
@@ -167,12 +166,8 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
                         itemCount: dishes.length,
                         itemBuilder: (context, index) {
                           return RecentlyAddedCard(
-                              dishData: {
-                            "dishName": dishes[index].dishName,
-                            "dishImage": dishes[index].dishImage,
-                            "dishPrice": dishes[index].dishPrice,
-                            // كده تقدر توصلي للداتا داخل RecentlyAddedCard
-                          });
+                              dishData: dishes[index]
+                          );
                         },
                         separatorBuilder: (_, __) => const SizedBox(width: 10),
                       ),

@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DishDataModel {
-
 
 class DishDataModel{
   String dishId;
@@ -52,3 +50,4 @@ class DishDataModel{
     );
   }
 }
+

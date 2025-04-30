@@ -27,17 +27,14 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
     var height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(80),//bnzwed height el appbar
-          child: AppBar(
-            title:  Row(
-              children: [
-                Image.asset(
-                  AppAssets.appLogo,
-                  height: height * 0.03,
-                ),
-              ],
-            ),
+        appBar: AppBar(
+          title:  Row(
+            children: [
+              Image.asset(
+                AppAssets.appLogo,
+                height: height * 0.03,
+              ),
+            ],
           ),
         ),
         body: Padding(

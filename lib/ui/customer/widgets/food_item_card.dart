@@ -2,13 +2,13 @@ import 'package:eco_eaters_app_3/core/utils/snack_bar_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../Data/dish_data_model.dart';
+import '../../../Data/recently_added_dish_data_model.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/cart_provider.dart';
 
 class FoodItemCard extends StatelessWidget {
-  final DishDataModel dishData;
+  final RecentlyAddedDishDataModel dishData;
 
   FoodItemCard({required this.dishData});
 

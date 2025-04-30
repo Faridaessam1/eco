@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../Data/recently_added_dish_data_model.dart';
 import '../../Data/restaurant_card_data.dart';
 
 abstract class FireBaseFirestoreServicesCustomer{
@@ -153,9 +154,9 @@ abstract class FireBaseFirestoreServicesCustomer{
   }
 
 
-  static Future<List<Map<String, dynamic>>> getRecentlyAddedDishes() async {
+  static Future<List<RecentlyAddedDishDataModel>> getRecentlyAddedDishes() async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final DateTime threeHoursAgo = DateTime.now().subtract(const Duration(hours: 24));
+    final DateTime threeHoursAgo = DateTime.now().subtract(const Duration(hours: 48));
     List<Map<String, dynamic>> recentlyAddedDishes = [];
 
     try {
@@ -176,12 +177,15 @@ abstract class FireBaseFirestoreServicesCustomer{
         }
       }
 
-      return recentlyAddedDishes;
+      return recentlyAddedDishes
+          .map((dishMap) => RecentlyAddedDishDataModel.fromFireStore(dishMap))
+          .toList();
     } catch (e) {
       print('Error fetching recently added dishes: $e');
       return [];
     }
   }
+
 
 
 }

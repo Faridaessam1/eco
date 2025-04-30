@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../Data/dish_data_model.dart';
+import '../../../Data/recently_added_dish_data_model.dart';
 import '../../../core/FirebaseServices/firebas_firestore_customer.dart';
 import '../../../core/constants/app_colors.dart';
 import '../widgets/food_item_card.dart';
@@ -53,7 +54,7 @@ class _RestaurantFoodItemState extends State<RestaurantFoodItem> {
                 separatorBuilder: (context, index) => SizedBox(height: height * 0.05), // المسافة بين كل طبق
                 itemBuilder: (context, index) {
                   return FoodItemCard(
-                    dishData: DishDataModel.fromFireStore(dishes[index]), // عرض الطبق
+                    dishData: RecentlyAddedDishDataModel.fromFireStore(dishes[index]), // عرض الطبق
                   );
                 },
               );

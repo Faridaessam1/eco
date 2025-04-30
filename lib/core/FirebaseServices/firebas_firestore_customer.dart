@@ -97,6 +97,13 @@ abstract class FireBaseFirestoreServicesCustomer{
         return restaurantsData;
     }
   }
+  static List<RestaurantCardData> filterRestaurantsByCategoryString(String category, List<RestaurantCardData> restaurantsData) {
+    if (category == "All") {
+      return restaurantsData;
+    }
+    return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains(category)).toList();  // تصفية حسب الفئة
+  }
+
 
   static Future<List<Map<String, dynamic>>> getDishesForSpecificRestaurant(String restaurantName) async {
     List<Map<String, dynamic>> restaurantDishes = [];

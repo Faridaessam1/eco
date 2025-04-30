@@ -12,6 +12,7 @@ import '../../ui/auth/user_type.dart';
 import '../../ui/customer/layout/layout.dart';
 import '../../ui/customer/orders/customer_order_screen.dart';
 import '../../ui/customer/restaurantsFoodItems/restaurants_food_items.dart';
+import '../../ui/customer/restaurantsTab/restaurants_tab.dart';
 import '../../ui/onBoarding/widget/onBoardingScreen.dart';
 import '../../ui/seller/widgets/layout_view.dart';
 import '../../ui/splash/splash_screen.dart';
@@ -68,7 +69,12 @@ class AppRoutes {
           builder: (context) => LayoutCustomer(),
           settings: settings,
         );
-      case PagesRouteName.restaurantFoodItem:
+      case PagesRouteName.restaurantTab:
+        return MaterialPageRoute(
+          builder: (context) => RestaurantsTab(),
+          settings: settings,
+        );
+        case PagesRouteName.restaurantFoodItem:
         return MaterialPageRoute(
           builder: (context) => RestaurantFoodItem(),
           settings: settings,

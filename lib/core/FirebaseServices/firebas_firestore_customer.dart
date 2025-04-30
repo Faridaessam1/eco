@@ -134,6 +134,7 @@ abstract class FireBaseFirestoreServicesCustomer{
               'createdAt': dishDoc['createdAt'] ?? Timestamp.now(),
               'dishCategory': dishDoc['dishCategory']
             });
+
           }
         }
       }
@@ -143,5 +144,63 @@ abstract class FireBaseFirestoreServicesCustomer{
 
     return restaurantDishes;
   }
+
+  static Future<List<Map<String, dynamic>>> getRecentlyAddedDishes({int hours = 6}) async {
+    List<Map<String, dynamic>> recentDishes = [];
+    try {
+      // حساب الوقت الحالي ووقت بداية الفلترة
+      Timestamp now = Timestamp.now();
+      DateTime timeThreshold = DateTime.now().subtract(Duration(hours: hours));
+
+      // جلب كل المستخدمين من نوع seller
+      var usersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('userType', isEqualTo: 'seller')
+          .get();
+
+      print("Fetched users: ${usersSnapshot.docs.length} users found.");
+
+      for (var userDoc in usersSnapshot.docs) {
+        String restaurantName = userDoc['businessName'] ?? 'Unknown';
+
+        // جلب الأطباق التابعة لكل بائع
+        var dishesSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userDoc.id)
+            .collection('dishes')
+            .get();
+
+        print("Fetched dishes for restaurant $restaurantName: ${dishesSnapshot.docs.length} dishes found.");
+
+        for (var dishDoc in dishesSnapshot.docs) {
+          var data = dishDoc.data();
+          Timestamp createdAt = data['createdAt'] ?? Timestamp.now();
+
+          // فلترة حسب الوقت (الأطباق المضافة حديثًا فقط)
+          if (createdAt.toDate().isAfter(timeThreshold)) {
+            recentDishes.add({
+              'restaurantId': userDoc.id,
+              'restaurantName': restaurantName,
+              'dishName': data['dishName']?? "fire",
+              'dishAdditionalInfo': data['dishAdditionalInfo']??"no info",
+              'dishPrice': data['dishPrice']??6,
+              'dishImage': data['dishImage'] ?? "assets/images/recentlyAddedImg.png",
+              'dishQuantity': data['dishQuantity']??5,
+              'createdAt': createdAt,
+              'dishCategory': data['dishCategory']??"fast food",
+            });
+          }
+        }
+      }
+
+      print("Total recent dishes fetched: ${recentDishes.length}");
+
+    } catch (e) {
+      print("Error fetching recent dishes: $e");
+    }
+
+    return recentDishes;
+  }
+
 
 }

@@ -37,12 +37,12 @@ class DishDataModel{
   factory DishDataModel.fromFireStore(Map<String, dynamic> data) {
     return DishDataModel(
       dishName: data['dishName'] ?? 'Unknown Dish',
-      dishAdditionalInfo: data['dishAdditionalInfo'] ,
-      dishPrice: data['dishPrice'] ,
+      dishAdditionalInfo: data['dishAdditionalInfo'] ?? "No additional info" ,
+      dishPrice: data['dishPrice'] ?? 0,
       dishImage: data['dishImage'] ?? 'assets/images/recentlyAddedImg.png',
-      dishQuantity: data['dishQuantity'] ,
+      dishQuantity: data['dishQuantity'] ?? 1,
       createdAt: data['createdAt'] ?? Timestamp.now(),
-      dishCategory: data['dishCategory'] ,
+      dishCategory: data['dishCategory'] ?? "hotels",
     );
   }
 }

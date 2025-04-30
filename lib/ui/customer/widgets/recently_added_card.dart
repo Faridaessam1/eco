@@ -24,7 +24,8 @@ class RecentlyAddedCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.asset(AppAssets.recentlyAddedImg,
+            child: Image.asset(
+              dishData.dishImage ?? AppAssets.recentlyAddedImg,
               height: height * 0.10,
               width: double.infinity,
               fit: BoxFit.cover,

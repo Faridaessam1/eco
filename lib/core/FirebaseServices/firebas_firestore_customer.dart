@@ -97,7 +97,7 @@ abstract class FireBaseFirestoreServicesCustomer{
       default: // All tab
         return restaurantsData;
     }
-  }
+  } ///de sabta
   static List<RestaurantCardData> filterRestaurantsByCategoryString(String category, List<RestaurantCardData> restaurantsData) {
     if (category == "All") {
       return restaurantsData;

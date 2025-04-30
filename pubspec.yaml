@@ -33,6 +33,7 @@ dependencies:
   flutter_easyloading: ^3.0.5
   bot_toast: ^4.1.3
 
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons:
@@ -43,13 +44,14 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
-  smooth_page_indicator:
+  smooth_page_indicator: ^1.2.1
   firebase_core: ^3.13.0
   firebase_auth: ^5.5.2
   google_sign_in: ^6.3.0
   cloud_firestore:
   flutter_rating_bar:
   provider:
+
 
 
 

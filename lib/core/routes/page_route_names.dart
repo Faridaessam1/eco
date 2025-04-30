@@ -12,6 +12,7 @@ class PagesRouteName {
   static const String restaurantFoodItem = "restaurantFoodItem";
   static const String customerOrdersScreen = "customerOrdersScreen";
   static const String customerFeedbackScreen = "customerFeedbackScreen";
-
+  static const String paymentMethod = "paymentMethod";
+  static const String deliveryScreen = "deliveryScreen";
 
 }

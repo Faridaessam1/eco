@@ -2,6 +2,9 @@ abstract class AppAssets{
 
 static String ordersIcon = "assets/icons/orders_icon.png";
 static String newIcon = "assets/icons/new_icon.png";
+static String methodIcon = "assets/icons/paymentMethod.png";
+static String payOnline = "assets/icons/payonline.png";
+static String cashPayment = "assets/icons/cash.png";
 static String ecoEaterIcon = "assets/icons/eco_eaters_icon.png";
   static String locationIcon = "assets/icons/location.png";
   static const String onBoardingImg = "assets/images/onboarding1.png";

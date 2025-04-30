@@ -1,12 +1,9 @@
 import 'package:eco_eaters_app_3/ui/customer/restaurantsTab/widgets/custom_tab_bar_item_customer.dart';
 import 'package:flutter/material.dart';
-
 import '../../../Data/restaurant_card_data.dart';
 import '../../../core/FirebaseServices/firebas_firestore_customer.dart';
 import '../../../core/constants/app_assets.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/routes/page_route_names.dart';
-import '../../../core/widgets/custom_text_form_field.dart';
 import '../widgets/restaurant_card.dart';
 
 class RestaurantsTab extends StatefulWidget {
@@ -27,6 +24,7 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
   }
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         appBar: PreferredSize(
@@ -36,21 +34,7 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
               children: [
                 Image.asset(
                   AppAssets.appLogo,
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(80),
-                    child: CustomTextFormField(
-                      hintText: "Search Restaurants",
-                      borderColor: AppColors.lightGrey,
-                      filledColor:AppColors.lightGrey,
-                      hasIcon: true,
-                      iconPath: AppAssets.searchIcon,
-                      iconColor: AppColors.black,
-                      hintTextColor: AppColors.darkGrey,
-                    ),
-                  ),
+                  height: height * 0.03,
                 ),
               ],
             ),

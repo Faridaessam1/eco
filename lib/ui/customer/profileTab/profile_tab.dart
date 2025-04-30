@@ -18,7 +18,7 @@ class ProfileTab extends StatelessWidget{
       appBar: AppBar(
         title: Image.asset(
           AppAssets.appLogo,
-          height: height * 0.02,
+          height: height * 0.03,
         ),
         centerTitle: true,
       ),

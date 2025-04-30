@@ -1,9 +1,7 @@
-
 import 'package:eco_eaters_app_3/ui/seller/home/widgets/custom_insights_container.dart';
 import 'package:eco_eaters_app_3/ui/seller/home/widgets/custom_recent_order_container.dart';
 import 'package:eco_eaters_app_3/ui/seller/home/widgets/custom_text_button.dart';
 import 'package:flutter/material.dart';
-
 import '../../../Data/order_data_model.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../Data/insights_data_model.dart';

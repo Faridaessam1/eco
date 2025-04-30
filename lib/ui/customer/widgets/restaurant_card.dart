@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../Data/restaurant_card_data.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/favorite_provider.dart';
 
 
 class RestaurantCard extends StatelessWidget{
@@ -20,16 +22,52 @@ class RestaurantCard extends StatelessWidget{
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.asset(restaurantCardData.imgPath),
+            child: Stack(
+              children: [
+                Image.asset(
+                  restaurantCardData.imgPath,
+                  width: double.infinity,
+                  height: height * 0.22, // adjust if needed
+                  fit: BoxFit.cover,
+                ),
+                Positioned(
+                  bottom: 8,
+                  right: 8,
+                  child: Consumer<FavoritesProvider>(
+                    builder: (context, favoritesProvider, _) {
+                      final isFav = favoritesProvider.isFavorite(restaurantCardData);
+                      return GestureDetector(
+                        onTap: () {
+                          favoritesProvider.toggleFavorite(restaurantCardData);
+                        },
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                          ),
+                          padding: const EdgeInsets.all(6),
+                          child: Icon(
+                            isFav ? Icons.favorite : Icons.favorite_border,
+                            color: AppColors.primaryColor,
+                            size: 20,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 3,),
+
+          const SizedBox(height: 3,),
           Row(
             children: [
               Column(
                 children: [
                   Text(
                     restaurantCardData.restaurantName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -37,7 +75,7 @@ class RestaurantCard extends StatelessWidget{
                   ),
                   Text(
                     restaurantCardData.restaurantCategory,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.darkGrey,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -45,8 +83,8 @@ class RestaurantCard extends StatelessWidget{
                   ),
                 ],
               ),
-              Spacer(),
-              Row(
+              const Spacer(),
+              const Row(
                 children: [
                   Text("4.4" ,style: TextStyle(color:AppColors.primaryColor,),),
                   Icon(Icons.star , color: AppColors.primaryColor,)
@@ -57,16 +95,16 @@ class RestaurantCard extends StatelessWidget{
 
           Row(
             children: [
-              Icon(Icons.location_on ,color: AppColors.black,),
+              const Icon(Icons.location_on ,color: AppColors.black,),
               Text(restaurantCardData.location,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.darkGrey,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),),
-              Icon(Icons.timelapse_outlined ,color: AppColors.black,),
+              const Icon(Icons.timelapse_outlined ,color: AppColors.black,),
               Text(restaurantCardData.deliveryEstimatedTime,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.darkGrey,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,

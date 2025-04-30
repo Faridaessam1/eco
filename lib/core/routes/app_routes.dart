@@ -2,8 +2,13 @@ import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:eco_eaters_app_3/ui/auth/otp_screen.dart';
 import 'package:eco_eaters_app_3/ui/auth/phone_login.dart';
 import 'package:eco_eaters_app_3/ui/auth/seller_sign_up_screen.dart';
+import 'package:eco_eaters_app_3/ui/customer/delievery/delievery_screen.dart';
 import 'package:eco_eaters_app_3/ui/customer/feedbackScreen/feedback.dart';
+
 import 'package:eco_eaters_app_3/ui/seller/new%20dish/new_dish_view.dart';
+
+import 'package:eco_eaters_app_3/ui/customer/paymentMethod/payment_method.dart';
+
 import 'package:flutter/material.dart';
 import '../../ui/auth/login_screen.dart';
 import '../../ui/auth/customer_sign_up_screen.dart';
@@ -11,6 +16,7 @@ import '../../ui/auth/user_type.dart';
 import '../../ui/customer/layout/layout.dart';
 import '../../ui/customer/orders/customer_order_screen.dart';
 import '../../ui/customer/restaurantsFoodItems/restaurants_food_items.dart';
+import '../../ui/customer/restaurantsTab/restaurants_tab.dart';
 import '../../ui/onBoarding/widget/onBoardingScreen.dart';
 import '../../ui/seller/widgets/layout_view.dart';
 import '../../ui/splash/splash_screen.dart';
@@ -73,7 +79,12 @@ class AppRoutes {
           builder: (context) => const LayoutCustomer(),
           settings: settings,
         );
-      case PagesRouteName.restaurantFoodItem:
+      case PagesRouteName.restaurantTab:
+        return MaterialPageRoute(
+          builder: (context) => RestaurantsTab(),
+          settings: settings,
+        );
+        case PagesRouteName.restaurantFoodItem:
         return MaterialPageRoute(
           builder: (context) => RestaurantFoodItem(),
           settings: settings,
@@ -83,11 +94,22 @@ class AppRoutes {
           builder: (context) => CustomerOrderScreen(),
           settings: settings,
         );
+      case PagesRouteName.paymentMethod:
+        return MaterialPageRoute(
+          builder: (context) => PaymentMethodScreen(),
+          settings: settings,
+        );
+      case PagesRouteName.paymentMethod:
+        return MaterialPageRoute(
+          builder: (context) => DeliveryHelpScreen(),
+          settings: settings,
+        );
       case PagesRouteName.sellerHomeLayout:
         return MaterialPageRoute(
           builder: (context) => const LayOutViewSeller(),
           settings: settings,
         );
+
       // Default route
       default:
         return MaterialPageRoute(

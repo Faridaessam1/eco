@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 import '../widgets/custom_status_container.dart';
@@ -40,6 +38,8 @@ class _NewDishViewState extends State<NewDishView> {
     final List<String> _sellerCategoriesList = [
       "Restaurant",
       "Hotel",
+      "Fast Food",
+      "Desserts",
     ];
 
     return Scaffold(
@@ -60,6 +60,22 @@ class _NewDishViewState extends State<NewDishView> {
               if (!formKey.currentState!.validate()) return;
 
               String sellerId = FirebaseAuth.instance.currentUser!.uid;
+
+              final dish = DishDataModel(
+                dishName: _dishNameController.text.trim(),
+                dishQuantity: int.parse(_dishQuantityController.text.trim()),
+                dishPrice: double.parse(_dishPriceController.text.trim()),
+                dishCategory: _dishCategoryController.value ?? "",
+                dishAdditionalInfo: _dishAdditionalInfoController.text.trim(),
+                dishImage: _imageUrl ?? "",
+                dishId: '',
+              );
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(sellerId)
+                  .collection("dishes")
+                  .add(dish.toFireStore());
+
 
               try {
                 await FirebaseFirestore.instance
@@ -109,9 +125,9 @@ class _NewDishViewState extends State<NewDishView> {
                     borderRadius: BorderRadius.circular(12),
                     image: _image != null
                         ? DecorationImage(
-                            image: FileImage(_image!),
-                            fit: BoxFit.cover,
-                          )
+                      image: FileImage(_image!),
+                      fit: BoxFit.cover,
+                    )
                         : null,
                     border: Border.all(
                       color: AppColors.grey,
@@ -151,19 +167,21 @@ class _NewDishViewState extends State<NewDishView> {
                     const SizedBox(height: 10),
                     _imageUrl != null
                         ? const Text(
-                            "Image uploaded successfully!",
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.green),
-                          )
+
+                      "Image uploaded successfully!",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.white),
+                    )
+
                         : const Text(
-                            "No image uploaded yet",
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.white),
-                          ),
+                      "No image uploaded yet",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.white),
+                    ),
                   ],
                 ),
               ),

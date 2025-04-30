@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DishDataModel {
-  static const String collectionName = "dishDataCollection";
 
-  final String dishId;
+
+class DishDataModel{
+  String dishId;
   final String dishName;
   final String? dishImage;
   final int dishQuantity;
@@ -47,6 +48,7 @@ class DishDataModel {
       dishCategory: data["dishCategory"] ?? "",
       dishAdditionalInfo: data["dishAdditionalInfo"],
       createdAt: data["createdAt"],
+
     );
   }
 }

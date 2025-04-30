@@ -13,6 +13,7 @@ class CustomElevatedButton extends StatelessWidget {
   final double borderRadius;
   final double width;
   final double height;
+  final IconData? icon;
 
   CustomElevatedButton({
     super.key,
@@ -27,32 +28,37 @@ class CustomElevatedButton extends StatelessWidget {
     this.borderRadius = 16,
     this.width = 310,
     this.height = 310,
+    this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: 56,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: buttonColor ?? AppColors.primaryColor,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            side: BorderSide(width: 1, color: AppColors.primaryColor),
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: buttonColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
-        onPressed: onPressed,
-        child: Text(
-          text!,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: fontWeight,
-            fontSize: fontSize,
-            fontFamily: fontFamily,
-            color: textColor,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+      ),
+      onPressed: onPressed,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, color: textColor),
+            const SizedBox(width: 8),
+          ],
+          Text(
+            text!,
+            style: TextStyle(
+              color: textColor,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

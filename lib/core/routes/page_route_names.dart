@@ -9,10 +9,14 @@ class PagesRouteName {
   static const String phoneLoginScreen = "phoneLoginScreen";
   static const String sellerHomeLayout = "sellerHomeLayout";
   static const String restaurantFoodItem = "restaurantFoodItem";
+  static const String restaurantTab = "restaurantTab";
   static const String customerOrdersScreen = "customerOrdersScreen";
   static const String customerFeedbackScreen = "customerFeedbackScreen";
-
   //seller
   static const String sellerSignUp = "signup";
   static const String sellerNewDishScreen = "sellerNewDishScreen";
+
+  static const String paymentMethod = "paymentMethod";
+  static const String deliveryScreen = "deliveryScreen";
+
 }

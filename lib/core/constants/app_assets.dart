@@ -23,7 +23,15 @@ static const String restaurantsIcon = "assets/icons/restaurantsIcon.png";
   static const String profileIcon = "assets/icons/profileIcon.png";
   static const String notificationsIcon = "assets/icons/notificationsIcon.png";
   static const String searchIcon = "assets/icons/searchIcon.png";
-  static const String ad = "assets/images/ad.png";
+  static const String dessertIcon = "assets/icons/dessert icn.png";
+  static const String fastFoodIcon = "assets/icons/fastfood icn.png";
+  static const String hotelsIcon = "assets/icons/hotels icn.png";
+  static const String restaurantIcon = "assets/icons/restaurant icn.png";
+  static const String ad1 = "assets/images/ad1.png";
+  static const String ad2 = "assets/images/ad2.png";
+  static const String ad3 = "assets/images/ad3.png";
+  static const String ad4 = "assets/images/ad4.png";
+  static const String ad5 = "assets/images/ad5.png";
   static const String recentlyAddedImg = "assets/images/recentlyAddedImg.png";
   static const String restaurantsCardImg = "assets/images/restaurantsCardImg.png";
 

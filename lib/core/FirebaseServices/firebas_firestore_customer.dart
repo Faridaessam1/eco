@@ -98,11 +98,39 @@ abstract class FireBaseFirestoreServicesCustomer{
         return restaurantsData;
     }
   } ///de sabta
-  static List<RestaurantCardData> filterRestaurantsByCategoryString(String category, List<RestaurantCardData> restaurantsData) {
-    if (category == "All") {
-      return restaurantsData;
+
+
+
+  static Future<List<RestaurantCardData>> getRestaurantsByCategory(
+      String category) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('userType', isEqualTo: 'seller')
+          .where('businessType',
+          isEqualTo:
+          category) // استخدم businessType عشان نجيب المطاعم اللي الـ businessType بتاعها بيساوي الـ category
+          .get();
+
+      print("Category being queried: $category");
+      print("Number of documents found: ${snapshot.docs.length}");
+      snapshot.docs.forEach((doc) {
+        print("Document data: ${doc.data()}");
+      });
+
+      if (snapshot.docs.isEmpty) {
+        print("No restaurants found in category: $category");
+      }
+
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return RestaurantCardData.fromFireStore(
+            data); //
+      }).toList();
+    } catch (e) {
+      print('Error fetching restaurants by category: $e');
+      return [];
     }
-    return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains(category)).toList();  // تصفية حسب الفئة
   }
 
 

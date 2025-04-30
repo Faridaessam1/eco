@@ -13,11 +13,14 @@ class RestaurantCardData {
     required this.deliveryEstimatedTime,
   });
 
+
   factory RestaurantCardData.fromFireStore(Map<String, dynamic> data) {
     return RestaurantCardData(
-      imgPath: data['imgPath'] ?? 'assets/images/restaurantsCardImg.png',
+      imgPath: data['img'] ??
+          'assets/images/restaurantsCardImg.png', // استخدم اسم الحقل الصحيح
       restaurantName: data['businessName'] ?? 'No Name',
-      restaurantCategory: data['businessType'] ?? '',
+      restaurantCategory:
+      data['businessType'] ?? '', // استخدم businessType كـ restaurantCategory
       location: data['city'] ?? '',
       deliveryEstimatedTime: data['deliveryTime'] ?? '30 Min',
     );

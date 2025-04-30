@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
@@ -9,6 +8,7 @@ import 'package:eco_eaters_app_3/core/utils/validation.dart';
 import 'package:eco_eaters_app_3/core/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/FirebaseServices/firebase_auth.dart';
@@ -546,6 +546,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
     final url = Uri.parse('https://api.cloudinary.com/v1_1/dbdwuvc3w/upload');
     final request = http.MultipartRequest('POST', url)
       ..fields['upload_preset'] = 'ml_default'
+      ..fields['folder'] = 'restaurant'
       ..files.add(await http.MultipartFile.fromPath('file', _image!.path));
 
     final response = await request.send();

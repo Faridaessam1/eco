@@ -16,7 +16,7 @@ class _OrdersViewState extends State<OrdersView> {
   int selectedIndex = 0;
 
   List<OrderDataModel> orders = [
-    OrderDataModel(
+    const OrderDataModel(
       orderNumber: "ORD-2025001",
       orderStatus: "Pending",
       orderStatusColor: AppColors.red,
@@ -26,7 +26,7 @@ class _OrdersViewState extends State<OrdersView> {
       customerAddress: "123 Green Street, New York",
       time: "Jan 15, 2025 - 14:30",
     ),
-    OrderDataModel(
+    const OrderDataModel(
       orderNumber: "ORD-2025002",
       orderStatus: "In Progress",
       orderStatusColor: AppColors.orange,
@@ -36,9 +36,9 @@ class _OrdersViewState extends State<OrdersView> {
       customerAddress: "456 Eco Avenue, Brooklyn",
       time: "Jan 15, 2025 - 15:45",
     ),
-    OrderDataModel(
+    const OrderDataModel(
       orderNumber: "ORD-2025003",
-      orderStatus: "Confirmed",
+      orderStatus: "Completed",
       orderStatusColor: AppColors.green,
       orderDetails: "2x Pasta Primavera, 1x Fresh Juice",
       orderAmount: "39.75",
@@ -48,13 +48,30 @@ class _OrdersViewState extends State<OrdersView> {
     ),
   ];
 
+  List<OrderDataModel> get filteredOrders {
+    switch (selectedIndex) {
+      case 1:
+        return orders.where((order) => order.orderStatus == "Pending").toList();
+      case 2:
+        return orders
+            .where((order) => order.orderStatus == "In Progress")
+            .toList();
+      case 3:
+        return orders
+            .where((order) => order.orderStatus == "Completed")
+            .toList();
+      default:
+        return orders; // All
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
         backgroundColor: AppColors.white,
-        title: Text(
+        title: const Text(
           "Order Management",
           style: TextStyle(
             fontSize: 20,
@@ -64,7 +81,7 @@ class _OrdersViewState extends State<OrdersView> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_rounded),
+            icon: const Icon(Icons.notifications_rounded),
             onPressed: () {},
           ),
         ],
@@ -97,7 +114,7 @@ class _OrdersViewState extends State<OrdersView> {
                     tabColor: AppColors.orange,
                   ),
                   CustomTabBarItemSeller(
-                    title: "Confirmed",
+                    title: "Completed",
                     isSelected: selectedIndex == 3,
                     tabColor: AppColors.green,
                   ),
@@ -105,15 +122,16 @@ class _OrdersViewState extends State<OrdersView> {
               ),
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Expanded(
             child: ListView.builder(
-              itemCount: orders.length,
+              itemCount: filteredOrders.length,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 8.0, horizontal: 16.0),
-                  child: CustomOrderContainer(orderDataModel: orders[index]),
+                  child: CustomOrderContainer(
+                      orderDataModel: filteredOrders[index]),
                 );
               },
             ),

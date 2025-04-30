@@ -22,6 +22,19 @@ abstract class FireBaseFirestoreServicesSeller {
     await customerDocRef.collection('orders').add(order.toFireStore());
   }
 
+  static Stream<QuerySnapshot<DishDataModel>> getSellerDishesStream(
+      String userId) {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .collection(DishDataModel.collectionName)
+        .withConverter<DishDataModel>(
+          fromFirestore: (snapshot, _) => DishDataModel.fromFirestore(snapshot),
+          toFirestore: (model, _) => model.toFireStore(),
+        )
+        .snapshots();
+  }
+
   static Future<void> getSellerProfileData({
     required TextEditingController businessNameController,
     required TextEditingController contactPersonController,

@@ -4,7 +4,6 @@ class PagesRouteName {
   static const String userType = "userType";
   static const String login = "login";
   static const String customerSignUp = "signup";
-  static const String sellerSignUp = "signup";
   static const String otpScreen = "otpscreen";
   static const String customerHomeLayout = "customerHomeLayout";
   static const String phoneLoginScreen = "phoneLoginScreen";
@@ -13,6 +12,10 @@ class PagesRouteName {
   static const String restaurantTab = "restaurantTab";
   static const String customerOrdersScreen = "customerOrdersScreen";
   static const String customerFeedbackScreen = "customerFeedbackScreen";
+  //seller
+  static const String sellerSignUp = "signup";
+  static const String sellerNewDishScreen = "sellerNewDishScreen";
+
   static const String paymentMethod = "paymentMethod";
   static const String deliveryScreen = "deliveryScreen";
 

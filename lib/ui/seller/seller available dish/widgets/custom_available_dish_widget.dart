@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../Data/seller_available_dish_data_model.dart';
 import '../../../../core/constants/app_colors.dart';
 
@@ -30,6 +31,8 @@ class CustomAvailableDishWidget extends StatelessWidget {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // Space out the children
         children: [
           Image.asset(
             availableDishDataModel.dishImage,
@@ -39,6 +42,7 @@ class CustomAvailableDishWidget extends StatelessWidget {
           ),
           const SizedBox(width: 15),
           Expanded(
+            // Use Expanded to take available space
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

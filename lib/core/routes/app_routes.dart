@@ -4,7 +4,11 @@ import 'package:eco_eaters_app_3/ui/auth/phone_login.dart';
 import 'package:eco_eaters_app_3/ui/auth/seller_sign_up_screen.dart';
 import 'package:eco_eaters_app_3/ui/customer/delievery/delievery_screen.dart';
 import 'package:eco_eaters_app_3/ui/customer/feedbackScreen/feedback.dart';
+
+import 'package:eco_eaters_app_3/ui/seller/new%20dish/new_dish_view.dart';
+
 import 'package:eco_eaters_app_3/ui/customer/paymentMethod/payment_method.dart';
+
 import 'package:flutter/material.dart';
 import '../../ui/auth/login_screen.dart';
 import '../../ui/auth/customer_sign_up_screen.dart';
@@ -22,7 +26,7 @@ class AppRoutes {
     switch (settings.name) {
       case PagesRouteName.onBoarding:
         return MaterialPageRoute(
-          builder: (context) => OnBoardingScreen(),
+          builder: (context) => const OnBoardingScreen(),
           settings: settings,
         );
       case PagesRouteName.userType:
@@ -53,20 +57,26 @@ class AppRoutes {
 
       case PagesRouteName.phoneLoginScreen:
         return MaterialPageRoute(
-          builder: (context) => PhoneLoginScreen(),
+          builder: (context) => const PhoneLoginScreen(),
           settings: settings,
         );
 
       case PagesRouteName.customerFeedbackScreen:
         return MaterialPageRoute(
-          builder: (context) => CustomerFeedbackScreen(),
+          builder: (context) => const CustomerFeedbackScreen(),
+          settings: settings,
+        );
+
+      case PagesRouteName.sellerNewDishScreen:
+        return MaterialPageRoute(
+          builder: (context) => const NewDishView(),
           settings: settings,
         );
 
       // Routes from farida-feature
       case PagesRouteName.customerHomeLayout:
         return MaterialPageRoute(
-          builder: (context) => LayoutCustomer(),
+          builder: (context) => const LayoutCustomer(),
           settings: settings,
         );
       case PagesRouteName.restaurantTab:
@@ -96,14 +106,14 @@ class AppRoutes {
         );
       case PagesRouteName.sellerHomeLayout:
         return MaterialPageRoute(
-          builder: (context) => LayOutViewSeller(),
+          builder: (context) => const LayOutViewSeller(),
           settings: settings,
         );
 
       // Default route
       default:
         return MaterialPageRoute(
-          builder: (context) => SplashScreen(),
+          builder: (context) => const SplashScreen(),
           settings: settings,
         );
     }

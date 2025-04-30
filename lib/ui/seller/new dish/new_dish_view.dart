@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eco_eaters_app_3/Data/dish_data_model.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,7 +28,8 @@ class _NewDishViewState extends State<NewDishView> {
   final _dishNameController = TextEditingController();
   final _dishQuantityController = TextEditingController();
   final _dishPriceController = TextEditingController();
-  final SingleSelectController<String?> _dishCategoryController = SingleSelectController(null);
+  final SingleSelectController<String?> _dishCategoryController =
+      SingleSelectController(null);
   final _dishAdditionalInfoController = TextEditingController();
 
   @override
@@ -56,9 +56,11 @@ class _NewDishViewState extends State<NewDishView> {
         ),
         actions: [
           GestureDetector(
-            onTap:() async {
+            onTap: () async {
               if (!formKey.currentState!.validate()) return;
+
               String sellerId = FirebaseAuth.instance.currentUser!.uid;
+
               final dish = DishDataModel(
                 dishName: _dishNameController.text.trim(),
                 dishQuantity: int.parse(_dishQuantityController.text.trim()),
@@ -74,8 +76,31 @@ class _NewDishViewState extends State<NewDishView> {
                   .collection("dishes")
                   .add(dish.toFireStore());
 
-              EasyLoading.showSuccess("Dish Added Successfully!");
-              Navigator.pushNamed(context,PagesRouteName.sellerHomeLayout);
+
+              try {
+                await FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(sellerId)
+                    .collection("dishes")
+                    .add({
+                  "dishName": _dishNameController.text.trim(),
+                  "dishQuantity":
+                      int.parse(_dishQuantityController.text.trim()),
+                  "dishPrice": double.parse(_dishPriceController.text.trim()),
+                  "dishCategory": _dishCategoryController.value ?? "",
+                  "dishAdditionalInfo":
+                      _dishAdditionalInfoController.text.trim(),
+                  "dishImage": _imageUrl ?? "",
+                  "isAvailable": true,
+                  "timestamp": FieldValue.serverTimestamp(),
+                });
+
+                EasyLoading.showSuccess("Dish Added Successfully!");
+                Navigator.pushNamed(context, PagesRouteName.sellerHomeLayout);
+              } catch (e) {
+                print("❌ Failed to save dish: $e");
+                EasyLoading.showError("Failed to add dish");
+              }
             },
             child: CustomStatusContainer(
               orderStatus: "Save",
@@ -83,9 +108,7 @@ class _NewDishViewState extends State<NewDishView> {
               orderStatusColor: AppColors.white,
             ),
           ),
-          const SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
         ],
       ),
       body: SingleChildScrollView(
@@ -144,12 +167,14 @@ class _NewDishViewState extends State<NewDishView> {
                     const SizedBox(height: 10),
                     _imageUrl != null
                         ? const Text(
+
                       "Image uploaded successfully!",
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: AppColors.white),
                     )
+
                         : const Text(
                       "No image uploaded yet",
                       style: TextStyle(
@@ -160,19 +185,13 @@ class _NewDishViewState extends State<NewDishView> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 30,
-              ),
-              const Text(
-                "Dish Name",
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.black),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 30),
+              const Text("Dish Name",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.black)),
+              const SizedBox(height: 10),
               CustomTextFormField(
                 hintText: "Enter Dish Name",
                 hintTextColor: AppColors.textGreyColor,
@@ -180,19 +199,13 @@ class _NewDishViewState extends State<NewDishView> {
                 borderColor: AppColors.grey,
                 controller: _dishNameController,
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "Quantity",
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.black),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 20),
+              const Text("Quantity",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.black)),
+              const SizedBox(height: 10),
               CustomTextFormField(
                 hintText: "Enter quantity",
                 hintTextColor: AppColors.textGreyColor,
@@ -200,19 +213,13 @@ class _NewDishViewState extends State<NewDishView> {
                 borderColor: AppColors.grey,
                 controller: _dishQuantityController,
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "Price",
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.black),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 20),
+              const Text("Price",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.black)),
+              const SizedBox(height: 10),
               CustomTextFormField(
                 hintText: "Enter price",
                 hintTextColor: AppColors.textGreyColor,
@@ -220,19 +227,13 @@ class _NewDishViewState extends State<NewDishView> {
                 borderColor: AppColors.grey,
                 controller: _dishPriceController,
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "Category",
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.black),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 20),
+              const Text("Category",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.black)),
+              const SizedBox(height: 10),
               CustomDropdown<String>(
                 hintText: 'Select Category',
                 items: _sellerCategoriesList,
@@ -257,19 +258,13 @@ class _NewDishViewState extends State<NewDishView> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "Additional information",
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.black),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 20),
+              const Text("Additional information",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.black)),
+              const SizedBox(height: 10),
               CustomTextFormField(
                 minLines: 1,
                 maxLines: 5,

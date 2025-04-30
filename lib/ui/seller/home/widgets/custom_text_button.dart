@@ -6,6 +6,7 @@ class CustomTextButton extends StatelessWidget {
   Color? buttonColor;
   Color? textColor;
   Color? iconColor;
+  final Function()? onPressed;
 
   CustomTextButton({
     super.key,
@@ -14,12 +15,13 @@ class CustomTextButton extends StatelessWidget {
     this.buttonColor = Colors.white,
     this.textColor = Colors.black,
     this.iconColor = Colors.black,
+    this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () {},
+      onPressed: onPressed ?? () {}, // إذا ما فيش دالة ممررة، هتنفذ دالة فارغة
       style: TextButton.styleFrom(
         padding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
@@ -34,7 +36,7 @@ class CustomTextButton extends StatelessWidget {
             icon,
             color: iconColor,
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
             text,
             style: TextStyle(
@@ -48,3 +50,4 @@ class CustomTextButton extends StatelessWidget {
     );
   }
 }
+

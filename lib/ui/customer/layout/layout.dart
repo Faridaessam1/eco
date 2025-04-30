@@ -1,12 +1,9 @@
-
-
 import 'package:flutter/material.dart';
-
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../cartTab/cart_tab.dart';
 import '../favoriteTab/favorite_tab.dart';
-import '../homeTab/home_tab.dart';
+import '../homeTab/customer_home_tab.dart';
 import '../profileTab/profile_tab.dart';
 import '../restaurantsTab/restaurants_tab.dart';
 
@@ -21,7 +18,7 @@ class _LayoutCustomerState extends State<LayoutCustomer> {
   int selectedIndex = 0 ;
 
   List<Widget> tabs = [
-    HomeTab(),
+    CustomerHomeTab(),
     RestaurantsTab(),
     CartTab(),
     FavoriteTab(),

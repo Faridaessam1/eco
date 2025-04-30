@@ -1,3 +1,4 @@
+import 'package:eco_eaters_app_3/core/utils/snack_bar_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -85,7 +86,7 @@ class FoodItemCard extends StatelessWidget {
                 child: IconButton(
                   onPressed: () {
                     Provider.of<CartProvider>(context, listen: false).addToCart(dishData);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Added to cart')));
+                    SnackBarServices.showSuccessMessage('Added to cart');
                   },
                   icon: const Icon(
                     Icons.add,

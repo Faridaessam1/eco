@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../Data/recently_added_dish_data_model.dart';
 import '../../../core/FirebaseServices/firebas_firestore_customer.dart';
 import '../../../core/constants/app_assets.dart';
@@ -13,6 +14,14 @@ class CustomerHomeTab extends StatefulWidget {
 
 class _CustomerHomeTabState extends State<CustomerHomeTab> {
   Future<List<RecentlyAddedDishDataModel>>? _recentDishesFuture;
+  final PageController _pageController = PageController();
+  int _currentIndex = 0;
+  final List<String> adImages = [
+    AppAssets.ad3,
+    AppAssets.ad1,
+    AppAssets.ad4,
+    AppAssets.ad5,
+  ];
 
   @override
   void initState() {
@@ -29,7 +38,17 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
       backgroundColor: AppColors.white,
       appBar: AppBar(
         centerTitle: true,
-        title: Image.asset(AppAssets.appLogo, height: height * 0.04), // responsive logo
+        title: Image.asset(AppAssets.appLogo, height: height * 0.04),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Image.asset(AppAssets.searchIcon, width: 20, height: 20),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Image.asset(AppAssets.notificationsIcon, width: 20, height: 20),
+          ),
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: width * 0.04), // Responsive padding
@@ -40,20 +59,53 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
               Text(
                 "Welcome To EcoEaters",
                 style: TextStyle(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w400,
                     fontSize: height * 0.024, // Responsive font size
                     color: AppColors.black),
               ),
               Text(
                 "Save Food, Save Money!",
                 style: TextStyle(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w400,
                     fontSize: height * 0.024, // Responsive font size
                     color: AppColors.primaryColor),
               ),
-              Image.asset(
-                AppAssets.ad1,
-                width: width, // Make image width responsive
+              SizedBox(
+                height: height * 0.25,
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: adImages.length,
+                  itemBuilder: (context, index) {
+                    return Image.asset(
+                      adImages[index],
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    );
+                  },
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                  }
+                  ),
+    ),
+              Center(
+                child: SmoothPageIndicator(
+                  controller: _pageController,
+                  count: adImages.length,
+                  effect: const WormEffect(
+                    activeDotColor: AppColors.primaryColor,
+                    dotHeight: 8.0,
+                    dotWidth: 8.0,
+                  ),
+                  onDotClicked: (index) {
+                    _pageController.animateToPage(
+                      index,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                    );
+                  },
+                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -10,6 +10,8 @@ import 'core/providers/cart_provider.dart';
 import 'core/routes/app_routes.dart';
 import 'core/routes/page_route_names.dart';
 import 'firebase_options.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -19,7 +21,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  await dotenv.load();
   runApp(
     MultiProvider(
       providers: [

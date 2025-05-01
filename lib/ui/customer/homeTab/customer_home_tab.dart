@@ -107,35 +107,37 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
                   },
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Categories",
-                    style: TextStyle(
-                      color: AppColors.black,
-                      fontSize: height * 0.024, // Responsive font size
-                      fontWeight: FontWeight.w800,
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Categories",
+                      style: TextStyle(
+                        color: AppColors.black,
+                        fontSize: height * 0.024, // Responsive font size
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: height * 0.02), // Responsive spacing
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildCategoryItem(
-                            "Fast Food", AppAssets.fastFoodIcon, context, height, width), // Pass context, height, width
-                        _buildCategoryItem(
-                            "Restaurants", AppAssets.restaurantIcon, context, height, width),
-                        _buildCategoryItem(
-                            "Desserts", AppAssets.dessertIcon, context, height, width),
-                        _buildCategoryItem(
-                            "Hotel", AppAssets.hotelsIcon, context, height, width),
-                      ],
+                    SizedBox(height: height * 0.02), // Responsive spacing
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildCategoryItem(
+                              "Fast Food", AppAssets.fastFoodIcon, context, height, width), // Pass context, height, width
+                          _buildCategoryItem(
+                              "Restaurants", AppAssets.restaurantIcon, context, height, width),
+                          _buildCategoryItem(
+                              "Desserts", AppAssets.dessertIcon, context, height, width),
+                          _buildCategoryItem(
+                              "Hotel", AppAssets.hotelsIcon, context, height, width),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: height * 0.02), // Responsive spacing
-                ],
+                    SizedBox(height: height * 0.02), // Responsive spacing
+                  ],
+                ),
               ),
               SizedBox(height: height * 0.01), // Responsive spacing
               Text(

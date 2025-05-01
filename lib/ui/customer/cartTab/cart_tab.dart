@@ -2,6 +2,7 @@ import 'package:eco_eaters_app_3/ui/customer/cartTab/widgets/food_card_widget.da
 import 'package:eco_eaters_app_3/ui/customer/paymentMethod/payment_method.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../Data/recently_added_dish_data_model.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/cart_provider.dart';
@@ -9,7 +10,8 @@ import '../../../core/widgets/custom_elevated_button.dart';
 import '../delievery/delievery_screen.dart';
 
 class CartTab extends StatelessWidget {
-  const CartTab({super.key});
+
+  CartTab({super.key });
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class CartTab extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset(
+        title:Image.asset(
           AppAssets.appLogo,
           height: height * 0.03,
         ),

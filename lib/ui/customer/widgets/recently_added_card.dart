@@ -16,23 +16,28 @@ class RecentlyAddedCard extends StatelessWidget {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return SizedBox(
-      height: height * 0.15,
-      width: width * 0.30,
+      height: height * 0.40,
+      width: width * 0.40,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.asset(
-               AppAssets.recentlyAddedImg,
-              height: height * 0.15,
+            child:Image.network(
+              dishData.dishImage ?? 'https://your-default-image-link.com',
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(AppAssets.recentlyAddedImg); // fallback
+              },
+              height: height * 0.12,
               width: double.infinity,
               fit: BoxFit.cover,
             ),
           ),
           Text(
             dishData.dishName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: AppColors.black,
               fontSize: 16,

@@ -51,6 +51,8 @@ dependencies:
   cloud_firestore:
   flutter_rating_bar:
   provider:
+  multi_payment_gateway: ^0.0.3
+  flutter_dotenv:
 
 
 

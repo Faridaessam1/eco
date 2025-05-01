@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eco_eaters_app_3/ui/seller/seller%20available%20dish/widgets/custom_available_dish_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../../../Data/seller_available_dish_data_model.dart';
 
 class SellerAvailableDish extends StatefulWidget {
   const SellerAvailableDish({super.key});
@@ -10,7 +13,7 @@ class SellerAvailableDish extends StatefulWidget {
 }
 
 class _SellerAvailableDishState extends State<SellerAvailableDish> {
-  late Future<List<Map<String, dynamic>>> _dishesFuture;
+  late Future<List<SellerAvailableDishDataModel>> _dishesFuture;
 
   @override
   void initState() {
@@ -18,11 +21,11 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
     _dishesFuture = fetchDishesWithImages();
   }
 
-  Future<List<Map<String, dynamic>>> fetchDishesWithImages() async {
+  Future<List<SellerAvailableDishDataModel>> fetchDishesWithImages() async {
     final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     print("👤 Current UID: $uid");
 
-    List<Map<String, dynamic>> finalDishes = [];
+    List<SellerAvailableDishDataModel> finalDishes = [];
 
     try {
       final userDishesSnapshot = await FirebaseFirestore.instance
@@ -31,20 +34,19 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
           .collection('dishes')
           .get();
 
-      print("📦 Total fetched documents: ${userDishesSnapshot.docs.length}");
-
       for (var doc in userDishesSnapshot.docs) {
         final dishData = doc.data();
         final dishImage = dishData['dishImage'] ?? '';
 
         if (dishImage.toString().trim().isNotEmpty) {
-          final fullDish = {
-            'id': doc.id,
-            ...dishData,
-            'dishImage': dishImage,
-            'isAvailable': dishData['isAvailable'] ?? true, // default to true
-          };
-          finalDishes.add(fullDish);
+          final dishModel = SellerAvailableDishDataModel(
+            id: doc.id,
+            dishImage: dishImage,
+            dishName: dishData['dishName'] ?? 'No name',
+            dishPrice: dishData['dishPrice']?.toString() ?? '0',
+            isAvailable: dishData['isAvailable'] ?? true,
+          );
+          finalDishes.add(dishModel);
         }
       }
     } catch (e) {
@@ -70,7 +72,7 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
       appBar: AppBar(
         title: const Text("EcoEaters"),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
+      body: FutureBuilder<List<SellerAvailableDishDataModel>>(
         future: _dishesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -88,39 +90,19 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
             itemBuilder: (context, index) {
               final dish = dishes[index];
 
-              return StatefulBuilder(
-                builder: (context, setStateSwitch) {
-                  return Card(
-                    margin: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: dish['dishImage'] != null &&
-                                  dish['dishImage'] != ''
-                              ? Image.network(
-                                  dish['dishImage'],
-                                  width: 60,
-                                  height: 60,
-                                  fit: BoxFit.cover,
-                                )
-                              : const Icon(Icons.image_not_supported),
-                          title: Text(dish['dishName'] ?? 'No name'),
-                          subtitle:
-                              Text('\$${dish['dishPrice']?.toString() ?? "0"}'),
-                          trailing: Switch(
-                            value: dish['isAvailable'] ?? true,
-                            onChanged: (value) async {
-                              setStateSwitch(() {
-                                dish['isAvailable'] = value;
-                              });
-                              await updateDishAvailability(dish['id'], value);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: CustomAvailableDishWidget(
+                  availableDishDataModel: dish,
+                  isAvailable: dish.isAvailable,
+                  onToggle: (newValue) async {
+                    setState(() {
+                      dish.isAvailable = newValue;
+                    });
+                    await updateDishAvailability(dish.id, newValue);
+                  },
+                ),
               );
             },
           );

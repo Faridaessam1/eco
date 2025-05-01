@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:eco_eaters_app_3/core/utils/validation.dart';
 import 'package:eco_eaters_app_3/core/widgets/custom_elevated_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-
 import '../../../core/FirebaseServices/firebase_auth.dart';
 import '../../../core/FirebaseServices/firebase_firestore_seller.dart';
 import '../../../core/constants/app_assets.dart';
@@ -40,11 +40,12 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
+  @override
   void initState() {
     super.initState();
 
+    // تحميل باقي البيانات
     FireBaseFirestoreServicesSeller.getSellerProfileData(
-
       businessNameController: _businessNameController,
       contactPersonController: _contactPersonController,
       phoneController: _phoneController,
@@ -60,12 +61,14 @@ class _SellerProfileViewState extends State<SellerProfileView> {
         });
       },
       onOperatingHoursSelected: (value) {
-
         setState(() {
           selectedOperatingHours = value;
         });
       },
     );
+
+    // تحميل رابط صورة البائع من Firestore
+    _loadSellerImage(); // دي فانكشن بسيطة تحت
   }
 
   @override
@@ -83,7 +86,6 @@ class _SellerProfileViewState extends State<SellerProfileView> {
       '12:00 PM - 8:00 PM',
     ];
     final List<String> cairoCities = [
-      'Giza',
       'Nasr City',
       'Heliopolis',
       'Maadi',
@@ -129,18 +131,24 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                 width: mediaQuery.size.width * 0.948,
                 height: mediaQuery.size.height * 0.228,
                 decoration: BoxDecoration(
-                    color: AppColors.grey.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    image: _image != null
-                        ? DecorationImage(
-                      image: FileImage(_image!),
-                      fit: BoxFit.cover,
-                    )
-                        : null,
-                    border: Border.all(
-                      color: AppColors.grey,
-                      width: 2,
-                    )),
+                  color: AppColors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  image: _imageUrl != null
+                      ? DecorationImage(
+                          image: NetworkImage(_imageUrl!),
+                          fit: BoxFit.cover,
+                        )
+                      : _image != null
+                          ? DecorationImage(
+                              image: FileImage(_image!),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                  border: Border.all(
+                    color: AppColors.grey,
+                    width: 2,
+                  ),
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -512,7 +520,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                       onPressed: () async {
                         await FirebaseFunctions.logout();
                         Navigator.pushReplacementNamed(context,PagesRouteName.login);
-                        },
+                      },
                       text: "Logout",
                       buttonColor: AppColors.primaryColor,
                       textColor: AppColors.white,
@@ -543,24 +551,57 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   Future<void> _uploadImage() async {
     if (_image == null) return;
 
+    // تحديد رابط الـ API في Cloudinary
     final url = Uri.parse('https://api.cloudinary.com/v1_1/dbdwuvc3w/upload');
-    final request = http.MultipartRequest('POST', url)
-      ..fields['upload_preset'] = 'ml_default'
-      ..fields['folder'] = 'restaurant'
-      ..files.add(await http.MultipartFile.fromPath('file', _image!.path));
 
+    // إعداد الطلب
+    final request = http.MultipartRequest('POST', url)
+      ..fields['upload_preset'] = 'ml_default' // وضع الـ upload_preset
+      ..fields['folder'] = 'restaurant' // تحديد الـ folder
+      ..files.add(await http.MultipartFile.fromPath(
+          'file', _image!.path)); // إضافة الصورة
+
+    // إرسال الطلب
     final response = await request.send();
 
+    // إذا كانت الاستجابة ناجحة (status code = 200)
     if (response.statusCode == 200) {
       final responseData = await response.stream.toBytes();
       final responseString = String.fromCharCodes(responseData);
       final jsonMap = jsonDecode(responseString);
 
+      // استخراج رابط الصورة من الاستجابة
+      final String imageUrl = jsonMap['secure_url'];
+
+      // تحديث الحالة لعرض الرابط في واجهة المستخدم
       setState(() {
-        _imageUrl = jsonMap['url'];
+        _imageUrl = imageUrl;
+      });
+
+      // تخزين الرابط في Firestore للمستخدم
+      final userId = FirebaseAuth
+          .instance.currentUser!.uid; // استخدم الـ userId للمستخدم الحالي
+      await FirebaseFirestore.instance
+          .collection('users') // استخدم مجموعة المستخدمين
+          .doc(userId) // استخدم الـ userId للوصول إلى مستند المستخدم
+          .update({
+        'sellerProfileImage': imageUrl, // تخزين رابط الصورة في الحقل المناسب
       });
     } else {
+      // في حالة فشل رفع الصورة، طباعة السبب
       print("Upload failed: ${response.reasonPhrase}");
+    }
+  }
+
+  Future<void> _loadSellerImage() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    if (doc.exists && doc.data()?['sellerProfileImage'] != null) {
+      setState(() {
+        _imageUrl = doc['sellerProfileImage'];
+      });
     }
   }
 }

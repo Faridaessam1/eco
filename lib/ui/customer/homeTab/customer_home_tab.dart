@@ -42,53 +42,54 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Image.asset(AppAssets.searchIcon, width: 20, height: 20),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Image.asset(AppAssets.notificationsIcon, width: 20, height: 20),
+            icon:
+                Image.asset(AppAssets.notificationsIcon, width: 20, height: 20),
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: width * 0.04), // Responsive padding
+        padding: EdgeInsets.symmetric(
+            horizontal: width * 0.04), // Responsive padding
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Welcome To EcoEaters",
+                "Welcome to EcoEaters",
                 style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: height * 0.024, // Responsive font size
-                    color: AppColors.black),
+                  fontSize: height * 0.025,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.black,
+                ),
               ),
+              const SizedBox(height: 4),
               Text(
                 "Save Food, Save Money!",
                 style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: height * 0.024, // Responsive font size
-                    color: AppColors.primaryColor),
+                  fontSize: height * 0.02,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.darkGreen,
+                ),
               ),
+              SizedBox(height: 10),
               SizedBox(
                 height: height * 0.25,
                 child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: adImages.length,
-                  itemBuilder: (context, index) {
-                    return Image.asset(
-                      adImages[index],
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    );
-                  },
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentIndex = index;
-                    });
-                  }
-                  ),
-    ),
+                    controller: _pageController,
+                    itemCount: adImages.length,
+                    itemBuilder: (context, index) {
+                      return Image.asset(
+                        adImages[index],
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      );
+                    },
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentIndex = index;
+                      });
+                    }),
+              ),
               Center(
                 child: SmoothPageIndicator(
                   controller: _pageController,
@@ -125,13 +126,17 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
                       child: Row(
                         children: [
                           _buildCategoryItem(
-                              "Fast Food", AppAssets.fastFoodIcon, context, height, width), // Pass context, height, width
-                          _buildCategoryItem(
-                              "Restaurants", AppAssets.restaurantIcon, context, height, width),
-                          _buildCategoryItem(
-                              "Desserts", AppAssets.dessertIcon, context, height, width),
-                          _buildCategoryItem(
-                              "Hotel", AppAssets.hotelsIcon, context, height, width),
+                              "Fast Food",
+                              AppAssets.fastFoodIcon,
+                              context,
+                              height,
+                              width), // Pass context, height, width
+                          _buildCategoryItem("Restaurants",
+                              AppAssets.restaurantIcon, context, height, width),
+                          _buildCategoryItem("Desserts", AppAssets.dessertIcon,
+                              context, height, width),
+                          _buildCategoryItem("Hotel", AppAssets.hotelsIcon,
+                              context, height, width),
                         ],
                       ),
                     ),
@@ -183,8 +188,8 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
     );
   }
 
-  Widget _buildCategoryItem(
-      String category, String iconPath, BuildContext context, double height, double width) {
+  Widget _buildCategoryItem(String category, String iconPath,
+      BuildContext context, double height, double width) {
     // Added height and width
     return GestureDetector(
       onTap: () {
@@ -218,4 +223,3 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
     );
   }
 }
-

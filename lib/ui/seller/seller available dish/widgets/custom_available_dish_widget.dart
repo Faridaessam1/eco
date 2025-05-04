@@ -34,7 +34,7 @@ class CustomAvailableDishWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         // Space out the children
         children: [
-          Image.asset(
+          Image.network(
             availableDishDataModel.dishImage,
             width: 80,
             height: 80,
@@ -56,13 +56,13 @@ class CustomAvailableDishWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "\$${availableDishDataModel.dishPrice}",
+                  "${double.parse(availableDishDataModel.dishPrice).toStringAsFixed(2)} EGP",
                   style: const TextStyle(
                     color: AppColors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
-                ),
+                )
               ],
             ),
           ),

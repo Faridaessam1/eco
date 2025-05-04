@@ -1,20 +1,18 @@
-import 'dart:convert';
 import 'dart:io';
+
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:eco_eaters_app_3/core/utils/validation.dart';
 import 'package:eco_eaters_app_3/core/widgets/custom_elevated_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
+
 import '../../../core/FirebaseServices/firebase_auth.dart';
 import '../../../core/FirebaseServices/firebase_firestore_seller.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/seller services/seller_profile_services.dart';
 import '../../../core/utils/snack_bar_services.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 
@@ -39,7 +37,6 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   final TextEditingController _addressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  @override
   @override
   void initState() {
     super.initState();
@@ -170,7 +167,8 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                             color: AppColors.green),
                       ),
                     ),
-                    GestureDetector(
+                    if (_image != null)
+                      GestureDetector(
                       onTap: _uploadImage,
                       child: const Text(
                         "Upload image",
@@ -538,69 +536,35 @@ class _SellerProfileViewState extends State<SellerProfileView> {
     );
   }
   void _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
+    final picked = await SellerProfileServices.pickImage();
+    if (picked != null) {
       setState(() {
-        _image = File(image.path);
+        _image = picked;
       });
     }
   }
 
-  Future<void> _uploadImage() async {
+  void _uploadImage() async {
     if (_image == null) return;
-
-    // تحديد رابط الـ API في Cloudinary
-    final url = Uri.parse('https://api.cloudinary.com/v1_1/dbdwuvc3w/upload');
-
-    // إعداد الطلب
-    final request = http.MultipartRequest('POST', url)
-      ..fields['upload_preset'] = 'ml_default' // وضع الـ upload_preset
-      ..fields['folder'] = 'restaurant' // تحديد الـ folder
-      ..files.add(await http.MultipartFile.fromPath(
-          'file', _image!.path)); // إضافة الصورة
-
-    // إرسال الطلب
-    final response = await request.send();
-
-    // إذا كانت الاستجابة ناجحة (status code = 200)
-    if (response.statusCode == 200) {
-      final responseData = await response.stream.toBytes();
-      final responseString = String.fromCharCodes(responseData);
-      final jsonMap = jsonDecode(responseString);
-
-      // استخراج رابط الصورة من الاستجابة
-      final String imageUrl = jsonMap['secure_url'];
-
-      // تحديث الحالة لعرض الرابط في واجهة المستخدم
-      setState(() {
-        _imageUrl = imageUrl;
-      });
-
-      // تخزين الرابط في Firestore للمستخدم
-      final userId = FirebaseAuth
-          .instance.currentUser!.uid; // استخدم الـ userId للمستخدم الحالي
-      await FirebaseFirestore.instance
-          .collection('users') // استخدم مجموعة المستخدمين
-          .doc(userId) // استخدم الـ userId للوصول إلى مستند المستخدم
-          .update({
-        'sellerProfileImage': imageUrl, // تخزين رابط الصورة في الحقل المناسب
-      });
-    } else {
-      // في حالة فشل رفع الصورة، طباعة السبب
-      print("Upload failed: ${response.reasonPhrase}");
-    }
+    await SellerProfileServices.uploadAndSaveImage(
+      image: _image!,
+      onSuccess: (url) {
+        setState(() {
+          _imageUrl = url;
+        });
+      },
+      onError: (error) {
+        print("Image upload error: $error");
+        // Show a snackbar or alert if needed
+      },
+    );
   }
 
-  Future<void> _loadSellerImage() async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-
-    if (doc.exists && doc.data()?['sellerProfileImage'] != null) {
+  void _loadSellerImage() async {
+    final url = await SellerProfileServices.fetchSellerImageUrl();
+    if (url != null) {
       setState(() {
-        _imageUrl = doc['sellerProfileImage'];
+        _imageUrl = url;
       });
     }
   }

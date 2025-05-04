@@ -51,6 +51,9 @@ dependencies:
   cloud_firestore:
   flutter_rating_bar:
   provider:
+  multi_payment_gateway: ^0.0.3
+  flutter_dotenv:
+
 
 
 
@@ -86,9 +89,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-
     - assets/icons/
     - assets/images/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

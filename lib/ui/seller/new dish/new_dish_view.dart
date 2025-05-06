@@ -1,16 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
+
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
+
 import '../../../Data/dish_data_model.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/seller services/new_dish_services.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 import '../widgets/custom_status_container.dart';
 
@@ -59,9 +57,6 @@ class _NewDishViewState extends State<NewDishView> {
           GestureDetector(
             onTap: () async {
               if (!formKey.currentState!.validate()) return;
-
-              String sellerId = FirebaseAuth.instance.currentUser!.uid;
-
               final dish = DishDataModel(
                 dishName: _dishNameController.text.trim(),
                 dishQuantity: int.parse(_dishQuantityController.text.trim()),
@@ -71,31 +66,9 @@ class _NewDishViewState extends State<NewDishView> {
                 dishImage: _imageUrl ?? "",
                 dishId: '',
               );
-              await FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(sellerId)
-                  .collection("dishes")
-                  .add(dish.toFireStore());
-
 
               try {
-                await FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(sellerId)
-                    .collection("dishes")
-                    .add({
-                  "dishName": _dishNameController.text.trim(),
-                  "dishQuantity":
-                      int.parse(_dishQuantityController.text.trim()),
-                  "dishPrice": double.parse(_dishPriceController.text.trim()),
-                  "dishCategory": _dishCategoryController.value ?? "",
-                  "dishAdditionalInfo":
-                      _dishAdditionalInfoController.text.trim(),
-                  "dishImage": _imageUrl ?? "",
-                  "isAvailable": true,
-                  "timestamp": FieldValue.serverTimestamp(),
-                });
-
+                await NewDishServices.addDishToFirestore(dish);
                 EasyLoading.showSuccess("Dish Added Successfully!");
                 Navigator.pushNamed(context, PagesRouteName.sellerHomeLayout);
               } catch (e) {
@@ -146,7 +119,14 @@ class _NewDishViewState extends State<NewDishView> {
                           color: AppColors.textGreyColor),
                     ),
                     GestureDetector(
-                      onTap: _pickImage,
+                      onTap: () async {
+                        final image = await NewDishServices.pickImage();
+                        if (image != null) {
+                          setState(() {
+                            _image = image;
+                          });
+                        }
+                      },
                       child: const Text(
                         "Choose image",
                         style: TextStyle(
@@ -156,7 +136,15 @@ class _NewDishViewState extends State<NewDishView> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: _uploadImage,
+                      onTap: () async {
+                        if (_image == null) return;
+                        final url = await NewDishServices.uploadImage(_image!);
+                        if (url != null) {
+                          setState(() {
+                            _imageUrl = url;
+                          });
+                        }
+                      },
                       child: const Text(
                         "Upload image",
                         style: TextStyle(
@@ -280,39 +268,5 @@ class _NewDishViewState extends State<NewDishView> {
         ),
       ),
     );
-  }
-
-  void _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _image = File(image.path);
-      });
-    }
-  }
-
-  Future<void> _uploadImage() async {
-    if (_image == null) return;
-
-    final url = Uri.parse('https://api.cloudinary.com/v1_1/dbdwuvc3w/upload');
-    final request = http.MultipartRequest('POST', url)
-      ..fields['upload_preset'] = 'ml_default'
-      ..files.add(await http.MultipartFile.fromPath('file', _image!.path));
-
-    final response = await request.send();
-
-    if (response.statusCode == 200) {
-      final responseData = await response.stream.toBytes();
-      final responseString = String.fromCharCodes(responseData);
-      final jsonMap = jsonDecode(responseString);
-
-      setState(() {
-        _imageUrl = jsonMap['url'];
-      });
-    } else {
-      print("Upload failed: ${response.reasonPhrase}");
-    }
   }
 }

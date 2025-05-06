@@ -14,5 +14,4 @@ class PaymentService {
 
     await PaypalService.instance.pay(setupPayment: paypalModel);
   }
-
 }

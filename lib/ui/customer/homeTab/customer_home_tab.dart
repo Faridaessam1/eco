@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
 import '../../../Data/recently_added_dish_data_model.dart';
 import '../../../core/FirebaseServices/firebas_firestore_customer.dart';
 import '../../../core/constants/app_assets.dart';

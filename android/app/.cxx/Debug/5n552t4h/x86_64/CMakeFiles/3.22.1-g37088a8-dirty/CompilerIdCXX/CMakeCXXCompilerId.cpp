@@ -385,7 +385,7 @@
    getting matched.  Store it in a pointer rather than an array
    because some compilers will just produce instructions to fill the
    array rather than assigning a pointer to a static array.  */
-char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
+char const *info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
 #ifdef SIMULATE_ID
 char const* info_simulate = "INFO" ":" "simulate[" SIMULATE_ID "]";
 #endif
@@ -714,9 +714,8 @@ char const info_simulate_version[] = {
    getting matched.  Store it in a pointer rather than an array
    because some compilers will just produce instructions to fill the
    array rather than assigning a pointer to a static array.  */
-char const* info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";
-char const* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
-
+char const *info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";
+char const *info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
 
 
 #if defined(__INTEL_COMPILER) && defined(_MSVC_LANG) && _MSVC_LANG < 201403L
@@ -735,57 +734,56 @@ char const* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
 #  define CXX_STD __cplusplus
 #endif
 
-const char* info_language_standard_default = "INFO" ":" "standard_default["
-#if CXX_STD > 202002L
-  "23"
-#elif CXX_STD > 201703L
-  "20"
-#elif CXX_STD >= 201703L
-  "17"
-#elif CXX_STD >= 201402L
-  "14"
-#elif CXX_STD >= 201103L
-  "11"
-#else
-  "98"
-#endif
-"]";
+const char *info_language_standard_default = "INFO" ":" "standard_default["
+                                             #if CXX_STD > 202002L
+                                             "23"
+                                             #elif CXX_STD > 201703L
+                                             "20"
+                                             #elif CXX_STD >= 201703L
+                                             "17"
+                                             #elif CXX_STD >= 201402L
+                                             "14"
+                                             #elif CXX_STD >= 201103L
+                                             "11"
+                                             #else
+                                             "98"
+                                             #endif
+                                             "]";
 
-const char* info_language_extensions_default = "INFO" ":" "extensions_default["
-/* !defined(_MSC_VER) to exclude Clang's MSVC compatibility mode. */
-#if (defined(__clang__) || defined(__GNUC__) ||                               \
-     defined(__TI_COMPILER_VERSION__)) &&                                     \
+const char *info_language_extensions_default = "INFO" ":" "extensions_default["
+                                               /* !defined(_MSC_VER) to exclude Clang's MSVC compatibility mode. */
+                                               #if (defined(__clang__) || defined(__GNUC__) || \
+     defined(__TI_COMPILER_VERSION__)) && \
   !defined(__STRICT_ANSI__) && !defined(_MSC_VER)
-  "ON"
-#else
-  "OFF"
-#endif
-"]";
+                                               "ON"
+                                               #else
+                                               "OFF"
+                                               #endif
+                                               "]";
 
 /*--------------------------------------------------------------------------*/
 
-int main(int argc, char* argv[])
-{
-  int require = 0;
-  require += info_compiler[argc];
-  require += info_platform[argc];
+int main(int argc, char *argv[]) {
+    int require = 0;
+    require += info_compiler[argc];
+    require += info_platform[argc];
 #ifdef COMPILER_VERSION_MAJOR
-  require += info_version[argc];
+    require += info_version[argc];
 #endif
 #ifdef COMPILER_VERSION_INTERNAL
-  require += info_version_internal[argc];
+    require += info_version_internal[argc];
 #endif
 #ifdef SIMULATE_ID
-  require += info_simulate[argc];
+    require += info_simulate[argc];
 #endif
 #ifdef SIMULATE_VERSION_MAJOR
-  require += info_simulate_version[argc];
+    require += info_simulate_version[argc];
 #endif
 #if defined(__CRAYXT_COMPUTE_LINUX_TARGET)
-  require += info_cray[argc];
+    require += info_cray[argc];
 #endif
-  require += info_language_standard_default[argc];
-  require += info_language_extensions_default[argc];
-  (void)argv;
-  return require;
+    require += info_language_standard_default[argc];
+    require += info_language_extensions_default[argc];
+    (void) argv;
+    return require;
 }

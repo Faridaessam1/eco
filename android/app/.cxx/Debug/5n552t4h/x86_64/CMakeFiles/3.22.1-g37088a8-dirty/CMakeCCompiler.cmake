@@ -19,15 +19,13 @@ set(CMAKE_C_COMPILER_FRONTEND_VARIANT "GNU")
 set(CMAKE_C_SIMULATE_VERSION "")
 
 
-
-
 set(CMAKE_AR "C:/Users/Farida/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-ar.exe")
 set(CMAKE_C_COMPILER_AR "CMAKE_C_COMPILER_AR-NOTFOUND")
 set(CMAKE_RANLIB "C:/Users/Farida/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-ranlib.exe")
 set(CMAKE_C_COMPILER_RANLIB "CMAKE_C_COMPILER_RANLIB-NOTFOUND")
 set(CMAKE_LINKER "C:/Users/Farida/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/ld.lld.exe")
 set(CMAKE_MT "")
-set(CMAKE_COMPILER_IS_GNUCC )
+set(CMAKE_COMPILER_IS_GNUCC)
 set(CMAKE_C_COMPILER_LOADED 1)
 set(CMAKE_C_COMPILER_WORKS TRUE)
 set(CMAKE_C_ABI_COMPILED TRUE)
@@ -45,25 +43,22 @@ set(CMAKE_C_COMPILER_ABI "ELF")
 set(CMAKE_C_BYTE_ORDER "LITTLE_ENDIAN")
 set(CMAKE_C_LIBRARY_ARCHITECTURE "")
 
-if(CMAKE_C_SIZEOF_DATA_PTR)
+if (CMAKE_C_SIZEOF_DATA_PTR)
   set(CMAKE_SIZEOF_VOID_P "${CMAKE_C_SIZEOF_DATA_PTR}")
-endif()
+endif ()
 
-if(CMAKE_C_COMPILER_ABI)
+if (CMAKE_C_COMPILER_ABI)
   set(CMAKE_INTERNAL_PLATFORM_ABI "${CMAKE_C_COMPILER_ABI}")
-endif()
+endif ()
 
-if(CMAKE_C_LIBRARY_ARCHITECTURE)
+if (CMAKE_C_LIBRARY_ARCHITECTURE)
   set(CMAKE_LIBRARY_ARCHITECTURE "")
-endif()
+endif ()
 
 set(CMAKE_C_CL_SHOWINCLUDES_PREFIX "")
-if(CMAKE_C_CL_SHOWINCLUDES_PREFIX)
+if (CMAKE_C_CL_SHOWINCLUDES_PREFIX)
   set(CMAKE_CL_SHOWINCLUDES_PREFIX "${CMAKE_C_CL_SHOWINCLUDES_PREFIX}")
-endif()
-
-
-
+endif ()
 
 
 set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "C:/Users/Farida/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/lib64/clang/14.0.6/include;C:/Users/Farida/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/local/include;C:/Users/Farida/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/x86_64-linux-android;C:/Users/Farida/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include")

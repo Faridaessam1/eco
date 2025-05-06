@@ -2,9 +2,10 @@ import 'package:eco_eaters_app_3/ui/seller/home/widgets/custom_insights_containe
 import 'package:eco_eaters_app_3/ui/seller/home/widgets/custom_recent_order_container.dart';
 import 'package:eco_eaters_app_3/ui/seller/home/widgets/custom_text_button.dart';
 import 'package:flutter/material.dart';
+
+import '../../../Data/insights_data_model.dart';
 import '../../../Data/order_data_model.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../Data/insights_data_model.dart';
 
 
 class HomeView extends StatefulWidget {
@@ -16,22 +17,22 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   List<InsightsDataModel> insights = [
-    InsightsDataModel(
+    const InsightsDataModel(
       icon: Icons.shopping_basket_rounded,
       title: "Total Orders",
       value: "247",
     ),
-    InsightsDataModel(
+    const InsightsDataModel(
       icon: Icons.attach_money,
       title: "Revenue",
       value: "1,438",
     ),
-    InsightsDataModel(
+    const InsightsDataModel(
       icon: Icons.restaurant,
       title: "Available Dishes",
       value: "32",
     ),
-    InsightsDataModel(
+    const InsightsDataModel(
       icon: Icons.access_time_filled_rounded,
       title: "Pending Orders",
       value: "8",
@@ -39,7 +40,7 @@ class _HomeViewState extends State<HomeView> {
   ];
 
   List<OrderDataModel> recentOrders = [
-    OrderDataModel(
+    const OrderDataModel(
       orderNumber: "2458",
       orderStatus: "Pending",
       orderStatusColor: AppColors.red,
@@ -48,7 +49,7 @@ class _HomeViewState extends State<HomeView> {
       customerName: "Sarah M.",
       time: "10:00 AM",
     ),
-    OrderDataModel(
+    const OrderDataModel(
       orderNumber: "2457",
       orderStatus: "Completed",
       orderStatusColor: AppColors.green,
@@ -67,7 +68,7 @@ class _HomeViewState extends State<HomeView> {
       backgroundColor: AppColors.white,
       appBar: AppBar(
         backgroundColor: AppColors.white,
-        title: Text(
+        title: const Text(
           "EcoEaters",
           style: TextStyle(
             fontSize: 20,
@@ -77,11 +78,11 @@ class _HomeViewState extends State<HomeView> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_rounded),
+            icon: const Icon(Icons.notifications_rounded),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.sunny),
+            icon: const Icon(Icons.sunny),
             onPressed: () {},
           ),
         ],
@@ -93,9 +94,9 @@ class _HomeViewState extends State<HomeView> {
             // Insights Grid
             GridView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: insights.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 15,
                 mainAxisSpacing: 15,
@@ -109,7 +110,7 @@ class _HomeViewState extends State<HomeView> {
                 );
               },
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             // Action Buttons
             Row(
@@ -123,7 +124,7 @@ class _HomeViewState extends State<HomeView> {
                     buttonColor: AppColors.green,
                   ),
                 ),
-                SizedBox(width: 15),
+                const SizedBox(width: 15),
                 Expanded(
                   child: CustomTextButton(
                     text: "Today's Order",
@@ -135,13 +136,13 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ],
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             // Recent Orders Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   "Recent Orders",
                   style: TextStyle(
                     color: AppColors.black,
@@ -151,7 +152,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 TextButton(
                   onPressed: () {},
-                  child: Text(
+                  child: const Text(
                     "View All",
                     style: TextStyle(
                       color: AppColors.green,
@@ -162,7 +163,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Recent Orders List
             Expanded(

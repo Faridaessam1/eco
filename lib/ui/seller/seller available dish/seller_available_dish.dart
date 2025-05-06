@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Data/seller_available_dish_data_model.dart';
+import '../../../core/seller services/seller_available_dish_services.dart';
 
 class SellerAvailableDish extends StatefulWidget {
   const SellerAvailableDish({super.key});
@@ -18,7 +19,7 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
   @override
   void initState() {
     super.initState();
-    _dishesFuture = fetchDishesWithImages();
+    _dishesFuture = SellerDishesServices.fetchDishesWithImages();
   }
 
   Future<List<SellerAvailableDishDataModel>> fetchDishesWithImages() async {
@@ -100,7 +101,8 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
                     setState(() {
                       dish.isAvailable = newValue;
                     });
-                    await updateDishAvailability(dish.id, newValue);
+                    await SellerDishesServices.updateDishAvailability(
+                        dish.id, newValue);
                   },
                 ),
               );

@@ -1,5 +1,6 @@
 import 'package:eco_eaters_app_3/core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/payment/payment_services.dart';
 import '../../../core/utils/snack_bar_services.dart';
@@ -70,13 +71,15 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               child: ElevatedButton(
                 onPressed: selectedMethod != null
                     ? () async {
-                  print("Confirmed: $selectedMethod");
-                  if (selectedMethod == "online") {
-                    await PaymentService.payWithPaypal(context); // استدعاء دالة PayPal
-                  } else if (selectedMethod == "cod") {
-                    SnackBarServices.showSuccessMessage("Cash On Delivery Selected");
-                  }
-                }
+                        print("Confirmed: $selectedMethod");
+                        if (selectedMethod == "online") {
+                          await PaymentService.payWithPaypal(
+                              context); // استدعاء دالة PayPal
+                        } else if (selectedMethod == "cod") {
+                          SnackBarServices.showSuccessMessage(
+                              "Cash On Delivery Selected");
+                        }
+                      }
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,

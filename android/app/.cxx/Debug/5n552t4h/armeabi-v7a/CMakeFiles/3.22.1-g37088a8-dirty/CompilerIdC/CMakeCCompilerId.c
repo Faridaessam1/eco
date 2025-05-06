@@ -400,7 +400,7 @@
    getting matched.  Store it in a pointer rather than an array
    because some compilers will just produce instructions to fill the
    array rather than assigning a pointer to a static array.  */
-char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
+char const *info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
 #ifdef SIMULATE_ID
 char const* info_simulate = "INFO" ":" "simulate[" SIMULATE_ID "]";
 #endif
@@ -729,9 +729,8 @@ char const info_simulate_version[] = {
    getting matched.  Store it in a pointer rather than an array
    because some compilers will just produce instructions to fill the
    array rather than assigning a pointer to a static array.  */
-char const* info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";
-char const* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
-
+char const *info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";
+char const *info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
 
 
 #if !defined(__STDC__) && !defined(__clang__)
@@ -751,19 +750,19 @@ char const* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
 #else
 # define C_VERSION "90"
 #endif
-const char* info_language_standard_default =
-  "INFO" ":" "standard_default[" C_VERSION "]";
+const char *info_language_standard_default =
+        "INFO" ":" "standard_default[" C_VERSION "]";
 
-const char* info_language_extensions_default = "INFO" ":" "extensions_default["
-/* !defined(_MSC_VER) to exclude Clang's MSVC compatibility mode. */
-#if (defined(__clang__) || defined(__GNUC__) ||                               \
-     defined(__TI_COMPILER_VERSION__)) &&                                     \
+const char *info_language_extensions_default = "INFO" ":" "extensions_default["
+                                               /* !defined(_MSC_VER) to exclude Clang's MSVC compatibility mode. */
+                                               #if (defined(__clang__) || defined(__GNUC__) || \
+     defined(__TI_COMPILER_VERSION__)) && \
   !defined(__STRICT_ANSI__) && !defined(_MSC_VER)
-  "ON"
-#else
-  "OFF"
-#endif
-"]";
+                                               "ON"
+                                               #else
+                                               "OFF"
+                                               #endif
+                                               "]";
 
 /*--------------------------------------------------------------------------*/
 
@@ -773,31 +772,32 @@ void main() {}
 # if defined(__CLASSIC_C__)
 int main(argc, argv) int argc; char *argv[];
 # else
-int main(int argc, char* argv[])
+
+int main(int argc, char *argv[])
 # endif
 {
-  int require = 0;
-  require += info_compiler[argc];
-  require += info_platform[argc];
-  require += info_arch[argc];
+    int require = 0;
+    require += info_compiler[argc];
+    require += info_platform[argc];
+    require += info_arch[argc];
 #ifdef COMPILER_VERSION_MAJOR
-  require += info_version[argc];
+    require += info_version[argc];
 #endif
 #ifdef COMPILER_VERSION_INTERNAL
-  require += info_version_internal[argc];
+    require += info_version_internal[argc];
 #endif
 #ifdef SIMULATE_ID
-  require += info_simulate[argc];
+    require += info_simulate[argc];
 #endif
 #ifdef SIMULATE_VERSION_MAJOR
-  require += info_simulate_version[argc];
+    require += info_simulate_version[argc];
 #endif
 #if defined(__CRAYXT_COMPUTE_LINUX_TARGET)
-  require += info_cray[argc];
+    require += info_cray[argc];
 #endif
-  require += info_language_standard_default[argc];
-  require += info_language_extensions_default[argc];
-  (void)argv;
-  return require;
+    require += info_language_standard_default[argc];
+    require += info_language_extensions_default[argc];
+    (void) argv;
+    return require;
 }
 #endif

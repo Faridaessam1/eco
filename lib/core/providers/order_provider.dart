@@ -6,7 +6,6 @@ import '../../Data/complete_order_data_model.dart';
 import '../FirebaseServices/order_service.dart';
 import 'cart_provider.dart';
 
-
 class OrderProvider extends ChangeNotifier {
   final OrderService _orderService = OrderService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -16,12 +15,20 @@ class OrderProvider extends ChangeNotifier {
   List<CompleteOrderDataModel> _sellerOrders = [];
   bool _isLoading = false;
   String _errorMessage = '';
+  String _userType = ''; // 'customer' or 'seller'
 
   // Getters
   List<CompleteOrderDataModel> get customerOrders => _customerOrders;
   List<CompleteOrderDataModel> get sellerOrders => _sellerOrders;
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
+  String get userType => _userType;
+
+  // Set user type
+  void setUserType(String type) {
+    _userType = type;
+    notifyListeners();
+  }
 
   // Create a new order
   Future<String?> placeOrder({
@@ -64,7 +71,6 @@ class OrderProvider extends ChangeNotifier {
       final totalAmount = subtotal + serviceFee + tax;
 
       // Create a map of dish names to dish IDs
-      // This requires fetching dish data from Firestore first
       Map<String, String> dishIdMap = {};
       for (final item in cartItems) {
         // Query Firestore to find the dish ID by name
@@ -79,7 +85,7 @@ class OrderProvider extends ChangeNotifier {
         }
       }
 
-      // Create the order
+      // Create the order - this will save to both customer and seller subcollections
       final orderId = await _orderService.createOrder(
         customerId: currentUser.uid,
         sellerId: sellerId,
@@ -110,6 +116,18 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
+  // Load orders based on user type
+  void loadOrders() {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    if (_userType == 'customer') {
+      loadCustomerOrders();
+    } else if (_userType == 'seller') {
+      loadSellerOrders();
+    }
+  }
+
   // Load customer orders
   void loadCustomerOrders() {
     final user = _auth.currentUser;
@@ -130,6 +148,24 @@ class OrderProvider extends ChangeNotifier {
       _sellerOrders = orders;
       notifyListeners();
     });
+  }
+
+  // Load orders by status
+  void loadOrdersByStatus(String status) {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    if (_userType == 'customer') {
+      _orderService.getCustomerOrdersByStatus(user.uid, status).listen((orders) {
+        _customerOrders = orders;
+        notifyListeners();
+      });
+    } else if (_userType == 'seller') {
+      _orderService.getSellerOrdersByStatus(user.uid, status).listen((orders) {
+        _sellerOrders = orders;
+        notifyListeners();
+      });
+    }
   }
 
   // Update order status
@@ -154,6 +190,24 @@ class OrderProvider extends ChangeNotifier {
       _isLoading = false;
       _errorMessage = e.toString();
       notifyListeners();
+    }
+  }
+
+  // Get a specific order
+  Future<CompleteOrderDataModel?> getOrder(String orderId) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw Exception('User not authenticated');
+
+      return await _orderService.getOrder(
+        user.uid,
+        orderId,
+        userType: _userType,
+      );
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return null;
     }
   }
 

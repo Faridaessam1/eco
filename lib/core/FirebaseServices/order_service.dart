@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../../Data/complete_order_data_model.dart';
 import '../../Data/food_card_in_cart_tab_data.dart';
 
-
 class OrderService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -55,7 +54,7 @@ class OrderService {
         createdAt: Timestamp.now(),
       );
 
-      // Save order to customer's subcollection
+      // Save order to customer's orders subcollection
       await _firestore
           .collection('users')
           .doc(customerId)
@@ -63,7 +62,7 @@ class OrderService {
           .doc(orderId)
           .set(order.toFirestore());
 
-      // Save order to seller's subcollection
+      // Save the same order to seller's orders subcollection
       await _firestore
           .collection('users')
           .doc(sellerId)
@@ -84,7 +83,7 @@ class OrderService {
     }
   }
 
-  // Update order status
+  // Update order status - Updates in both customer and seller subcollections
   Future<void> updateOrderStatus({
     required String orderId,
     required String customerId,
@@ -93,39 +92,44 @@ class OrderService {
   }) async {
     final Timestamp now = Timestamp.now();
 
-    // Update in customer's subcollection
-    await _firestore
-        .collection('users')
-        .doc(customerId)
-        .collection('orders')
-        .doc(orderId)
-        .update({
-      'orderStatus': newStatus,
-      'updatedAt': now,
-    });
+    try {
+      // Update in customer's subcollection
+      await _firestore
+          .collection('users')
+          .doc(customerId)
+          .collection('orders')
+          .doc(orderId)
+          .update({
+        'orderStatus': newStatus,
+        'updatedAt': now,
+      });
 
-    // Update in seller's subcollection
-    await _firestore
-        .collection('users')
-        .doc(sellerId)
-        .collection('orders')
-        .doc(orderId)
-        .update({
-      'orderStatus': newStatus,
-      'updatedAt': now,
-    });
+      // Update in seller's subcollection
+      await _firestore
+          .collection('users')
+          .doc(sellerId)
+          .collection('orders')
+          .doc(orderId)
+          .update({
+        'orderStatus': newStatus,
+        'updatedAt': now,
+      });
 
-    // Update in main orders collection
-    await _firestore
-        .collection('orders')
-        .doc(orderId)
-        .update({
-      'orderStatus': newStatus,
-      'updatedAt': now,
-    });
+      // Update in main orders collection
+      await _firestore
+          .collection('orders')
+          .doc(orderId)
+          .update({
+        'orderStatus': newStatus,
+        'updatedAt': now,
+      });
+    } catch (e) {
+      debugPrint('Error updating order status: $e');
+      throw Exception('Failed to update order status: $e');
+    }
   }
 
-  // Get customer orders
+  // Get customer orders as a stream
   Stream<List<CompleteOrderDataModel>> getCustomerOrders(String customerId) {
     return _firestore
         .collection('users')
@@ -138,7 +142,7 @@ class OrderService {
         .toList());
   }
 
-  // Get seller orders
+  // Get seller orders as a stream
   Stream<List<CompleteOrderDataModel>> getSellerOrders(String sellerId) {
     return _firestore
         .collection('users')
@@ -152,7 +156,8 @@ class OrderService {
   }
 
   // Get a specific order
-  Future<CompleteOrderDataModel?> getOrder(String userId, String orderId) async {
+  Future<CompleteOrderDataModel?> getOrder(String userId, String orderId, {required String userType}) async {
+    // Based on userType, we'll fetch from the appropriate subcollection
     final doc = await _firestore
         .collection('users')
         .doc(userId)
@@ -164,5 +169,33 @@ class OrderService {
       return CompleteOrderDataModel.fromFirestore(doc);
     }
     return null;
+  }
+
+  // Get orders by status for a customer
+  Stream<List<CompleteOrderDataModel>> getCustomerOrdersByStatus(String customerId, String status) {
+    return _firestore
+        .collection('users')
+        .doc(customerId)
+        .collection('orders')
+        .where('orderStatus', isEqualTo: status)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+        .map((doc) => CompleteOrderDataModel.fromFirestore(doc))
+        .toList());
+  }
+
+  // Get orders by status for a seller
+  Stream<List<CompleteOrderDataModel>> getSellerOrdersByStatus(String sellerId, String status) {
+    return _firestore
+        .collection('users')
+        .doc(sellerId)
+        .collection('orders')
+        .where('orderStatus', isEqualTo: status)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+        .map((doc) => CompleteOrderDataModel.fromFirestore(doc))
+        .toList());
   }
 }

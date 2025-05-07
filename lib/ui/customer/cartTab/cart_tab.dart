@@ -10,8 +10,7 @@ import '../../../core/widgets/custom_elevated_button.dart';
 import '../delievery/delievery_screen.dart';
 
 class CartTab extends StatelessWidget {
-
-  CartTab({super.key });
+  CartTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +33,45 @@ class CartTab extends StatelessWidget {
     double tax = subtotal * 0.14;
     double totalPrice = subtotal + serviceFees + tax;
 
+    // Early return if cart is empty
+    if (cardData.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Image.asset(
+            AppAssets.appLogo,
+            height: height * 0.03,
+          ),
+        ),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.shopping_cart_outlined, size: 80, color: AppColors.darkGrey),
+              SizedBox(height: 16),
+              Text(
+                "Your cart is empty",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.darkGrey,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                "Add items to get started",
+                style: TextStyle(
+                  color: AppColors.darkGrey,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title:Image.asset(
+        title: Image.asset(
           AppAssets.appLogo,
           height: height * 0.03,
         ),
@@ -83,9 +118,17 @@ class CartTab extends StatelessWidget {
                     width: double.infinity,
                     child: CustomElevatedButton(
                       onPressed: () {
+                        // Get the seller ID from the CartProvider
+                        final sellerId = cartProvider.currentSellerId.isNotEmpty
+                            ? cartProvider.currentSellerId
+                            : "unknown";
+
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) =>PaymentMethodScreen ()),
+                          MaterialPageRoute(builder: (context) => PaymentMethodScreen(
+                            sellerId: sellerId,
+                            orderType: "pickup",
+                          )),
                         );
                       },
                       text: "Pickup Order",
@@ -104,7 +147,7 @@ class CartTab extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) =>DeliveryHelpScreen ()),
+                          MaterialPageRoute(builder: (context) => DeliveryHelpScreen()),
                         );
                       },
                       text: "Delivery Order",
@@ -141,7 +184,7 @@ class CartTab extends StatelessWidget {
           ),
           const Spacer(),
           Text(
-            value.toStringAsFixed(2),
+            "${value.toStringAsFixed(2)} L.E",
             style: TextStyle(
               color: color ?? AppColors.darkGrey,
               fontWeight: isBold ? FontWeight.bold : FontWeight.w700,

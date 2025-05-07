@@ -42,7 +42,7 @@ class CompleteOrderDataModel {
     return {
       'orderId': orderId,
       'customerId': customerId,
-      'sellerId': sellerId,
+      'uid': sellerId,
       'customerName': customerName,
       'customerAddress': customerAddress,
       'customerPhone': customerPhone,
@@ -65,7 +65,7 @@ class CompleteOrderDataModel {
     return CompleteOrderDataModel(
       orderId: doc.id,
       customerId: data['customerId'] ?? '',
-      sellerId: data['sellerId'] ?? '',
+      sellerId: data['uid'] ?? '',
       customerName: data['customerName'] ?? '',
       customerAddress: data['customerAddress'],
       customerPhone: data['customerPhone'],

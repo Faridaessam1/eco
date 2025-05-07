@@ -69,7 +69,7 @@ class OrderService {
           .collection('orders')
           .doc(orderId)
           .set(order.toFirestore());
-
+      print("Creating order with sellerId: $sellerId");
       // Optional: Create a general orders collection for admin purposes
       await _firestore
           .collection('orders')

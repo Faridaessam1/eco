@@ -34,7 +34,7 @@ class RecentlyAddedDishDataModel{
       "dishCategory": dishCategory,
       "dishAdditionalInfo": dishAdditionalInfo,
       "createdAt": Timestamp.now(),
-      "sellerId": sellerId, // Added to map
+      "uid": sellerId, // Added to map
     };
   }
 
@@ -47,7 +47,7 @@ class RecentlyAddedDishDataModel{
       dishQuantity: data['dishQuantity'] ?? 1,
       createdAt: data['createdAt'] ?? Timestamp.now(),
       dishCategory: data['dishCategory'] ?? "hotels",
-      sellerId: data['sellerId'], // Parse from data
+      sellerId: data['uid'], // Parse from data
     );
   }
 }

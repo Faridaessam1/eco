@@ -96,11 +96,6 @@ class AppRoutes {
         );
       case PagesRouteName.paymentMethod:
         return MaterialPageRoute(
-          builder: (context) => PaymentMethodScreen(),
-          settings: settings,
-        );
-      case PagesRouteName.paymentMethod:
-        return MaterialPageRoute(
           builder: (context) => DeliveryHelpScreen(),
           settings: settings,
         );

@@ -1,22 +1,28 @@
-import 'package:eco_eaters_app_3/core/constants/app_assets.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../../core/FirebaseServices/order_service.dart';
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/payment/payment_services.dart';
-import '../../../core/providers/cart_provider.dart';
+import '../../../core/providers/order_provider.dart';
 import '../../../core/utils/snack_bar_services.dart';
+import '../../../core/providers/cart_provider.dart';
+import '../order_confirmation_screen.dart';
+
 
 class PaymentMethodScreen extends StatefulWidget {
   final String sellerId;
-  final String? customerAddress;
+  final String orderType; // "pickup" or "delivery"
+  final String? deliveryAddress;
+  final String? phoneNumber;
 
   const PaymentMethodScreen({
     Key? key,
     required this.sellerId,
-    this.customerAddress,
+    required this.orderType,
+    this.deliveryAddress,
+    this.phoneNumber,
   }) : super(key: key);
 
   @override
@@ -29,20 +35,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final orderProvider = Provider.of<OrderProvider>(context);
     final cartProvider = Provider.of<CartProvider>(context);
-
-    // Calculate order totals
-    double subtotal = cartProvider.subtotal;
-    double serviceFees;
-    if (subtotal < 100) {
-      serviceFees = 15;
-    } else if (subtotal < 200) {
-      serviceFees = 20;
-    } else {
-      serviceFees = 35;
-    }
-    double tax = subtotal * 0.14;
-    double totalPrice = subtotal + serviceFees + tax;
 
     return Scaffold(
       appBar: AppBar(
@@ -87,16 +81,49 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
           const Spacer(),
 
+          if (orderProvider.errorMessage.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                orderProvider.errorMessage,
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
+            ),
+
           Padding(
             padding: const EdgeInsets.all(50.0),
             child: SizedBox(
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: _isProcessing || selectedMethod == null
-                    ? null
-                    : () => _processOrder(
-                    cartProvider, subtotal, serviceFees, tax, totalPrice),
+                onPressed: (selectedMethod != null && !_isProcessing)
+                    ? () async {
+                  setState(() {
+                    _isProcessing = true;
+                  });
+
+                  if (selectedMethod == "online") {
+                    try {
+                      await PaymentService.payWithPaypal(context);
+                      // After successful payment, create the order
+                      await _placeOrder(context, cartProvider, orderProvider);
+                    } catch (e) {
+                      SnackBarServices.showErrorMessage(
+                          "Payment failed: ${e.toString()}");
+                    } finally {
+                      setState(() {
+                        _isProcessing = false;
+                      });
+                    }
+                  } else if (selectedMethod == "cod") {
+                    await _placeOrder(context, cartProvider, orderProvider);
+                    setState(() {
+                      _isProcessing = false;
+                    });
+                  }
+                }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
                   shape: RoundedRectangleBorder(
@@ -104,7 +131,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   ),
                 ),
                 child: _isProcessing
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? const CircularProgressIndicator(color: AppColors.white)
                     : const Text(
                   "Confirm Payment Method",
                   style: TextStyle(fontSize: 16, color: AppColors.white),
@@ -117,71 +144,31 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
-  Future<void> _processOrder(
-      CartProvider cartProvider,
-      double subtotal,
-      double serviceFees,
-      double tax,
-      double totalPrice,
-      ) async {
-    setState(() {
-      _isProcessing = true;
-    });
+  Future<void> _placeOrder(
+      BuildContext context, CartProvider cartProvider, OrderProvider orderProvider) async {
+    final orderId = await orderProvider.placeOrder(
+      cartProvider: cartProvider,
+      sellerId: widget.sellerId,
+      customerAddress: widget.deliveryAddress,
+      customerPhone: widget.phoneNumber,
+      paymentMethod: selectedMethod!,
+      orderType: widget.orderType,
+    );
 
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        throw Exception("User not logged in");
-      }
-
-      // Process payment if online payment method is selected
-      if (selectedMethod == "online") {
-        final paymentResult = await PaymentService.payWithPaypal(context);
-        if (paymentResult != true) {
-          setState(() {
-            _isProcessing = false;
-          });
-          SnackBarServices.showErrorMessage("Payment canceled or failed");
-          return;
-        }
-      }
-
-      // Create the order
-      final String orderId = await OrderService.createOrder(
-        customerId: user.uid,
-        sellerId: widget.sellerId,
-        customerName: user.displayName ?? "Customer",
-        customerAddress: widget.customerAddress,
-        orderItems: cartProvider.cartItems,
-        subtotal: subtotal,
-        serviceFees: serviceFees,
-        tax: tax,
-        totalAmount: totalPrice,
-        paymentMethod: selectedMethod == "online" ? "Online Payment" : "Cash on Delivery",
-      );
-
-      // Clear the cart after successful order creation
-      cartProvider.clearCart();
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Order placed successfully! Order ID: $orderId'),
-          backgroundColor: Colors.green,
+    if (orderId != null) {
+      // Order placed successfully
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => OrderConfirmationScreen(
+            orderId: orderId,
+            orderType: widget.orderType,
+          ),
         ),
+            (route) => route.isFirst, // Keep only the first route in the stack
       );
-
-      // Navigate to the home screen
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-            (route) => false,
-      );
-    } catch (e) {
-      setState(() {
-        _isProcessing = false;
-      });
-      SnackBarServices.showErrorMessage("Failed to place order: $e");
+    } else {
+      SnackBarServices.showErrorMessage(
+          "Failed to place order: ${orderProvider.errorMessage}");
     }
   }
 
@@ -214,6 +201,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           children: [
             Image.asset(iconPath, width: 36, height: 36),
             const SizedBox(width: 12),
+            // Texts
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

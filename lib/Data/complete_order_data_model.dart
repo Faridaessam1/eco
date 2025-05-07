@@ -1,38 +1,39 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'food_card_in_cart_tab_data.dart';
+import '../Data/food_card_in_cart_tab_data.dart';
 
-class CompleteOrderModel {
+class CompleteOrderDataModel {
   final String orderId;
   final String customerId;
   final String sellerId;
   final String customerName;
   final String? customerAddress;
-  final List<FoodCardInCartTabData> orderItems;
-  final String orderStatus;
-  final Color orderStatusColor;
+  final String? customerPhone;
+  final List<OrderItemModel> items;
   final double subtotal;
-  final double serviceFees;
+  final double serviceFee;
   final double tax;
   final double totalAmount;
-  final String paymentMethod;
+  final String paymentMethod; // "online" or "cod"
+  final String orderStatus; // "pending", "processing", "delivered", "cancelled"
+  final String orderType; // "pickup" or "delivery"
   final Timestamp createdAt;
   final Timestamp? updatedAt;
 
-  CompleteOrderModel({
+  CompleteOrderDataModel({
     required this.orderId,
     required this.customerId,
     required this.sellerId,
     required this.customerName,
     this.customerAddress,
-    required this.orderItems,
-    required this.orderStatus,
-    required this.orderStatusColor,
+    this.customerPhone,
+    required this.items,
     required this.subtotal,
-    required this.serviceFees,
+    required this.serviceFee,
     required this.tax,
     required this.totalAmount,
     required this.paymentMethod,
+    required this.orderStatus,
+    required this.orderType,
     required this.createdAt,
     this.updatedAt,
   });
@@ -44,54 +45,91 @@ class CompleteOrderModel {
       'sellerId': sellerId,
       'customerName': customerName,
       'customerAddress': customerAddress,
-      'orderItems': orderItems.map((item) => {
-        'foodName': item.foodName,
-        'foodPrice': item.foodPrice,
-        'foodQuantity': item.foodQuantity,
-        'foodImgPath': item.foodImgPath,
-        'totalItemPrice': item.foodPrice * item.foodQuantity,
-      }).toList(),
-      'orderStatus': orderStatus,
-      'orderStatusColor': orderStatusColor.value,
+      'customerPhone': customerPhone,
+      'items': items.map((item) => item.toFirestore()).toList(),
       'subtotal': subtotal,
-      'serviceFees': serviceFees,
+      'serviceFee': serviceFee,
       'tax': tax,
       'totalAmount': totalAmount,
       'paymentMethod': paymentMethod,
+      'orderStatus': orderStatus,
+      'orderType': orderType,
       'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'updatedAt': updatedAt ?? Timestamp.now(),
     };
   }
 
-  factory CompleteOrderModel.fromFirestore(Map<String, dynamic> data, String docId) {
-    List<FoodCardInCartTabData> items = [];
-    if (data['orderItems'] != null) {
-      for (var item in data['orderItems']) {
-        items.add(FoodCardInCartTabData(
-          foodImgPath: item['foodImgPath'] ?? 'assets/images/recentlyAddedImg.png',
-          foodName: item['foodName'] ?? 'Unknown Item',
-          foodPrice: (item['foodPrice'] ?? 0).toDouble(),
-          foodQuantity: item['foodQuantity'] ?? 1,
-        ));
-      }
-    }
+  factory CompleteOrderDataModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
 
-    return CompleteOrderModel(
-      orderId: docId,
+    return CompleteOrderDataModel(
+      orderId: doc.id,
       customerId: data['customerId'] ?? '',
       sellerId: data['sellerId'] ?? '',
       customerName: data['customerName'] ?? '',
       customerAddress: data['customerAddress'],
-      orderItems: items,
-      orderStatus: data['orderStatus'] ?? 'Pending',
-      orderStatusColor: Color(data['orderStatusColor'] ?? Colors.orange.value),
-      subtotal: (data['subtotal'] ?? 0).toDouble(),
-      serviceFees: (data['serviceFees'] ?? 0).toDouble(),
-      tax: (data['tax'] ?? 0).toDouble(),
-      totalAmount: (data['totalAmount'] ?? 0).toDouble(),
-      paymentMethod: data['paymentMethod'] ?? 'Cash',
+      customerPhone: data['customerPhone'],
+      items: (data['items'] as List?)?.map((item) => OrderItemModel.fromFirestore(item)).toList() ?? [],
+      subtotal: (data['subtotal'] as num).toDouble(),
+      serviceFee: (data['serviceFee'] as num).toDouble(),
+      tax: (data['tax'] as num).toDouble(),
+      totalAmount: (data['totalAmount'] as num).toDouble(),
+      paymentMethod: data['paymentMethod'] ?? 'cod',
+      orderStatus: data['orderStatus'] ?? 'pending',
+      orderType: data['orderType'] ?? 'pickup',
       createdAt: data['createdAt'] ?? Timestamp.now(),
       updatedAt: data['updatedAt'],
+    );
+  }
+}
+
+class OrderItemModel {
+  final String dishId;
+  final String dishName;
+  final String? dishImage;
+  final int quantity;
+  final double price;
+  final double totalPrice;
+
+  OrderItemModel({
+    required this.dishId,
+    required this.dishName,
+    this.dishImage,
+    required this.quantity,
+    required this.price,
+    required this.totalPrice,
+  });
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'dishId': dishId,
+      'dishName': dishName,
+      'dishImage': dishImage,
+      'quantity': quantity,
+      'price': price,
+      'totalPrice': totalPrice,
+    };
+  }
+
+  factory OrderItemModel.fromFirestore(Map<String, dynamic> data) {
+    return OrderItemModel(
+      dishId: data['dishId'] ?? '',
+      dishName: data['dishName'] ?? '',
+      dishImage: data['dishImage'],
+      quantity: data['quantity'] ?? 0,
+      price: (data['price'] as num).toDouble(),
+      totalPrice: (data['totalPrice'] as num).toDouble(),
+    );
+  }
+
+  factory OrderItemModel.fromCartItem(FoodCardInCartTabData cartItem, String dishId) {
+    return OrderItemModel(
+      dishId: dishId,
+      dishName: cartItem.foodName,
+      dishImage: cartItem.foodImgPath,
+      quantity: cartItem.foodQuantity,
+      price: cartItem.foodPrice,
+      totalPrice: cartItem.foodPrice * cartItem.foodQuantity,
     );
   }
 }

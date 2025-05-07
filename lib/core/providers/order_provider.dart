@@ -1,3 +1,4 @@
+// lib/core/providers/order_provider.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -70,18 +71,31 @@ class OrderProvider extends ChangeNotifier {
       final tax = subtotal * 0.14;
       final totalAmount = subtotal + serviceFee + tax;
 
-      // Create a map of dish names to dish IDs
-      Map<String, String> dishIdMap = {};
-      for (final item in cartItems) {
-        // Query Firestore to find the dish ID by name
-        final dishQuerySnapshot = await _firestore
-            .collection('dishes')
-            .where('dishName', isEqualTo: item.foodName)
-            .limit(1)
-            .get();
+      // Use the dishIdMap directly from the CartProvider
+      Map<String, String> dishIdMap = cartProvider.dishIdMap;
 
-        if (dishQuerySnapshot.docs.isNotEmpty) {
-          dishIdMap[item.foodName] = dishQuerySnapshot.docs.first.id;
+      // For any dishes without an ID mapping, try to find them in Firestore as a fallback
+      for (final item in cartItems) {
+        if (!dishIdMap.containsKey(item.foodName)) {
+          try {
+            // Attempt to find the dish ID in Firestore
+            final dishQuerySnapshot = await _firestore
+                .collection('dishes')
+                .where('dishName', isEqualTo: item.foodName)
+                .limit(1)
+                .get();
+
+            if (dishQuerySnapshot.docs.isNotEmpty) {
+              dishIdMap[item.foodName] = dishQuerySnapshot.docs.first.id;
+            } else {
+              // Use a placeholder ID if not found
+              dishIdMap[item.foodName] = 'unknown_${DateTime.now().millisecondsSinceEpoch}';
+            }
+          } catch (e) {
+            debugPrint('Error finding dish ID: $e');
+            // Use a placeholder ID if there's an error
+            dishIdMap[item.foodName] = 'unknown_${DateTime.now().millisecondsSinceEpoch}';
+          }
         }
       }
 

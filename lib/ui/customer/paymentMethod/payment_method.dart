@@ -1,3 +1,4 @@
+// lib/ui/customer/paymentMethod/payment_method.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -98,31 +99,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               height: 48,
               child: ElevatedButton(
                 onPressed: (selectedMethod != null && !_isProcessing)
-                    ? () async {
-                  setState(() {
-                    _isProcessing = true;
-                  });
-
-                  if (selectedMethod == "online") {
-                    try {
-                      await PaymentService.payWithPaypal(context);
-                      // After successful payment, create the order
-                      await _placeOrder(context, cartProvider, orderProvider);
-                    } catch (e) {
-                      SnackBarServices.showErrorMessage(
-                          "Payment failed: ${e.toString()}");
-                    } finally {
-                      setState(() {
-                        _isProcessing = false;
-                      });
-                    }
-                  } else if (selectedMethod == "cod") {
-                    await _placeOrder(context, cartProvider, orderProvider);
-                    setState(() {
-                      _isProcessing = false;
-                    });
-                  }
-                }
+                    ? () => _processPayment(context, cartProvider, orderProvider)
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
@@ -144,8 +121,51 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
+  // Moved the payment processing logic to a separate method
+  Future<void> _processPayment(
+      BuildContext context, CartProvider cartProvider, OrderProvider orderProvider) async {
+
+    if (selectedMethod == null) return;
+
+    try {
+      setState(() {
+        _isProcessing = true;
+      });
+
+      if (selectedMethod == "online") {
+        try {
+          await PaymentService.payWithPaypal(context);
+          // After successful payment, create the order
+          await _placeOrder(context, cartProvider, orderProvider);
+        } catch (e) {
+          // Only show error if the widget is still mounted
+          if (mounted) {
+            SnackBarServices.showErrorMessage(
+                "Payment failed: ${e.toString()}");
+          }
+        }
+      } else if (selectedMethod == "cod") {
+        await _placeOrder(context, cartProvider, orderProvider);
+      }
+    } finally {
+      // Only update state if widget is still mounted
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+      }
+    }
+  }
+
   Future<void> _placeOrder(
       BuildContext context, CartProvider cartProvider, OrderProvider orderProvider) async {
+
+    // Check if cart has items
+    if (cartProvider.cartItems.isEmpty) {
+      SnackBarServices.showErrorMessage("Your cart is empty");
+      return;
+    }
+
     final orderId = await orderProvider.placeOrder(
       cartProvider: cartProvider,
       sellerId: widget.sellerId,
@@ -157,18 +177,22 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
     if (orderId != null) {
       // Order placed successfully
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (context) => OrderConfirmationScreen(
-            orderId: orderId,
-            orderType: widget.orderType,
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => OrderConfirmationScreen(
+              orderId: orderId,
+              orderType: widget.orderType,
+            ),
           ),
-        ),
-            (route) => route.isFirst, // Keep only the first route in the stack
-      );
+              (route) => route.isFirst, // Keep only the first route in the stack
+        );
+      }
     } else {
-      SnackBarServices.showErrorMessage(
-          "Failed to place order: ${orderProvider.errorMessage}");
+      if (mounted) {
+        SnackBarServices.showErrorMessage(
+            "Failed to place order: ${orderProvider.errorMessage}");
+      }
     }
   }
 

@@ -1,3 +1,4 @@
+// lib/Data/recently_added_dish_data_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RecentlyAddedDishDataModel{
@@ -9,28 +10,31 @@ class RecentlyAddedDishDataModel{
   final String dishCategory;
   final String? dishAdditionalInfo;
   final Timestamp? createdAt;
+  final String? sellerId; // Added missing sellerId field
 
-   RecentlyAddedDishDataModel({
+  RecentlyAddedDishDataModel({
     required this.dishName,
-     this.dishId ="",
+    this.dishId ="",
     required this.dishImage,
     required this.dishQuantity,
     required this.dishPrice,
     required this.dishCategory,
     required this.dishAdditionalInfo,
-     this.createdAt,
-});
+    this.createdAt,
+    this.sellerId, // Added to constructor
+  });
 
 
   Map <String, dynamic> toFireStore(){
     return {
       "dishName" : dishName,
-      "dishImage":dishImage,
+      "dishImage": dishImage,
       "dishQuantity": dishQuantity,
       "dishPrice": dishPrice,
       "dishCategory": dishCategory,
-      "dishAdditionalInfo" :dishAdditionalInfo,
+      "dishAdditionalInfo": dishAdditionalInfo,
       "createdAt": Timestamp.now(),
+      "sellerId": sellerId, // Added to map
     };
   }
 
@@ -43,6 +47,7 @@ class RecentlyAddedDishDataModel{
       dishQuantity: data['dishQuantity'] ?? 1,
       createdAt: data['createdAt'] ?? Timestamp.now(),
       dishCategory: data['dishCategory'] ?? "hotels",
+      sellerId: data['sellerId'], // Parse from data
     );
   }
 }

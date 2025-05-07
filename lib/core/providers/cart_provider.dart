@@ -1,3 +1,4 @@
+// lib/core/providers/cart_provider.dart
 import 'package:flutter/material.dart';
 
 import '../../Data/food_card_in_cart_tab_data.dart';
@@ -7,9 +8,12 @@ class CartProvider extends ChangeNotifier {
   List<FoodCardInCartTabData> _cartItems = [];
   // Store seller ID separately since it's not part of the food card data model
   String _currentSellerId = "";
+  // Store dish ID to dish name map for order creation
+  final Map<String, String> _dishIdMap = {};
 
   List<FoodCardInCartTabData> get cartItems => _cartItems;
   String get currentSellerId => _currentSellerId;
+  Map<String, String> get dishIdMap => _dishIdMap;
 
   void addToCart(RecentlyAddedDishDataModel dish) {
     // If this is the first item, set the seller ID
@@ -22,6 +26,9 @@ class CartProvider extends ChangeNotifier {
       // In a real app, you might want to show a warning to the user
       return;
     }
+
+    // Store the dish ID to dish name mapping for order creation
+    _dishIdMap[dish.dishName] = dish.dishId;
 
     final existingIndex = _cartItems.indexWhere((item) => item.foodName == dish.dishName);
     if (existingIndex != -1) {
@@ -59,6 +66,7 @@ class CartProvider extends ChangeNotifier {
     // Reset seller ID if cart becomes empty
     if (_cartItems.isEmpty) {
       _currentSellerId = "";
+      _dishIdMap.clear();
     }
 
     notifyListeners();
@@ -68,6 +76,7 @@ class CartProvider extends ChangeNotifier {
   void clearCart() {
     _cartItems.clear();
     _currentSellerId = "";
+    _dishIdMap.clear();
     notifyListeners();
   }
 

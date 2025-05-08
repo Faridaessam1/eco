@@ -1,7 +1,7 @@
 import 'package:eco_eaters_app_3/ui/customer/homeTab/customer_home_tab.dart';
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/widgets/custom_elevated_button.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/custom_elevated_button.dart';
 
 
 class OrderConfirmationScreen extends StatelessWidget {
@@ -70,9 +70,8 @@ class OrderConfirmationScreen extends StatelessWidget {
                   );
                 },
                 text: "Back to Home",
-                buttonColor: AppColors.primaryColor,
                 borderRadius: 20,
-                textColor: AppColors.white,
+                textColor: AppColors.primaryColor,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               )

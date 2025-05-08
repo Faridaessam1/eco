@@ -9,7 +9,7 @@ import '../../../core/payment/payment_services.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/utils/snack_bar_services.dart';
 import '../../../core/providers/cart_provider.dart';
-import '../order_confirmation_screen.dart';
+import '../orders/order_confirmation_screen.dart';
 
 
 class PaymentMethodScreen extends StatefulWidget {

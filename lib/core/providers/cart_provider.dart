@@ -1,3 +1,4 @@
+// lib/core/providers/cart_provider.dart
 import 'package:flutter/foundation.dart';
 import '../../Data/food_card_in_cart_tab_data.dart';
 import '../../Data/recently_added_dish_data_model.dart';

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../Data/recently_added_dish_data_model.dart';
 import '../../Data/restaurant_card_data.dart';
 
-abstract class FireBaseFirestoreServicesCustomer{
+abstract class FireBaseFirestoreServicesCustomer {
 
   static Future<void> getCustomerProfileData({
     required TextEditingController nameController,
@@ -24,9 +24,10 @@ abstract class FireBaseFirestoreServicesCustomer{
       if (doc.exists) {
         final data = doc.data()!;
 
-        nameController.text = data['name'] ;
-        phoneController.text = data['phone'];
-        emailController.text = data['email'];
+        // Updated to handle both naming conventions for consistency
+        nameController.text = data['name'] ?? data['fullName'] ?? '';
+        phoneController.text = data['phone'] ?? '';
+        emailController.text = data['email'] ?? '';
         onDataLoaded();
       }
     } catch (e) {
@@ -54,6 +55,7 @@ abstract class FireBaseFirestoreServicesCustomer{
 
         await userDocRef.update({
           'name': name,
+          'fullName': name, // Adding both field names for consistency
           'phone': phone,
           'email': email,
         });
@@ -92,14 +94,12 @@ abstract class FireBaseFirestoreServicesCustomer{
         return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains('Hotel')).toList();
       case 3: // Restaurants tab
         return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains('Restaurants')).toList();
-     case 4: // Desserts tab
+      case 4: // Desserts tab
         return restaurantsData.where((restaurant) => restaurant.restaurantCategory.contains('Desserts')).toList();
       default: // All tab
         return restaurantsData;
     }
-  } ///de sabta
-
-
+  }
 
   static Future<List<RestaurantCardData>> getRestaurantsByCategory(
       String category) async {
@@ -107,9 +107,7 @@ abstract class FireBaseFirestoreServicesCustomer{
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('userType', isEqualTo: 'seller')
-          .where('businessType',
-          isEqualTo:
-          category) // استخدم businessType عشان نجيب المطاعم اللي الـ businessType بتاعها بيساوي الـ category
+          .where('businessType', isEqualTo: category)
           .get();
 
       print("Category being queried: $category");
@@ -124,8 +122,7 @@ abstract class FireBaseFirestoreServicesCustomer{
 
       return snapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        return RestaurantCardData.fromFireStore(
-            data); //
+        return RestaurantCardData.fromFireStore(data);
       }).toList();
     } catch (e) {
       print('Error fetching restaurants by category: $e');
@@ -133,24 +130,23 @@ abstract class FireBaseFirestoreServicesCustomer{
     }
   }
 
-
   static Future<List<Map<String, dynamic>>> getDishesForSpecificRestaurant(String restaurantName) async {
     List<Map<String, dynamic>> restaurantDishes = [];
 
     try {
-      // الحصول على جميع البائعين
+      // Get all sellers
       var usersSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('userType', isEqualTo: 'seller')
           .get();
 
       for (var userDoc in usersSnapshot.docs) {
-        // التحقق من اسم المطعم
+        // Check restaurant name
         String fetchedRestaurantName = userDoc['businessName'] ?? 'Unknown Restaurant';
 
         if (fetchedRestaurantName != restaurantName) continue;
 
-        // الحصول على أطباق هذا المطعم فقط
+        // Get dishes for this restaurant only
         var dishesSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .doc(userDoc.id)
@@ -160,6 +156,7 @@ abstract class FireBaseFirestoreServicesCustomer{
         for (var dishDoc in dishesSnapshot.docs) {
           if (dishDoc.data().containsKey('dishName') && dishDoc.data().containsKey('dishPrice')) {
             restaurantDishes.add({
+              'dishId': dishDoc.id, // Include the document ID as dishId
               'restaurantId': userDoc.id,
               'restaurantName': fetchedRestaurantName,
               'dishName': dishDoc['dishName'],
@@ -168,9 +165,9 @@ abstract class FireBaseFirestoreServicesCustomer{
               'dishImage': dishDoc['dishImage'] ?? "assets/images/recentlyAddedImg.png",
               'dishQuantity': dishDoc['dishQuantity'],
               'createdAt': dishDoc['createdAt'] ?? Timestamp.now(),
-              'dishCategory': dishDoc['dishCategory']
+              'dishCategory': dishDoc['dishCategory'],
+              'sellerId': userDoc.id, // Include sellerId consistently
             });
-
           }
         }
       }
@@ -181,11 +178,10 @@ abstract class FireBaseFirestoreServicesCustomer{
     return restaurantDishes;
   }
 
-
   static Future<List<RecentlyAddedDishDataModel>> getRecentlyAddedDishes() async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final DateTime threeHoursAgo = DateTime.now().subtract(const Duration(hours: 48));
-    List<Map<String, dynamic>> recentlyAddedDishes = [];
+    final DateTime twoHoursAgo = DateTime.now().subtract(const Duration(hours: 48));
+    List<RecentlyAddedDishDataModel> recentlyAddedDishes = [];
 
     try {
       final usersSnapshot = await firestore.collection('users').get();
@@ -196,24 +192,27 @@ abstract class FireBaseFirestoreServicesCustomer{
               .collection('users')
               .doc(userDoc.id)
               .collection('dishes')
-              .where('createdAt', isGreaterThan: Timestamp.fromDate(threeHoursAgo))
+              .where('createdAt', isGreaterThan: Timestamp.fromDate(twoHoursAgo))
               .get();
 
           for (var dishDoc in dishesSnapshot.docs) {
-            recentlyAddedDishes.add(dishDoc.data());
+            Map<String, dynamic> dishData = dishDoc.data();
+            // Make sure sellerId is included in the data
+            if (!dishData.containsKey('sellerId') && !dishData.containsKey('uid')) {
+              dishData['sellerId'] = userDoc.id;
+            }
+            // Create model with correct parameters
+            recentlyAddedDishes.add(
+                RecentlyAddedDishDataModel.fromFireStore(dishData, dishDoc.id)
+            );
           }
         }
       }
 
-      return recentlyAddedDishes
-          .map((dishMap) => RecentlyAddedDishDataModel.fromFireStore(dishMap))
-          .toList();
+      return recentlyAddedDishes;
     } catch (e) {
       print('Error fetching recently added dishes: $e');
       return [];
     }
   }
-
-
-
 }

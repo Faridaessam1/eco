@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:eco_eaters_app_3/core/providers/favorite_provider.dart';
+import 'package:eco_eaters_app_3/core/providers/order_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -32,6 +33,8 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
+
       ],
       child: const MyApp(),
     ),

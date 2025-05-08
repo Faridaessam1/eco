@@ -7,6 +7,7 @@ import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/cart_provider.dart';
 import '../../../core/widgets/custom_elevated_button.dart';
+import '../../../core/utils/snack_bar_services.dart';
 import '../delievery/delievery_screen.dart';
 
 class CartTab extends StatelessWidget {
@@ -118,15 +119,18 @@ class CartTab extends StatelessWidget {
                     width: double.infinity,
                     child: CustomElevatedButton(
                       onPressed: () {
-                        // Get the seller ID from the CartProvider
-                        final sellerId = cartProvider.currentSellerId.isNotEmpty
-                            ? cartProvider.currentSellerId
-                            : "unknown";
+                        // Check if we have a valid seller ID
+                        if (cartProvider.currentSellerId.isEmpty) {
+                          SnackBarServices.showErrorMessage(
+                              "Unable to identify seller. Please try again or re-add items to cart."
+                          );
+                          return;
+                        }
 
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => PaymentMethodScreen(
-                            sellerId: sellerId,
+                            sellerId: cartProvider.currentSellerId,
                             orderType: "pickup",
                           )),
                         );
@@ -145,6 +149,14 @@ class CartTab extends StatelessWidget {
                     width: double.infinity,
                     child: CustomElevatedButton(
                       onPressed: () {
+                        // Check if we have a valid seller ID
+                        if (cartProvider.currentSellerId.isEmpty) {
+                          SnackBarServices.showErrorMessage(
+                              "Unable to identify seller. Please try again or re-add items to cart."
+                          );
+                          return;
+                        }
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => DeliveryHelpScreen()),

@@ -39,10 +39,15 @@ class CompleteOrderDataModel {
   });
 
   Map<String, dynamic> toFirestore() {
-    return {
+    print("===== ORDER MODEL toFirestore =====");
+    print("Converting order ID: $orderId to Firestore");
+    print("customerId: $customerId");
+    print("sellerId: $sellerId");
+
+    final result = {
       'orderId': orderId,
       'customerId': customerId,
-      'uid': sellerId,
+      'sellerId': sellerId,  // NOTE: This is a key issue - using 'uid' instead of 'sellerId'
       'customerName': customerName,
       'customerAddress': customerAddress,
       'customerPhone': customerPhone,
@@ -57,15 +62,31 @@ class CompleteOrderDataModel {
       'createdAt': createdAt,
       'updatedAt': updatedAt ?? Timestamp.now(),
     };
+
+    print("Firestore map keys: ${result.keys.toList()}");
+    print("uid value in result: ${result['uid']}");
+    print("===== ORDER MODEL toFirestore END =====");
+
+    return result;
   }
 
   factory CompleteOrderDataModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    print("===== ORDER MODEL fromFirestore =====");
+    print("Converting document ID: ${doc.id} from Firestore");
 
-    return CompleteOrderDataModel(
+    final data = doc.data() as Map<String, dynamic>;
+    print("Document data keys: ${data.keys.toList()}");
+
+    final customerId = data['customerId'] ?? '';
+    final sellerId = data['sellerId'] ?? '';  // NOTE: Reading 'uid' as sellerId
+
+    print("customerId from Firestore: $customerId");
+    print("sellerId from Firestore (uid field): $sellerId");
+
+    final result = CompleteOrderDataModel(
       orderId: doc.id,
-      customerId: data['customerId'] ?? '',
-      sellerId: data['uid'] ?? '',
+      customerId: customerId,
+      sellerId: sellerId,
       customerName: data['customerName'] ?? '',
       customerAddress: data['customerAddress'],
       customerPhone: data['customerPhone'],
@@ -80,6 +101,11 @@ class CompleteOrderDataModel {
       createdAt: data['createdAt'] ?? Timestamp.now(),
       updatedAt: data['updatedAt'],
     );
+
+    print("Created CompleteOrderDataModel with orderId: ${result.orderId}");
+    print("===== ORDER MODEL fromFirestore END =====");
+
+    return result;
   }
 }
 
@@ -123,6 +149,7 @@ class OrderItemModel {
   }
 
   factory OrderItemModel.fromCartItem(FoodCardInCartTabData cartItem, String dishId) {
+    print("Creating OrderItemModel from cart item: ${cartItem.foodName}, dishId: $dishId");
     return OrderItemModel(
       dishId: dishId,
       dishName: cartItem.foodName,

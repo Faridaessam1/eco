@@ -121,11 +121,26 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
+  // Verify seller ID is valid
+  bool _verifySellerID() {
+    if (widget.sellerId.isEmpty || widget.sellerId == "unknown") {
+      SnackBarServices.showErrorMessage(
+          "Could not identify the seller. Please return to the cart and try again.");
+      return false;
+    }
+    return true;
+  }
+
   // Moved the payment processing logic to a separate method
   Future<void> _processPayment(
       BuildContext context, CartProvider cartProvider, OrderProvider orderProvider) async {
 
     if (selectedMethod == null) return;
+
+    // Verify seller ID before proceeding
+    if (!_verifySellerID()) {
+      return;
+    }
 
     try {
       setState(() {
@@ -163,6 +178,13 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     // Check if cart has items
     if (cartProvider.cartItems.isEmpty) {
       SnackBarServices.showErrorMessage("Your cart is empty");
+      return;
+    }
+
+    // Double-check seller ID matches the cart provider's
+    if (widget.sellerId != cartProvider.currentSellerId) {
+      SnackBarServices.showErrorMessage(
+          "Order data mismatch. Please try again from the cart screen.");
       return;
     }
 

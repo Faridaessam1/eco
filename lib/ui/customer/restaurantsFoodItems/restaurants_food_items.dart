@@ -55,8 +55,7 @@ class _RestaurantFoodItemState extends State<RestaurantFoodItem> {
                 itemCount: dishes.length,
                 separatorBuilder: (context, index) => SizedBox(height: height * 0.05),
                 itemBuilder: (context, index) {
-                  // Create dish model using the updated fromFireStore method
-                  // which now requires both the data map and the document ID
+                
                   final dishData = RecentlyAddedDishDataModel.fromFireStore(
                     dishes[index],
                     dishes[index]['dishId'] ?? '',

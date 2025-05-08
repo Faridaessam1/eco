@@ -1,4 +1,4 @@
-import 'package:eco_eaters_app_3/ui/customer/homeTab/customer_home_tab.dart';
+import 'package:eco_eaters_app_3/ui/customer/layout/layout.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
@@ -64,7 +64,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                   // Navigate back to home screen and clear all routes
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
-                      builder: (context) => CustomerHomeTab(),
+                      builder: (context) => LayoutCustomer(),
                     ),
                         (route) => false,
                   );

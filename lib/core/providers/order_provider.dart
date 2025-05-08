@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 import '../../Data/complete_order_data_model.dart';
 import '../FirebaseServices/order_service.dart';
@@ -142,6 +143,7 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
+
   // Load customer orders
   void loadCustomerOrders() {
     final user = _auth.currentUser;
@@ -152,6 +154,7 @@ class OrderProvider extends ChangeNotifier {
       notifyListeners();
     });
   }
+
 
   // Load seller orders
   void loadSellerOrders() {
@@ -164,23 +167,26 @@ class OrderProvider extends ChangeNotifier {
     });
   }
 
-  // Load orders by status
   void loadOrdersByStatus(String status) {
     final user = _auth.currentUser;
     if (user == null) return;
 
+    // Clear the previous orders before applying the new filter
     if (_userType == 'customer') {
+      _customerOrders.clear(); // Clear previous orders
       _orderService.getCustomerOrdersByStatus(user.uid, status).listen((orders) {
         _customerOrders = orders;
-        notifyListeners();
+        notifyListeners(); // Notify listeners that the orders have changed
       });
     } else if (_userType == 'seller') {
+      _sellerOrders.clear(); // Clear previous orders
       _orderService.getSellerOrdersByStatus(user.uid, status).listen((orders) {
         _sellerOrders = orders;
-        notifyListeners();
+        notifyListeners(); // Notify listeners that the orders have changed
       });
     }
   }
+
 
   // Update order status
   Future<void> updateOrderStatus(String orderId, String customerId, String newStatus) async {
@@ -230,4 +236,6 @@ class OrderProvider extends ChangeNotifier {
     _errorMessage = '';
     notifyListeners();
   }
+
+
 }

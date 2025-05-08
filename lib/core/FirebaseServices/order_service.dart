@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+
 import '../../Data/complete_order_data_model.dart';
 import '../../Data/food_card_in_cart_tab_data.dart';
 
@@ -33,6 +34,15 @@ class OrderService {
       print("Payment Method: $paymentMethod");
       print("Order Type: $orderType");
 
+      // Fetch seller name
+      String? sellerName;
+      final sellerDoc = await _firestore.collection('sellers').doc(sellerId).get();
+      if (sellerDoc.exists) {
+        final sellerData = sellerDoc.data() as Map<String, dynamic>;
+        sellerName = sellerData['businessName'] ?? sellerData['name'];
+        print("Fetched seller name: $sellerName");
+      }
+
       // Generate a unique order ID
       final String orderId = _firestore.collection('orders').doc().id;
       print("Generated Order ID: $orderId");
@@ -41,10 +51,7 @@ class OrderService {
       List<OrderItemModel> orderItems = cartItems.map((item) {
         String dishId = dishIdMap[item.foodName] ?? '';
         print("Mapping cart item: ${item.foodName} -> Dish ID: $dishId");
-        return OrderItemModel.fromCartItem(
-            item,
-            dishId // Get dishId from the map
-        );
+        return OrderItemModel.fromCartItem(item, dishId);
       }).toList();
 
       print("Converted ${orderItems.length} items to OrderItemModel");
@@ -66,45 +73,26 @@ class OrderService {
         orderStatus: 'pending',
         orderType: orderType,
         createdAt: Timestamp.now(),
+        sellerName: sellerName,
       );
 
       print("Created order model with ID: ${order.orderId}");
 
-      // Check what the order.toFirestore() returns
       final Map<String, dynamic> orderData = order.toFirestore();
       print("Order data for Firestore - sellerId value: ${orderData['uid']}");
       print("Order data for Firestore - all keys: ${orderData.keys.toList()}");
 
-      // Save order to customer's orders subcollection
-      print("Saving to customer subcollection: users/$customerId/orders/$orderId");
-      await _firestore
-          .collection('users')
-          .doc(customerId)
-          .collection('orders')
-          .doc(orderId)
-          .set(order.toFirestore());
+      await _firestore.collection('users').doc(customerId).collection('orders').doc(orderId).set(orderData);
       print("Successfully saved to customer's orders subcollection");
 
-      // Save the same order to seller's orders subcollection
-      print("Saving to seller subcollection: users/$sellerId/orders/$orderId");
       try {
-        await _firestore
-            .collection('users')
-            .doc(sellerId)
-            .collection('orders')
-            .doc(orderId)
-            .set(order.toFirestore());
+        await _firestore.collection('users').doc(sellerId).collection('orders').doc(orderId).set(orderData);
         print("Successfully saved to seller's orders subcollection");
       } catch (e) {
         print("ERROR saving to seller's orders subcollection: $e");
       }
 
-      // Optional: Create a general orders collection for admin purposes
-      print("Saving to main orders collection: orders/$orderId");
-      await _firestore
-          .collection('orders')
-          .doc(orderId)
-          .set(order.toFirestore());
+      await _firestore.collection('orders').doc(orderId).set(orderData);
       print("Successfully saved to main orders collection");
 
       print("===== ORDER SERVICE: COMPLETED CREATE ORDER =====");
@@ -322,4 +310,5 @@ class OrderService {
       throw Exception('Failed to repair seller orders: $e');
     }
   }
+
 }

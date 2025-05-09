@@ -40,23 +40,23 @@ class _HomeViewState extends State<HomeView> {
   ];
 
   List<OrderDataModel> recentOrders = [
-    const OrderDataModel(
+     OrderDataModel(
       orderNumber: "2458",
       orderStatus: "Pending",
       orderStatusColor: AppColors.red,
       orderItemCount: "3",
       orderAmount: "24.00",
       customerName: "Sarah M.",
-      time: "10:00 AM",
+      time: "10:00 AM", id: '',
     ),
-    const OrderDataModel(
+     OrderDataModel(
       orderNumber: "2457",
       orderStatus: "Completed",
       orderStatusColor: AppColors.green,
       orderItemCount: "4",
-      orderAmount: "52.50",
+      orderAmount:" 52.50",
       customerName: "John D.",
-      time: "9:45 AM",
+      time: "9:45 AM", id: '',
     ),
   ];
 

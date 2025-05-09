@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../../Data/recently_added_dish_data_model.dart';
 import '../../../core/providers/cart_provider.dart';
 import '../../../core/utils/snack_bar_services.dart';
+import '../../../core/constants/app_assets.dart';
+import '../../../core/constants/app_colors.dart';
 
 class FoodItemWidget extends StatelessWidget {
   final RecentlyAddedDishDataModel foodData;
@@ -14,6 +16,9 @@ class FoodItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the screen height
+    final height = MediaQuery.of(context).size.height;
+
     // Get CartProvider from Provider
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
 
@@ -27,9 +32,9 @@ class FoodItemWidget extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: (dishData.dishImage != null && dishData.dishImage!.isNotEmpty)
+              child: (foodData.dishImage != null && foodData.dishImage!.isNotEmpty)
                   ? Image.network(
-                dishData.dishImage!,
+                foodData.dishImage!,
                 height: height * 0.18,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -43,7 +48,7 @@ class FoodItemWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              dishData.dishName,
+              foodData.dishName,
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 16,
@@ -51,7 +56,7 @@ class FoodItemWidget extends StatelessWidget {
               ),
             ),
             Text(
-              dishData.dishCategory,
+              foodData.dishCategory,
               style: const TextStyle(
                 color: AppColors.textGreyColor,
                 fontSize: 14,
@@ -60,7 +65,7 @@ class FoodItemWidget extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             Text(
-              dishData.dishAdditionalInfo ?? '',
+              foodData.dishAdditionalInfo ?? '',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -69,17 +74,22 @@ class FoodItemWidget extends StatelessWidget {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            const Spacer(),
+            const SizedBox(height: 8), // Replaced Spacer() with fixed height
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "${dishData.dishPrice} L.E",
+                  "${foodData.dishPrice} L.E",
                   style: const TextStyle(
                     color: AppColors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
+                // You might have intended to add something else here
+              ],
+            ),
+            const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -90,7 +100,7 @@ class FoodItemWidget extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 16), // زيادة المسافة العمودية
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onPressed: () {
                   // Check if seller ID exists in the food data

@@ -7,12 +7,30 @@ import '../../widgets/custom_status_container.dart';
 
 class CustomOrderContainer extends StatelessWidget {
   final OrderDataModel orderDataModel;
+  final Function(String) onUpdateStatus;
 
-  CustomOrderContainer({super.key, required this.orderDataModel});
+  CustomOrderContainer({super.key, required this.orderDataModel, required this.onUpdateStatus});
 
   @override
   Widget build(BuildContext context) {
+
     var mediaQuery = MediaQuery.of(context);
+
+    // تحديد اللون بناءً على حالة الطلب
+    Color orderStatusColor;
+    switch (orderDataModel.orderStatus) {
+      case "Pending":
+        orderStatusColor = AppColors.red;
+        break;
+      case "In Progress":
+        orderStatusColor = AppColors.orange;
+        break;
+      case "Completed":
+        orderStatusColor = AppColors.green;
+        break;
+      default:
+        orderStatusColor = AppColors.grey; // في حالة غير معروفة
+    }
 
     return Container(
       width: mediaQuery.size.width * 0.9,
@@ -40,7 +58,7 @@ class CustomOrderContainer extends StatelessWidget {
               Spacer(),
               CustomStatusContainer(
                 orderStatus: orderDataModel.orderStatus,
-                orderStatusColor: orderDataModel.orderStatusColor,
+                orderStatusColor: orderStatusColor,
               )
             ],
           ),
@@ -151,7 +169,9 @@ class CustomOrderContainer extends StatelessWidget {
             child: CustomElevatedButton(
               text: "Update Status",
               fontSize: 16,
-              onPressed: () {},
+              onPressed: () {
+                _showStatusUpdateDialog(context);
+              },
               textColor: AppColors.white,
               buttonColor: AppColors.green,
               borderRadius: 8.0,
@@ -161,4 +181,43 @@ class CustomOrderContainer extends StatelessWidget {
       ),
     );
   }
+
+  // Function to show the dialog for selecting a status
+  void _showStatusUpdateDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Update Order Status'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: const Text("Pending"),
+                onTap: () {
+                  onUpdateStatus("Pending");
+                  Navigator.pop(context); // Close the dialog
+                },
+              ),
+              ListTile(
+                title: const Text("In Progress"),
+                onTap: () {
+                  onUpdateStatus("In Progress");
+                  Navigator.pop(context); // Close the dialog
+                },
+              ),
+              ListTile(
+                title: const Text("Completed"),
+                onTap: () {
+                  onUpdateStatus("Completed");
+                  Navigator.pop(context); // Close the dialog
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
+

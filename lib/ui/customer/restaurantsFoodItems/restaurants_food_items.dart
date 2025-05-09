@@ -32,15 +32,6 @@ class _RestaurantFoodItemState extends State<RestaurantFoodItem> {
     final cartProvider = Provider.of<CartProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
-        title: const Text(
-          'EcoEaters',
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-      ),
       body: Column(
         children: [
           Expanded(
@@ -80,19 +71,6 @@ class _RestaurantFoodItemState extends State<RestaurantFoodItem> {
                               ),
                             ),
                           ],
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isFavorite = !isFavorite;
-                            });
-                          },
-                          icon: Icon(
-                            isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: isFavorite ? Colors.red : Colors.black,
-                          ),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
                         ),
                       ],
                     ),
@@ -200,6 +178,42 @@ class _RestaurantFoodItemState extends State<RestaurantFoodItem> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Image
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+            child: (dish.dishImage != null && dish.dishImage!.isNotEmpty)
+                ? Image.network(
+              dish.dishImage!,
+              height: 100,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                print("Error loading image: $error");
+                return Container(
+                  height: 100,
+                  width: double.infinity,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                );
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  height: 100,
+                  width: double.infinity,
+                  color: Colors.grey[200],
+                  child: const Center(child: CircularProgressIndicator()),
+                );
+              },
+            )
+                : Container(
+              height: 100,
+              width: double.infinity,
+              color: Colors.grey[300],
+              child: const Icon(Icons.restaurant, color: Colors.grey),
+            ),
+          ),
+
           // Title
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),

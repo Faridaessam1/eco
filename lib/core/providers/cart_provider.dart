@@ -67,11 +67,17 @@ class CartProvider with ChangeNotifier {
   }
 
   void decrement(int index) {
-    if (index < _cartItems.length && _cartItems[index].foodQuantity > 1) {
-      _cartItems[index].foodQuantity--;
+    if (index < _cartItems.length) {
+      if (_cartItems[index].foodQuantity > 1) {
+        _cartItems[index].foodQuantity--;
+      } else {
+        // إذا كانت الكمية تساوي 1، قم بحذف العنصر من السلة
+        removeFromCart(index);
+      }
       notifyListeners();
     }
   }
+
 
   void removeFromCart(int index) {
     if (index < _cartItems.length) {

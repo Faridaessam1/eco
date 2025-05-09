@@ -3,12 +3,15 @@ class FoodCardInCartTabData {
   String foodName;
   double foodPrice;
   int foodQuantity;
+  String dishId;
 
   FoodCardInCartTabData({
     required this.foodImgPath,
     required this.foodName,
     required this.foodPrice,
     required this.foodQuantity,
+    required this.dishId,
+
   });
   factory FoodCardInCartTabData.fromFirestore(Map<String, dynamic> data) {
     return FoodCardInCartTabData(
@@ -16,6 +19,7 @@ class FoodCardInCartTabData {
       foodName: data['dishName'] ?? 'Unknown Dish',
       foodPrice: (data['dishPrice'] ?? 0).toDouble(),
       foodQuantity: data['dishQuantity'] ?? 1,
+      dishId: data['dishId'] ?? 'null'
     );
   }
 }

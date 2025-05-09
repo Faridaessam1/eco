@@ -53,12 +53,6 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-            child: Row(
-              children: List.generate(
-                _tabs.length,
-                    (index) => _buildFilterTab(index),
-              ),
-            ),
           ),
           // Orders list
           Expanded(
@@ -106,54 +100,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
     );
   }
 
-  Widget _buildFilterTab(int index) {
-    bool isSelected = _selectedTabIndex == index;
 
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedTabIndex = index;
-        });
-
-        final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-        if (index == 0) {
-          orderProvider.loadOrders();
-        } else {
-          String status = _tabs[index].toLowerCase();
-          orderProvider.loadOrdersByStatus(status);
-        }
-      },
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        margin: EdgeInsets.only(right: 10),
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? AppColors.primaryColor : Colors.grey.shade300,
-            width: 1,
-          ),
-          boxShadow: isSelected
-              ? [
-            BoxShadow(
-                color: Colors.black12,
-                offset: Offset(2, 2),
-                blurRadius: 6)
-          ]
-              : [],
-        ),
-        child: Text(
-          _tabs[index],
-          style: TextStyle(
-            color: isSelected ? Colors.white : AppColors.primaryColor,
-            fontWeight: FontWeight.w500,
-            fontSize: isSelected ? 16 : 14,
-          ),
-        ),
-      ),
-    );
-  }
 
   void _showOrderDetails(CompleteOrderDataModel order) {
     showDialog(

@@ -48,6 +48,7 @@ class CartProvider with ChangeNotifier {
           foodPrice: dish.dishPrice,
           foodImgPath: dish.dishImage ?? 'assets/images/recentlyAddedImg.png',
           foodQuantity: quantity,
+          dishId: '',
         ),
       );
 

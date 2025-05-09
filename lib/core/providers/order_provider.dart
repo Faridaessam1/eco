@@ -1,38 +1,39 @@
-// lib/core/providers/order_provider.dart
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
-
 import '../../Data/complete_order_data_model.dart';
 import '../FirebaseServices/order_service.dart';
-import 'cart_provider.dart';
+import '../FirebaseServices/user_service.dart';
+import './cart_provider.dart';
 
-class OrderProvider extends ChangeNotifier {
+class OrderProvider with ChangeNotifier {
   final OrderService _orderService = OrderService();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final UserService _userService = UserService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  List<CompleteOrderDataModel> _orders = [];
   List<CompleteOrderDataModel> _customerOrders = [];
-  List<CompleteOrderDataModel> _sellerOrders = [];
-  bool _isLoading = false;
   String _errorMessage = '';
-  String _userType = ''; // 'customer' or 'seller'
+  bool _isLoading = false;
+  String _userType = 'customer'; // Default user type
 
-  // Getters
+  List<CompleteOrderDataModel> get orders => _orders;
   List<CompleteOrderDataModel> get customerOrders => _customerOrders;
-  List<CompleteOrderDataModel> get sellerOrders => _sellerOrders;
-  bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
-  String get userType => _userType;
+  bool get isLoading => _isLoading;
 
-  // Set user type
-  void setUserType(String type) {
-    _userType = type;
+  // Set user type (customer or seller)
+  void setUserType(String userType) {
+    _userType = userType;
     notifyListeners();
   }
 
-  // Create a new order
+  // Reset error message
+  void resetError() {
+    _errorMessage = '';
+    notifyListeners();
+  }
+
+  // Place a new order
   Future<String?> placeOrder({
     required CartProvider cartProvider,
     required String sellerId,
@@ -42,24 +43,41 @@ class OrderProvider extends ChangeNotifier {
     required String orderType,
   }) async {
     try {
-      _isLoading = true;
-      notifyListeners();
+      resetError();
 
-      final User? currentUser = _auth.currentUser;
+      final currentUser = _auth.currentUser;
       if (currentUser == null) {
-        throw Exception('User not authenticated');
+        _errorMessage = 'You must be logged in to place an order';
+        notifyListeners();
+        return null;
       }
 
-      // Get current user details
-      final userDoc = await _firestore.collection('users').doc(currentUser.uid).get();
-      final userData = userDoc.data() as Map<String, dynamic>;
-      final customerName = userData['fullName'] ?? currentUser.displayName ?? 'Unknown User';
+      // Create a map of dish names to dish IDs
+      final Map<String, String> dishIdMap = {};
+      for (var item in cartProvider.cartItems) {
+        dishIdMap[item.foodName] = item.dishId ?? '';
+      }
+
+      // Get customer details from Firestore instead of just using currentUser
+      final customerDetails = await _userService.getCustomerDetails(currentUser.uid);
+
+      // Get seller details from Firestore
+      final sellerDetails = await _userService.getSellerDetails(sellerId);
+
+      // Use the retrieved data or fall back to parameters/defaults
+      final String customerName = customerDetails['name'] ?? currentUser.displayName ?? 'Unknown Customer';
+      final String finalCustomerPhone = customerPhone ?? customerDetails['phone'] ?? '';
+      final String finalCustomerAddress = customerAddress ?? customerDetails['address'] ?? '';
+      final String sellerName = sellerDetails['name'] ?? 'Unknown Restaurant';
+
+      print("Placing order with:");
+      print("Customer Name: $customerName");
+      print("Customer Phone: $finalCustomerPhone");
+      print("Customer Address: $finalCustomerAddress");
+      print("Seller Name: $sellerName");
 
       // Calculate order totals
-      final cartItems = cartProvider.cartItems;
-      final subtotal = cartProvider.subtotal;
-
-      // Calculate service fee based on subtotal
+      final double subtotal = cartProvider.subtotal;
       double serviceFee;
       if (subtotal < 100) {
         serviceFee = 15;
@@ -68,46 +86,17 @@ class OrderProvider extends ChangeNotifier {
       } else {
         serviceFee = 35;
       }
+      final double tax = subtotal * 0.14;
+      final double totalAmount = subtotal + serviceFee + tax;
 
-      final tax = subtotal * 0.14;
-      final totalAmount = subtotal + serviceFee + tax;
-
-      // Use the dishIdMap directly from the CartProvider
-      Map<String, String> dishIdMap = cartProvider.dishIdMap;
-
-      // For any dishes without an ID mapping, try to find them in Firestore as a fallback
-      for (final item in cartItems) {
-        if (!dishIdMap.containsKey(item.foodName)) {
-          try {
-            // Attempt to find the dish ID in Firestore
-            final dishQuerySnapshot = await _firestore
-                .collection('dishes')
-                .where('dishName', isEqualTo: item.foodName)
-                .limit(1)
-                .get();
-
-            if (dishQuerySnapshot.docs.isNotEmpty) {
-              dishIdMap[item.foodName] = dishQuerySnapshot.docs.first.id;
-            } else {
-              // Use a placeholder ID if not found
-              dishIdMap[item.foodName] = 'unknown_${DateTime.now().millisecondsSinceEpoch}';
-            }
-          } catch (e) {
-            debugPrint('Error finding dish ID: $e');
-            // Use a placeholder ID if there's an error
-            dishIdMap[item.foodName] = 'unknown_${DateTime.now().millisecondsSinceEpoch}';
-          }
-        }
-      }
-
-      // Create the order - this will save to both customer and seller subcollections
+      // Create the order
       final orderId = await _orderService.createOrder(
         customerId: currentUser.uid,
         sellerId: sellerId,
         customerName: customerName,
-        customerAddress: customerAddress,
-        customerPhone: customerPhone,
-        cartItems: cartItems,
+        customerAddress: finalCustomerAddress,
+        customerPhone: finalCustomerPhone,
+        cartItems: cartProvider.cartItems,
         dishIdMap: dishIdMap,
         subtotal: subtotal,
         serviceFee: serviceFee,
@@ -117,125 +106,166 @@ class OrderProvider extends ChangeNotifier {
         orderType: orderType,
       );
 
-      // Clear cart after successful order
+      // Clear the cart after successful order
       cartProvider.clearCart();
 
-      _isLoading = false;
-      notifyListeners();
       return orderId;
     } catch (e) {
-      _isLoading = false;
       _errorMessage = e.toString();
       notifyListeners();
       return null;
     }
   }
 
-  // Load orders based on user type
-  void loadOrders() {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
+  // General method to load orders based on user type
+  Future<void> loadOrders() async {
     if (_userType == 'customer') {
-      loadCustomerOrders();
+      await loadCustomerOrders();
     } else if (_userType == 'seller') {
-      loadSellerOrders();
+      final currentUser = _auth.currentUser;
+      if (currentUser != null) {
+        await loadSellerOrders(currentUser.uid);
+      }
     }
   }
 
-
-  // Load customer orders
-  void loadCustomerOrders() {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
-    _orderService.getCustomerOrders(user.uid).listen((orders) {
-      _customerOrders = orders;
-      notifyListeners();
-    });
-  }
-
-
-  // Load seller orders
-  void loadSellerOrders() {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
-    _orderService.getSellerOrders(user.uid).listen((orders) {
-      _sellerOrders = orders;
-      notifyListeners();
-    });
-  }
-
-  void loadOrdersByStatus(String status) {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
-    // Clear the previous orders before applying the new filter
-    if (_userType == 'customer') {
-      _customerOrders.clear(); // Clear previous orders
-      _orderService.getCustomerOrdersByStatus(user.uid, status).listen((orders) {
-        _customerOrders = orders;
-        notifyListeners(); // Notify listeners that the orders have changed
-      });
-    } else if (_userType == 'seller') {
-      _sellerOrders.clear(); // Clear previous orders
-      _orderService.getSellerOrdersByStatus(user.uid, status).listen((orders) {
-        _sellerOrders = orders;
-        notifyListeners(); // Notify listeners that the orders have changed
-      });
-    }
-  }
-
-
-  // Update order status
-  Future<void> updateOrderStatus(String orderId, String customerId, String newStatus) async {
+  // Load orders by status
+  Future<void> loadOrdersByStatus(String status) async {
     try {
       _isLoading = true;
       notifyListeners();
 
-      final user = _auth.currentUser;
-      if (user == null) throw Exception('User not authenticated');
+      resetError();
+
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        _errorMessage = 'You must be logged in to view orders';
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      if (_userType == 'customer') {
+        _orderService.getCustomerOrdersByStatus(currentUser.uid, status).listen(
+                (orders) {
+              _customerOrders = orders;
+              _isLoading = false;
+              notifyListeners();
+            },
+            onError: (error) {
+              _errorMessage = 'Failed to load orders: $error';
+              _isLoading = false;
+              notifyListeners();
+            }
+        );
+      } else if (_userType == 'seller') {
+        _orderService.getSellerOrdersByStatus(currentUser.uid, status).listen(
+                (orders) {
+              _orders = orders;
+              _isLoading = false;
+              notifyListeners();
+            },
+            onError: (error) {
+              _errorMessage = 'Failed to load orders: $error';
+              _isLoading = false;
+              notifyListeners();
+            }
+        );
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Load customer orders
+  Future<void> loadCustomerOrders() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      resetError();
+
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        _errorMessage = 'You must be logged in to view your orders';
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      _orderService.getCustomerOrders(currentUser.uid).listen(
+              (orders) {
+            _customerOrders = orders;
+            _isLoading = false;
+            notifyListeners();
+          },
+          onError: (error) {
+            _errorMessage = 'Failed to load orders: $error';
+            _isLoading = false;
+            notifyListeners();
+          }
+      );
+    } catch (e) {
+      _errorMessage = e.toString();
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Load seller orders
+  Future<void> loadSellerOrders(String sellerId) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      resetError();
+
+      _orderService.getSellerOrders(sellerId).listen(
+              (orders) {
+            _orders = orders;
+            _isLoading = false;
+            notifyListeners();
+          },
+          onError: (error) {
+            _errorMessage = 'Failed to load orders: $error';
+            _isLoading = false;
+            notifyListeners();
+          }
+      );
+    } catch (e) {
+      _errorMessage = e.toString();
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Update order status
+  Future<void> updateOrderStatus(String orderId, String customerId, String sellerId, String newStatus) async {
+    try {
+      resetError();
 
       await _orderService.updateOrderStatus(
         orderId: orderId,
         customerId: customerId,
-        sellerId: user.uid, // Current seller user
+        sellerId: sellerId,
         newStatus: newStatus,
       );
-
-      _isLoading = false;
-      notifyListeners();
     } catch (e) {
-      _isLoading = false;
       _errorMessage = e.toString();
       notifyListeners();
     }
   }
 
-  // Get a specific order
-  Future<CompleteOrderDataModel?> getOrder(String orderId) async {
+  // Repair missing seller orders
+  Future<void> repairSellerOrders(String sellerId) async {
     try {
-      final user = _auth.currentUser;
-      if (user == null) throw Exception('User not authenticated');
-
-      return await _orderService.getOrder(
-        user.uid,
-        orderId,
-        userType: _userType,
-      );
+      resetError();
+      await _orderService.repairMissingSellerOrders(sellerId);
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
-      return null;
     }
   }
-
-  // Clear error message
-  void clearError() {
-    _errorMessage = '';
-    notifyListeners();
-  }
-
-
 }

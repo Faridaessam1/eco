@@ -15,6 +15,7 @@ class PagesRouteName {
   //seller
   static const String sellerSignUp = "signup";
   static const String sellerNewDishScreen = "sellerNewDishScreen";
+  static const String sellerOrdersScreen = "sellerOrdersScreen";
 
   static const String paymentMethod = "paymentMethod";
   static const String deliveryScreen = "deliveryScreen";

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../Data/insights_data_model.dart';
 import '../../../Data/order_data_model.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/routes/page_route_names.dart';
 
 
 class HomeView extends StatefulWidget {
@@ -117,6 +118,9 @@ class _HomeViewState extends State<HomeView> {
               children: [
                 Expanded(
                   child: CustomTextButton(
+                    onPressed: (){
+                      Navigator.pushNamed(context,PagesRouteName.sellerNewDishScreen);
+                    },
                     text: "Add New Dish",
                     textColor: AppColors.white,
                     icon: Icons.add,
@@ -127,6 +131,10 @@ class _HomeViewState extends State<HomeView> {
                 const SizedBox(width: 15),
                 Expanded(
                   child: CustomTextButton(
+                    onPressed: (){
+                      Navigator.pushNamed(context,PagesRouteName.sellerOrdersScreen);
+
+                    },
                     text: "Today's Order",
                     textColor: AppColors.green,
                     icon: Icons.menu_rounded,

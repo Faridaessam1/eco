@@ -150,6 +150,7 @@ class _SignUpScreenState extends State<CustomerSignUpScreen> {
                                     final uid = FirebaseAuth.instance.currentUser?.uid;
                                     if (uid != null) {
                                       await FirebaseFirestore.instance.collection('users').doc(uid).set({
+                                        'uid': uid,
                                         'userType': 'customer',
                                         'name': nameController.text.trim(),
                                         'email': emailController.text.trim(),

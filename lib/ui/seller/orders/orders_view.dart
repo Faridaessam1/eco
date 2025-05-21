@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/ui/seller/orders/widgets/custom_order_container.dart';
 import 'package:eco_eaters_app_3/ui/seller/orders/widgets/custom_tab_bar_item_seller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Data/order_data_model.dart';
@@ -15,58 +17,11 @@ class OrdersView extends StatefulWidget {
 class _OrdersViewState extends State<OrdersView> {
   int selectedIndex = 0;
 
-  List<OrderDataModel> orders = [
-    const OrderDataModel(
-      orderNumber: "ORD-2025001",
-      orderStatus: "Pending",
-      orderStatusColor: AppColors.red,
-      orderDetails: "3x Vegan Burger, 2x Green Salad",
-      orderAmount: "45.90",
-      customerName: "John Smith",
-      customerAddress: "123 Green Street, New York",
-      time: "Jan 15, 2025 - 14:30",
-    ),
-    const OrderDataModel(
-      orderNumber: "ORD-2025002",
-      orderStatus: "In Progress",
-      orderStatusColor: AppColors.orange,
-      orderDetails: "1x Buddha Bowl, 1x Smoothie",
-      orderAmount: "28.50",
-      customerName: "Emma Wilson",
-      customerAddress: "456 Eco Avenue, Brooklyn",
-      time: "Jan 15, 2025 - 15:45",
-    ),
-    const OrderDataModel(
-      orderNumber: "ORD-2025003",
-      orderStatus: "Completed",
-      orderStatusColor: AppColors.green,
-      orderDetails: "2x Pasta Primavera, 1x Fresh Juice",
-      orderAmount: "39.75",
-      customerName: "Michael Brown",
-      customerAddress: "789 Fresh Street, Los Angeles",
-      time: "Jan 15, 2025 - 16:00",
-    ),
-  ];
-
-  List<OrderDataModel> get filteredOrders {
-    switch (selectedIndex) {
-      case 1:
-        return orders.where((order) => order.orderStatus == "Pending").toList();
-      case 2:
-        return orders
-            .where((order) => order.orderStatus == "In Progress")
-            .toList();
-      case 3:
-        return orders
-            .where((order) => order.orderStatus == "Completed")
-            .toList();
-      default:
-        return orders; // All
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final sellerId = FirebaseAuth.instance.currentUser?.uid;
+    if (sellerId == null) return Container(); // Show an empty container if there's no user
+
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -93,7 +48,9 @@ class _OrdersViewState extends State<OrdersView> {
               length: 4,
               child: TabBar(
                 onTap: (index) {
-                  onTabBarItemTapped(index);
+                  setState(() {
+                    selectedIndex = index;
+                  });
                 },
                 isScrollable: true,
                 indicatorColor: Colors.transparent,
@@ -124,26 +81,78 @@ class _OrdersViewState extends State<OrdersView> {
           ),
           const SizedBox(height: 30),
           Expanded(
-            child: ListView.builder(
-              itemCount: filteredOrders.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
-                  child: CustomOrderContainer(
-                      orderDataModel: filteredOrders[index]),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(sellerId)
+                  .collection('orders')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text("No orders available"));
+                }
+
+                // Convert Firestore data to OrderDataModel list
+                final orders = snapshot.data!.docs.map((doc) {
+                  final data = doc.data() as Map<String, dynamic>; // Safely cast to Map<String, dynamic>
+                  final orderData = OrderDataModel.fromFireStore(data, doc.id);
+                  return orderData;
+                }).toList();
+
+                // Apply filtering based on selected tab
+                final filteredOrders = orders.where((order) {
+                  switch (selectedIndex) {
+                    case 1:
+                      return order.orderStatus == "Pending";
+                    case 2:
+                      return order.orderStatus == "In Progress";
+                    case 3:
+                      return order.orderStatus == "Completed";
+                    default:
+                      return true;
+                  }
+                }).toList();
+
+                return ListView.builder(
+                  itemCount: filteredOrders.length,
+                  itemBuilder: (context, index) {
+                    final order = filteredOrders[index];
+                    final orderNumber = index + 1; // Generate order number as 1, 2, 3, ...
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      child: CustomOrderContainer(
+                        orderDataModel: order.copyWith(orderNumber: orderNumber.toString()), // Pass the generated order number
+                        onUpdateStatus: (newStatus) {
+                          updateOrderStatus(order.id, newStatus);
+                        },
+                      ),
+                    );
+                  },
                 );
               },
             ),
-          ),
+          )
+
         ],
       ),
     );
   }
 
-  void onTabBarItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
+  Future<void> updateOrderStatus(String orderId, String newStatus) async {
+    final sellerId = FirebaseAuth.instance.currentUser?.uid;
+    if (sellerId == null) return;
+
+    // Update Firestore
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(sellerId)
+        .collection('orders')
+        .doc(orderId)
+        .update({'orderStatus': newStatus});
   }
 }

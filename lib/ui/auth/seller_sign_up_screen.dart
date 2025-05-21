@@ -236,6 +236,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                           final uid = userCredential.user?.uid;
                           if (uid != null) {
                             await FirebaseFirestore.instance.collection('users').doc(uid).set({
+                              'uid': uid,
                               'userType': 'seller',
                               'businessName': businessNameController.text.trim(),
                               'contactPerson': contactPersonController.text.trim(),

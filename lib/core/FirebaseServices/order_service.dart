@@ -24,16 +24,6 @@ class OrderService {
     required String orderType,
   }) async {
     try {
-      print("===== ORDER SERVICE: START CREATE ORDER =====");
-      print("Customer ID: $customerId");
-      print("Customer Name: $customerName");
-      print("Seller ID: $sellerId");
-      print("Address: $customerAddress");
-      print("Phone: $customerPhone");
-      print("Cart Items Count: ${cartItems.length}");
-      print("Payment Method: $paymentMethod");
-      print("Order Type: $orderType");
-
       // Validate customer name - apply fallback if null or empty
       if (customerName.isEmpty) {
         print("WARNING: Customer name is empty, using 'Unknown Customer'");

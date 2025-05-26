@@ -72,10 +72,9 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context);
     final List<String> sellerCategoriesList = [
-      'Restaurant',
+      'Bakeries',
       'Hotel',
       'Patisserie',
-      'Fast Food',
     ];
     final List<String> operatingHoursList = [
       '9:00 AM - 5:00 PM',

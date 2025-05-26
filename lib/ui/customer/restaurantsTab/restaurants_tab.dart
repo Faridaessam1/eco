@@ -24,7 +24,7 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
     "All",
     "Bakeries",
     "Hotel",
-    "Desserts",
+    "Patisserie",
   ];
   List<RestaurantCardData> restaurantsData = [];
 

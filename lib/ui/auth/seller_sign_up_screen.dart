@@ -23,20 +23,24 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController rePasswordController = TextEditingController();
 
-  String selectedBusinessType = 'Restaurant';
+  String selectedBusinessType = 'Hotel';
   String selectedOperatingHours = '9:00 AM - 5:00 PM';
+  String selectedDeliveryAvailability = 'Yes';
   String? selectedCity;
 
   final businessTypes = [
-    'Restaurant',
     'Hotel',
     'Patisserie',
-    'Fast Food',
+    'Bakeries',
   ];
   final operatingHours = [
     '9:00 AM - 5:00 PM',
     '10:00 AM - 6:00 PM',
     '12:00 PM - 8:00 PM',
+  ];
+  final deliveryOptions = [
+    'Yes',
+    'No',
   ];
   final cairoCities = [
     'Giza' ,
@@ -217,6 +221,29 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                       ),
                     ),
+                    SizedBox(height: verticalSpacing * 1.2),
+
+                    /// Delivery Availability Dropdown
+                    DropdownButtonFormField<String>(
+                      value: selectedDeliveryAvailability,
+                      items: deliveryOptions
+                          .map((option) => DropdownMenuItem(
+                        value: option,
+                        child: Text(option),
+                      ))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() => selectedDeliveryAvailability = value!);
+                      },
+                      decoration: InputDecoration(
+                        labelText: "Delivery Available",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+                      ),
+                    ),
                   ],
                 ),
 
@@ -245,11 +272,12 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                               'city': selectedCity,
                               'businessType': selectedBusinessType,
                               'operatingHours': selectedOperatingHours,
+                              'deliveryAvailable': selectedDeliveryAvailability,
                               'createdAt': FieldValue.serverTimestamp(),
                             });
 
-                         SnackBarServices.showSuccessMessage("Account Created Successfully");
-                         Navigator.pushNamed(context, PagesRouteName.login);
+                            SnackBarServices.showSuccessMessage("Account Created Successfully");
+                            Navigator.pushNamed(context, PagesRouteName.login);
                           }
                         } catch (e) {
                           SnackBarServices.showErrorMessage("Failed to Create Account");
@@ -306,4 +334,3 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
     );
   }
 }
-

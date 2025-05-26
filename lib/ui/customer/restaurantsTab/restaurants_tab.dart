@@ -22,9 +22,8 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
   late Future<List<RestaurantCardData>> futureRestaurantsData;
   List<String> tabNames = [
     "All",
-    "Fast Food",
+    "Bakeries",
     "Hotel",
-    "Restaurants",
     "Desserts",
   ];
   List<RestaurantCardData> restaurantsData = [];

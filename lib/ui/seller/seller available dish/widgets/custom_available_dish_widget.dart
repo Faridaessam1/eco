@@ -89,7 +89,7 @@ class CustomAvailableDishWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "\$${double.parse(availableDishDataModel.dishPrice).toStringAsFixed(2)}",
+                            "${double.parse(availableDishDataModel.dishPrice).toStringAsFixed(2)} EGP",
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,

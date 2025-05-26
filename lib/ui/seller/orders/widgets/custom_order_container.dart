@@ -9,7 +9,7 @@ class CustomOrderContainer extends StatelessWidget {
   final OrderDataModel orderDataModel;
   final Function(String) onUpdateStatus;
 
-  CustomOrderContainer({super.key, required this.orderDataModel, required this.onUpdateStatus});
+  const CustomOrderContainer({super.key, required this.orderDataModel, required this.onUpdateStatus});
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +29,13 @@ class CustomOrderContainer extends StatelessWidget {
         orderStatusColor = AppColors.green;
         break;
       default:
-        orderStatusColor = AppColors.grey; // في حالة غير معروفة
+        orderStatusColor = AppColors.grey;
     }
 
     return Container(
       width: mediaQuery.size.width * 0.9,
       height: mediaQuery.size.height * 0.29,
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
@@ -49,27 +49,27 @@ class CustomOrderContainer extends StatelessWidget {
             children: [
               Text(
                 "#${orderDataModel.orderNumber}",
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               CustomStatusContainer(
                 orderStatus: orderDataModel.orderStatus,
                 orderStatusColor: orderStatusColor,
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Row(
             children: [
               Text(
                 orderDataModel.time,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: AppColors.black,
@@ -77,12 +77,12 @@ class CustomOrderContainer extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Row(
             children: [
-              Text(
+              const Text(
                 "Customer:",
                 style: TextStyle(
                   fontSize: 14,
@@ -92,7 +92,7 @@ class CustomOrderContainer extends StatelessWidget {
               ),
               Text(
                 orderDataModel.customerName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: AppColors.black,
@@ -100,12 +100,12 @@ class CustomOrderContainer extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Row(
             children: [
-              Text(
+              const Text(
                 "Address:",
                 style: TextStyle(
                   fontSize: 14,
@@ -115,7 +115,7 @@ class CustomOrderContainer extends StatelessWidget {
               ),
               Text(
                 orderDataModel.customerAddress!,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: AppColors.black,
@@ -123,12 +123,12 @@ class CustomOrderContainer extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Row(
             children: [
-              Text(
+              const Text(
                 "Items:",
                 style: TextStyle(
                   fontSize: 14,
@@ -136,9 +136,10 @@ class CustomOrderContainer extends StatelessWidget {
                   color: AppColors.grey,
                 ),
               ),
+
               Text(
                 orderDataModel.orderItemCount!,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: AppColors.black,
@@ -146,14 +147,29 @@ class CustomOrderContainer extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
+            height: 5,
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              orderDataModel.items.map((i) => "${i.name} x${i.quantity}").join(", "),
+              textAlign: TextAlign.left,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: AppColors.grey,
+              ),
+            ),
+          ),
+          const SizedBox(
             height: 5,
           ),
           Row(
             children: [
               Text(
-                "Total: \$${orderDataModel.orderAmount}",
-                style: TextStyle(
+                "Total: ${orderDataModel.orderAmount} EGP",
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
                   color: AppColors.black,
@@ -161,7 +177,7 @@ class CustomOrderContainer extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           SizedBox(
@@ -219,4 +235,6 @@ class CustomOrderContainer extends StatelessWidget {
       },
     );
   }
+
 }
+

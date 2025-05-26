@@ -155,8 +155,6 @@ class _OrdersViewState extends State<OrdersView> {
         .doc(orderId)
         .update({'orderStatus': newStatus});
   }
+
 }
-
-
-
 

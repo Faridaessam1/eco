@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class OrderDataModel {
   String id;
-   String orderNumber;
-   String orderStatus;
+  String orderNumber;
+  String orderStatus;
   final String? orderItemCount;
   final Color orderStatusColor;
   final String? orderDetails;
@@ -12,7 +12,8 @@ class OrderDataModel {
   final String? customerAddress;
   final String time;
 
-   OrderDataModel({
+  OrderDataModel({
+
     required this.id,
     required this.orderNumber,
     required this.orderStatus,
@@ -85,5 +86,5 @@ class OrderDataModel {
     return Colors.grey; // fallback default
   }
 
-
 }
+

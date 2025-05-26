@@ -18,6 +18,8 @@ import '../../ui/customer/orders/customer_order_screen.dart';
 import '../../ui/customer/restaurantsFoodItems/restaurants_food_items.dart';
 import '../../ui/customer/restaurantsTab/restaurants_tab.dart';
 import '../../ui/onBoarding/widget/onBoardingScreen.dart';
+import '../../ui/seller/orders/orders_view.dart';
+import '../../ui/seller/seller available dish/seller_available_dish.dart';
 import '../../ui/seller/widgets/layout_view.dart';
 import '../../ui/splash/splash_screen.dart';
 
@@ -70,6 +72,11 @@ class AppRoutes {
       case PagesRouteName.sellerNewDishScreen:
         return MaterialPageRoute(
           builder: (context) => const NewDishView(),
+          settings: settings,
+        );
+        case PagesRouteName.sellerOrdersScreen:
+        return MaterialPageRoute(
+          builder: (context) => const OrdersView(),
           settings: settings,
         );
 

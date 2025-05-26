@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+
 import '../../Data/complete_order_data_model.dart';
 import '../../Data/food_card_in_cart_tab_data.dart';
 
@@ -23,15 +24,36 @@ class OrderService {
     required String orderType,
   }) async {
     try {
-      print("===== ORDER SERVICE: START CREATE ORDER =====");
-      print("Customer ID: $customerId");
-      print("Seller ID: $sellerId");
-      print("Customer Name: $customerName");
-      print("Address: $customerAddress");
-      print("Phone: $customerPhone");
-      print("Cart Items Count: ${cartItems.length}");
-      print("Payment Method: $paymentMethod");
-      print("Order Type: $orderType");
+      // Validate customer name - apply fallback if null or empty
+      if (customerName.isEmpty) {
+        print("WARNING: Customer name is empty, using 'Unknown Customer'");
+        customerName = "Unknown Customer";
+      }
+
+      // Fetch seller name if not already provided
+      String sellerName = "Unknown Restaurant";
+      try {
+        // Try sellers collection first
+        final sellerDoc = await _firestore.collection('sellers').doc(sellerId).get();
+        if (sellerDoc.exists) {
+          final sellerData = sellerDoc.data() as Map<String, dynamic>;
+          sellerName = sellerData['businessName'] ?? sellerData['name'] ?? sellerName;
+          print("Fetched seller name from sellers collection: $sellerName");
+        } else {
+          // Try users collection as fallback
+          final userDoc = await _firestore.collection('users').doc(sellerId).get();
+          if (userDoc.exists) {
+            final userData = userDoc.data() as Map<String, dynamic>;
+            sellerName = userData['businessName'] ?? userData['name'] ?? sellerName;
+            print("Fetched seller name from users collection: $sellerName");
+          } else {
+            print("WARNING: Seller document not found in either collection");
+          }
+        }
+      } catch (e) {
+        print("Error fetching seller name: $e");
+        // Continue with default seller name
+      }
 
       // Generate a unique order ID
       final String orderId = _firestore.collection('orders').doc().id;
@@ -41,10 +63,7 @@ class OrderService {
       List<OrderItemModel> orderItems = cartItems.map((item) {
         String dishId = dishIdMap[item.foodName] ?? '';
         print("Mapping cart item: ${item.foodName} -> Dish ID: $dishId");
-        return OrderItemModel.fromCartItem(
-            item,
-            dishId // Get dishId from the map
-        );
+        return OrderItemModel.fromCartItem(item, dishId);
       }).toList();
 
       print("Converted ${orderItems.length} items to OrderItemModel");
@@ -66,46 +85,41 @@ class OrderService {
         orderStatus: 'pending',
         orderType: orderType,
         createdAt: Timestamp.now(),
+        sellerName: sellerName,
       );
 
       print("Created order model with ID: ${order.orderId}");
 
-      // Check what the order.toFirestore() returns
       final Map<String, dynamic> orderData = order.toFirestore();
       print("Order data for Firestore - sellerId value: ${orderData['uid']}");
       print("Order data for Firestore - all keys: ${orderData.keys.toList()}");
 
-      // Save order to customer's orders subcollection
-      print("Saving to customer subcollection: users/$customerId/orders/$orderId");
-      await _firestore
-          .collection('users')
-          .doc(customerId)
-          .collection('orders')
-          .doc(orderId)
-          .set(order.toFirestore());
-      print("Successfully saved to customer's orders subcollection");
-
-      // Save the same order to seller's orders subcollection
-      print("Saving to seller subcollection: users/$sellerId/orders/$orderId");
+      // Save to customer's orders subcollection
       try {
-        await _firestore
-            .collection('users')
-            .doc(sellerId)
-            .collection('orders')
-            .doc(orderId)
-            .set(order.toFirestore());
+        await _firestore.collection('users').doc(customerId).collection('orders').doc(orderId).set(orderData);
+        print("Successfully saved to customer's orders subcollection");
+      } catch (e) {
+        print("ERROR saving to customer's orders subcollection: $e");
+        throw Exception('Failed to save order to customer data: $e');
+      }
+
+      // Save to seller's orders subcollection
+      try {
+        await _firestore.collection('users').doc(sellerId).collection('orders').doc(orderId).set(orderData);
         print("Successfully saved to seller's orders subcollection");
       } catch (e) {
         print("ERROR saving to seller's orders subcollection: $e");
+        // Don't throw here, we'll try to save to main collection anyway
       }
 
-      // Optional: Create a general orders collection for admin purposes
-      print("Saving to main orders collection: orders/$orderId");
-      await _firestore
-          .collection('orders')
-          .doc(orderId)
-          .set(order.toFirestore());
-      print("Successfully saved to main orders collection");
+      // Save to main orders collection
+      try {
+        await _firestore.collection('orders').doc(orderId).set(orderData);
+        print("Successfully saved to main orders collection");
+      } catch (e) {
+        print("ERROR saving to main orders collection: $e");
+        throw Exception('Failed to save order to main collection: $e');
+      }
 
       print("===== ORDER SERVICE: COMPLETED CREATE ORDER =====");
       return orderId;
@@ -116,6 +130,7 @@ class OrderService {
     }
   }
 
+  // Rest of the code remains the same...
   // Update order status - Updates in both customer and seller subcollections
   Future<void> updateOrderStatus({
     required String orderId,

@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Data/seller_available_dish_data_model.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/routes/page_route_names.dart';
 import '../../../core/seller services/seller_available_dish_services.dart';
 
 class SellerAvailableDish extends StatefulWidget {
@@ -15,6 +17,8 @@ class SellerAvailableDish extends StatefulWidget {
 
 class _SellerAvailableDishState extends State<SellerAvailableDish> {
   late Future<List<SellerAvailableDishDataModel>> _dishesFuture;
+  int totalOrders = 156; // Sample data for total orders
+  int activeDishes = 24; // Sample data for active dishes
 
   @override
   void initState() {
@@ -57,59 +61,181 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
     return finalDishes;
   }
 
-  Future<void> updateDishAvailability(String dishId, bool isAvailable) async {
-    final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('dishes')
-        .doc(dishId)
-        .update({'isAvailable': isAvailable});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("EcoEaters"),
+        backgroundColor: Colors.white,
+        title: const Text(
+          "Eco Eaters",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        centerTitle: false,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_upward, color: Colors.black),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.filter_list, color: Colors.black),
+            onPressed: () {},
+          ),
+        ],
       ),
-      body: FutureBuilder<List<SellerAvailableDishDataModel>>(
-        future: _dishesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No available dishes"));
-          }
-
-          final dishes = snapshot.data!;
-
-          return ListView.builder(
-            itemCount: dishes.length,
-            itemBuilder: (context, index) {
-              final dish = dishes[index];
-
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: CustomAvailableDishWidget(
-                  availableDishDataModel: dish,
-                  isAvailable: dish.isAvailable,
-                  onToggle: (newValue) async {
-                    setState(() {
-                      dish.isAvailable = newValue;
-                    });
-                    await SellerDishesServices.updateDishAvailability(
-                        dish.id, newValue);
-                  },
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Stats section
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Active Dishes stats
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      children: [
+                        const Text(
+                          "Active Dishes",
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "$activeDishes",
+                          style: const TextStyle(
+                            color: AppColors.primaryColor,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              );
-            },
-          );
-        },
+                const SizedBox(width: 12),
+                // Total Orders stats
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      children: [
+                        const Text(
+                          "Total Orders",
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "$totalOrders",
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Your Dishes section header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Your Dishes",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pushNamed(context,PagesRouteName.sellerNewDishScreen);
+                  },
+                  icon: const Icon(Icons.add, color: Colors.white),
+                  label: const Text("Add New", style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Dishes list
+          Expanded(
+            child: FutureBuilder<List<SellerAvailableDishDataModel>>(
+              future: _dishesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text("No available dishes"));
+                }
+
+                final dishes = snapshot.data!;
+
+                return ListView.builder(
+                  itemCount: dishes.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemBuilder: (context, index) {
+                    final dish = dishes[index];
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: CustomAvailableDishWidget(
+                        availableDishDataModel: dish,
+                        isAvailable: dish.isAvailable,
+                        onToggle: (newValue) async {
+                          setState(() {
+                            dish.isAvailable = newValue;
+                          });
+                          await SellerDishesServices.updateDishAvailability(
+                              dish.id, newValue);
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+
+          // Bottom navigation bar
+        ],
       ),
     );
   }
+
 }

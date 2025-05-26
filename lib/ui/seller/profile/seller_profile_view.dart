@@ -27,6 +27,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   String? selectedBusinessType;
   String? selectedOperatingHours;
   String? selectedAddress;
+  bool deliveryAvailability = false; // Added delivery availability
   File? _image;
   String? _imageUrl;
 
@@ -60,6 +61,11 @@ class _SellerProfileViewState extends State<SellerProfileView> {
       onOperatingHoursSelected: (value) {
         setState(() {
           selectedOperatingHours = value;
+        });
+      },
+      onDeliveryAvailabilitySelected: (value) { // Added callback for delivery availability
+        setState(() {
+          deliveryAvailability = value;
         });
       },
     );
@@ -131,15 +137,15 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                   borderRadius: BorderRadius.circular(12),
                   image: _imageUrl != null
                       ? DecorationImage(
-                          image: NetworkImage(_imageUrl!),
-                          fit: BoxFit.cover,
-                        )
+                    image: NetworkImage(_imageUrl!),
+                    fit: BoxFit.cover,
+                  )
                       : _image != null
-                          ? DecorationImage(
-                              image: FileImage(_image!),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
+                      ? DecorationImage(
+                    image: FileImage(_image!),
+                    fit: BoxFit.cover,
+                  )
+                      : null,
                   border: Border.all(
                     color: AppColors.grey,
                     width: 2,
@@ -168,15 +174,15 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                     ),
                     if (_image != null)
                       GestureDetector(
-                      onTap: _uploadImage,
-                      child: const Text(
-                        "Upload image",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.green),
+                        onTap: _uploadImage,
+                        child: const Text(
+                          "Upload image",
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.green),
+                        ),
                       ),
-                    ),
                     const SizedBox(height: 10),
                     _imageUrl != null
                         ? const Text(
@@ -389,6 +395,16 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                     const SizedBox(
                       height: 20,
                     ),
+                    const Text(
+                      "Location",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.black),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     CustomDropdown<String>(
                       hintText: 'Select location',
                       items: cairoCities,
@@ -416,8 +432,6 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                         ),
                       ),
                     ),
-
-
                     const SizedBox(
                       height: 20,
                     ),
@@ -439,7 +453,6 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                         setState(() {
                           selectedOperatingHours = value;
                         });
-
                       },
                       decoration: CustomDropdownDecoration(
                         closedBorder: Border.all(
@@ -462,6 +475,54 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                     const SizedBox(
                       height: 20,
                     ),
+                    // Delivery Availability Section
+                    const Text(
+                      "Delivery Service",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.black),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: AppColors.grey,
+                          width: 1.8,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            deliveryAvailability ? "Delivery Available" : "No Delivery",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: deliveryAvailability ? AppColors.green : AppColors.textGreyColor,
+                            ),
+                          ),
+                          Switch(
+                            value: deliveryAvailability,
+                            onChanged: (value) {
+                              setState(() {
+                                deliveryAvailability = value;
+                              });
+                            },
+                            activeColor: AppColors.green,
+                            inactiveThumbColor: AppColors.grey,
+                            inactiveTrackColor: AppColors.grey.withOpacity(0.3),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                   ],
                 ),
               ),
@@ -473,6 +534,9 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                       onPressed: () async {
                         // Validate the form before updating
                         if (_formKey.currentState?.validate() ?? false) {
+                          // Show loading
+                          EasyLoading.show(status: 'Updating...');
+
                           // If the form is valid, proceed with the update
                           bool success = await FireBaseFirestoreServicesSeller
                               .updateSellerProfile(
@@ -483,24 +547,21 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                             city: selectedAddress ?? "",
                             operatingHours: selectedOperatingHours ?? '',
                             businessType: selectedBusinessType,
+                            deliveryAvailability: deliveryAvailability, // Added delivery availability
                           );
 
+                          EasyLoading.dismiss();
+
                           if (success) {
-                            // Show a success message or navigate to another screen
-                            EasyLoading.show();
-                            SnackBarServices.showSuccessMessage("Account Updated Successfully");
-                            EasyLoading.dismiss();
+                            // Show a success message
+                            SnackBarServices.showSuccessMessage("Profile Updated Successfully");
                           } else {
                             // Show an error message
-                            EasyLoading.show();
                             SnackBarServices.showErrorMessage("Failed to update profile. Try again.");
-                            EasyLoading.dismiss();
                           }
                         } else {
                           // If the form is not valid, show a message
-                          EasyLoading.show();
                           SnackBarServices.showWarningMessage('Please fill in all fields correctly.');
-                          EasyLoading.dismiss();
                         }
                       },
                       text: "Update Profile",
@@ -515,7 +576,9 @@ class _SellerProfileViewState extends State<SellerProfileView> {
                   Expanded(
                     child: CustomElevatedButton(
                       onPressed: () async {
+                        EasyLoading.show(status: 'Logging out...');
                         await FirebaseFunctions.logout();
+                        EasyLoading.dismiss();
                         Navigator.pushReplacementNamed(context,PagesRouteName.login);
                       },
                       text: "Logout",
@@ -534,6 +597,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
       ),
     );
   }
+
   void _pickImage() async {
     final picked = await SellerProfileServices.pickImage();
     if (picked != null) {
@@ -545,16 +609,20 @@ class _SellerProfileViewState extends State<SellerProfileView> {
 
   void _uploadImage() async {
     if (_image == null) return;
+    EasyLoading.show(status: 'Uploading image...');
     await SellerProfileServices.uploadAndSaveImage(
       image: _image!,
       onSuccess: (url) {
         setState(() {
           _imageUrl = url;
         });
+        EasyLoading.dismiss();
+        SnackBarServices.showSuccessMessage("Image uploaded successfully!");
       },
       onError: (error) {
+        EasyLoading.dismiss();
         print("Image upload error: $error");
-        // Show a snackbar or alert if needed
+        SnackBarServices.showErrorMessage("Failed to upload image. Try again.");
       },
     );
   }

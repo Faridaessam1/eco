@@ -23,7 +23,7 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
   List<String> tabNames = [
     "All",
     "Bakeries",
-    "Hotel",
+    "Hotels",
     "Patisserie",
   ];
   List<RestaurantCardData> restaurantsData = [];

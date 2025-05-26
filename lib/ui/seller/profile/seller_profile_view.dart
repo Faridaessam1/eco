@@ -73,7 +73,7 @@ class _SellerProfileViewState extends State<SellerProfileView> {
     var mediaQuery = MediaQuery.of(context);
     final List<String> sellerCategoriesList = [
       'Bakeries',
-      'Hotel',
+      'Hotels',
       'Patisserie',
     ];
     final List<String> operatingHoursList = [

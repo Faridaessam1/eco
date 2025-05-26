@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
@@ -7,7 +6,6 @@ import 'package:eco_eaters_app_3/core/utils/validation.dart';
 import 'package:eco_eaters_app_3/core/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-
 import '../../../core/FirebaseServices/firebase_auth.dart';
 import '../../../core/FirebaseServices/firebase_firestore_seller.dart';
 import '../../../core/constants/app_assets.dart';

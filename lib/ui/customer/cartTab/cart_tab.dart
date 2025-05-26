@@ -8,7 +8,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/cart_provider.dart';
 import '../../../core/widgets/custom_elevated_button.dart';
 import '../../../core/utils/snack_bar_services.dart';
-import '../delievery/delievery_screen.dart';
 import '../../../core/FirebaseServices/firebase_firestore_seller.dart';  // إضافة import
 
 class CartTab extends StatefulWidget {
@@ -255,7 +254,10 @@ class _CartTabState extends State<CartTab> {
 
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DeliveryHelpScreen()),
+                MaterialPageRoute(builder: (context) => PaymentMethodScreen(
+                  sellerId: cartProvider.currentSellerId,
+                  orderType: "delivery",
+                )),
               );
             },
             text: "Delivery Order",

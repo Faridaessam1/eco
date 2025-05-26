@@ -2,7 +2,6 @@ import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:eco_eaters_app_3/ui/auth/otp_screen.dart';
 import 'package:eco_eaters_app_3/ui/auth/phone_login.dart';
 import 'package:eco_eaters_app_3/ui/auth/seller_sign_up_screen.dart';
-import 'package:eco_eaters_app_3/ui/customer/delievery/delievery_screen.dart';
 import 'package:eco_eaters_app_3/ui/customer/feedbackScreen/feedback.dart';
 
 import 'package:eco_eaters_app_3/ui/seller/new%20dish/new_dish_view.dart';
@@ -101,11 +100,7 @@ class AppRoutes {
           builder: (context) => CustomerOrderScreen(),
           settings: settings,
         );
-      case PagesRouteName.paymentMethod:
-        return MaterialPageRoute(
-          builder: (context) => DeliveryHelpScreen(),
-          settings: settings,
-        );
+
       case PagesRouteName.sellerHomeLayout:
         return MaterialPageRoute(
           builder: (context) => const LayOutViewSeller(),

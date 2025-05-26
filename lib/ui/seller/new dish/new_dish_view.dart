@@ -35,10 +35,9 @@ class _NewDishViewState extends State<NewDishView> {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context);
     final List<String> _sellerCategoriesList = [
-      "Restaurant",
-      "Hotel",
-      "Fast Food",
-      "Desserts",
+      'Hotels',
+      'Patisserie',
+      'Bakeries',
     ];
 
     return Scaffold(

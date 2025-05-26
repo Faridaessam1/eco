@@ -62,7 +62,7 @@ class CustomRecentOrderContainer extends StatelessWidget {
                 width: 5,
               ),
               Text(
-                "\$${orderDataModel.orderAmount}",
+                "${orderDataModel.orderAmount} EGP",
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 14,

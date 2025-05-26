@@ -168,7 +168,7 @@ class CustomOrderContainer extends StatelessWidget {
           Row(
             children: [
               Text(
-                "Total: \$${orderDataModel.orderAmount}",
+                "Total: ${orderDataModel.orderAmount} EGP",
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,

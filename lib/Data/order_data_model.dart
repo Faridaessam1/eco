@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../ui/seller/home/home_view.dart';
 
 class OrderDataModel {
   String id;
@@ -11,6 +13,7 @@ class OrderDataModel {
   final String customerName;
   final String? customerAddress;
   final String time;
+  List<OrderItem> items;
 
   OrderDataModel({
 
@@ -24,6 +27,7 @@ class OrderDataModel {
     required this.customerName,
     this.customerAddress = "",
     required this.time,
+    required this.items,
   });
 
   OrderDataModel copyWith({
@@ -36,6 +40,7 @@ class OrderDataModel {
     String? orderItemCount,
     String? orderAmount,
     Color? orderStatusColor,
+    List<OrderItem>? items,
   }) {
     return OrderDataModel(
       id: this.id,
@@ -47,6 +52,7 @@ class OrderDataModel {
       customerAddress: this.customerAddress,
       time: this.time,
       orderItemCount: this.orderItemCount,
+      items: items ?? this.items,
     );
   }
 
@@ -65,26 +71,46 @@ class OrderDataModel {
   }
 
   factory OrderDataModel.fromFireStore(Map<String, dynamic> json, String docId) {
+    final timestamp = json["createdAt"];
+    final time = timestamp is Timestamp ? timestamp.toDate().toString() : DateTime.now().toString();
+
+    // تحويل الـ items من List<dynamic> لـ List<OrderItem>
+    final itemsJson = json["items"] as List<dynamic>? ?? [];
+    final itemsList = itemsJson.map((item) => OrderItem.fromJson(item as Map<String, dynamic>)).toList();
+
     return OrderDataModel(
       id: docId,
-      orderNumber: " ",
+      orderNumber: " ", // will be overwritten later
       orderStatus: json["orderStatus"] ?? "Pending",
-      orderItemCount: json["orderItemCount"]?.toString() ?? "",
-      orderDetails: json["orderDetails"]?.toString() ?? "",
-      orderStatusColor: _parseColor(json["orderStatusColor"]),
-      orderAmount: json["orderAmount"]?.toString() ?? "0",
+      orderItemCount: (json["items"] as List<dynamic>?)?.length.toString() ?? "0",
+      orderDetails: "", // Not present in Firestore, maybe generate from items later
+      orderStatusColor: getStatusColor(json["orderStatus"] ?? "Pending"),
+      orderAmount: json["totalAmount"]?.toString() ?? "0.0",
       customerName: json["customerName"] ?? "Unknown",
       customerAddress: json["customerAddress"] ?? "",
-      time: json["time"] ?? DateTime.now().toString(),
+      time: time,
+      items: itemsList,
     );
-  }
-
-  static Color _parseColor(dynamic value) {
-    if (value is int) {
-      return Color(value);
-    }
-    return Colors.grey; // fallback default
   }
 
 }
 
+class OrderItem {
+  final String name;
+  final int quantity;
+  final double price;
+
+  OrderItem({
+    required this.name,
+    required this.quantity,
+    required this.price,
+  });
+
+  factory OrderItem.fromJson(Map<String, dynamic> json) {
+    return OrderItem(
+      name: json['name'] ?? 'Unknown',
+      quantity: json['quantity'] ?? 0,
+      price: (json['price'] ?? 0).toDouble(),
+    );
+  }
+}

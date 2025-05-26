@@ -9,9 +9,56 @@ import '../../../core/providers/cart_provider.dart';
 import '../../../core/widgets/custom_elevated_button.dart';
 import '../../../core/utils/snack_bar_services.dart';
 import '../delievery/delievery_screen.dart';
+import '../../../core/FirebaseServices/firebase_firestore_seller.dart';  // إضافة import
 
-class CartTab extends StatelessWidget {
+class CartTab extends StatefulWidget {
   CartTab({super.key});
+
+  @override
+  State<CartTab> createState() => _CartTabState();
+}
+
+class _CartTabState extends State<CartTab> {
+  bool? deliveryAvailable;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkDeliveryAvailability();
+  }
+
+  Future<void> _checkDeliveryAvailability() async {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+
+    if (cartProvider.currentSellerId.isNotEmpty) {
+      try {
+        final availability = await FireBaseFirestoreServicesSeller.getSellerDeliveryAvailability(
+            cartProvider.currentSellerId
+        );
+
+        if (mounted) {
+          setState(() {
+            deliveryAvailable = availability;
+            isLoading = false;
+          });
+        }
+      } catch (e) {
+        print("Error checking delivery availability: $e");
+        if (mounted) {
+          setState(() {
+            deliveryAvailable = false;
+            isLoading = false;
+          });
+        }
+      }
+    } else {
+      setState(() {
+        deliveryAvailable = false;
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +127,9 @@ class CartTab extends StatelessWidget {
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.only(bottom: 210), // Reserve space for bottom section
+            padding: EdgeInsets.only(
+                bottom: _getBottomPadding()
+            ), // Dynamic padding based on button count
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               itemCount: cardData.length,
@@ -114,63 +163,11 @@ class CartTab extends StatelessWidget {
                   _buildRow("Total Price", totalPrice, isBold: true, color: AppColors.black),
                   const SizedBox(height: 16),
 
-                  // Full-width buttons
-                  SizedBox(
-                    width: double.infinity,
-                    child: CustomElevatedButton(
-                      onPressed: () {
-                        // Check if we have a valid seller ID
-                        if (cartProvider.currentSellerId.isEmpty) {
-                          SnackBarServices.showErrorMessage(
-                              "Unable to identify seller. Please try again or re-add items to cart."
-                          );
-                          return;
-                        }
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => PaymentMethodScreen(
-                            sellerId: cartProvider.currentSellerId,
-                            orderType: "pickup",
-                          )),
-                        );
-                      },
-                      text: "Pickup Order",
-                      icon: Icons.store,
-                      buttonColor: AppColors.primaryColor,
-                      borderRadius: 20,
-                      textColor: AppColors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: CustomElevatedButton(
-                      onPressed: () {
-                        // Check if we have a valid seller ID
-                        if (cartProvider.currentSellerId.isEmpty) {
-                          SnackBarServices.showErrorMessage(
-                              "Unable to identify seller. Please try again or re-add items to cart."
-                          );
-                          return;
-                        }
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => DeliveryHelpScreen()),
-                        );
-                      },
-                      text: "Delivery Order",
-                      icon: Icons.delivery_dining,
-                      buttonColor: AppColors.primaryColor,
-                      borderRadius: 20,
-                      textColor: AppColors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  // عرض الـ buttons حسب availability
+                  if (isLoading)
+                    const Center(child: CircularProgressIndicator())
+                  else
+                    _buildActionButtons(cartProvider),
                 ],
               ),
             ),
@@ -178,6 +175,105 @@ class CartTab extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildActionButtons(CartProvider cartProvider) {
+    // لو delivery availability = false، اعرض button واحد للـ checkout
+    if (deliveryAvailable == false) {
+      return SizedBox(
+        width: double.infinity,
+        child: CustomElevatedButton(
+          onPressed: () {
+            if (cartProvider.currentSellerId.isEmpty) {
+              SnackBarServices.showErrorMessage(
+                  "Unable to identify seller. Please try again or re-add items to cart."
+              );
+              return;
+            }
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => PaymentMethodScreen(
+                sellerId: cartProvider.currentSellerId,
+                orderType: "pickup",
+              )),
+            );
+          },
+          text: "Proceed to Checkout",
+          icon: Icons.shopping_cart_checkout,
+          buttonColor: AppColors.primaryColor,
+          borderRadius: 20,
+          textColor: AppColors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+        ),
+      );
+    }
+
+    // لو delivery availability = true، اعرض الـ 2 buttons
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: CustomElevatedButton(
+            onPressed: () {
+              if (cartProvider.currentSellerId.isEmpty) {
+                SnackBarServices.showErrorMessage(
+                    "Unable to identify seller. Please try again or re-add items to cart."
+                );
+                return;
+              }
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PaymentMethodScreen(
+                  sellerId: cartProvider.currentSellerId,
+                  orderType: "pickup",
+                )),
+              );
+            },
+            text: "Pickup Order",
+            icon: Icons.store,
+            buttonColor: AppColors.primaryColor,
+            borderRadius: 20,
+            textColor: AppColors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          child: CustomElevatedButton(
+            onPressed: () {
+              if (cartProvider.currentSellerId.isEmpty) {
+                SnackBarServices.showErrorMessage(
+                    "Unable to identify seller. Please try again or re-add items to cart."
+                );
+                return;
+              }
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DeliveryHelpScreen()),
+              );
+            },
+            text: "Delivery Order",
+            icon: Icons.delivery_dining,
+            buttonColor: AppColors.primaryColor,
+            borderRadius: 20,
+            textColor: AppColors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+
+  double _getBottomPadding() {
+    if (isLoading) return 180;
+    return deliveryAvailable == true ? 210 : 160;
   }
 
   Widget _buildRow(String label, double value,

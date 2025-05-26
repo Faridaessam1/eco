@@ -29,9 +29,9 @@ abstract class FireBaseFirestoreServicesSeller {
         .doc(userId)
         .collection('dishes')
         .withConverter<DishDataModel>(
-          fromFirestore: (snapshot, _) => DishDataModel.fromFirestore(snapshot),
-          toFirestore: (model, _) => model.toFireStore(),
-        )
+      fromFirestore: (snapshot, _) => DishDataModel.fromFirestore(snapshot),
+      toFirestore: (model, _) => model.toFireStore(),
+    )
         .snapshots();
   }
 
@@ -43,30 +43,40 @@ abstract class FireBaseFirestoreServicesSeller {
     required Function(String) onAddressSelected,
     required Function(String?) onBusinessTypeSelected,
     required Function(String?) onOperatingHoursSelected,
+    required Function(bool) onDeliveryAvailabilitySelected,  // إضافة جديدة
   }) async {
     final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-try{
-  final doc = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(currentUserId)
-      .get();
+    try{
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUserId)
+          .get();
 
-  if (doc.exists) {
-    final data = doc.data()!;
+      if (doc.exists) {
+        final data = doc.data()!;
 
-      businessNameController.text = data['businessName'] ;
-      contactPersonController.text = data['contactPerson'];
-      phoneController.text = data['phone'] ;
-      emailController.text = data['email'] ;
+        businessNameController.text = data['businessName'] ;
+        contactPersonController.text = data['contactPerson'];
+        phoneController.text = data['phone'] ;
+        emailController.text = data['email'] ;
 
-      onAddressSelected(data['city']?.toString().trim() ?? 'No address available');
-      onBusinessTypeSelected(data['businessType']?.toString().trim());
-      onOperatingHoursSelected(data['operatingHours']?.toString().trim());
+        onAddressSelected(data['city']?.toString().trim() ?? 'No address available');
+        onBusinessTypeSelected(data['businessType']?.toString().trim());
+        onOperatingHoursSelected(data['operatingHours']?.toString().trim());
+        // Handle both field names for backward compatibility
+        bool deliveryAvail = false;
+        if (data.containsKey('deliveryAvailability')) {
+          deliveryAvail = data['deliveryAvailability'] ?? false;
+        } else if (data.containsKey('deliveryAvailable')) {
+          String? deliveryStr = data['deliveryAvailable']?.toString();
+          deliveryAvail = deliveryStr?.toLowerCase() == 'yes' || deliveryStr?.toLowerCase() == 'true';
+        }
+        onDeliveryAvailabilitySelected(deliveryAvail);
 
-  }
-} catch(e){
-  print("Error fetching seller data: $e");
-}
+      }
+    } catch(e){
+      print("Error fetching seller data: $e");
+    }
   }
 
   // update function
@@ -78,6 +88,7 @@ try{
     required String city,
     required String operatingHours,
     String? businessType,
+    required bool deliveryAvailability,  // إضافة جديدة
   }) async {
     try {
       var userId =
@@ -86,7 +97,7 @@ try{
       if (userId != null) {
         // Reference to the user document
         var userDocRef =
-            FirebaseFirestore.instance.collection('users').doc(userId);
+        FirebaseFirestore.instance.collection('users').doc(userId);
 
         // Check if the document exists
         var docSnapshot = await userDocRef.get();
@@ -104,6 +115,7 @@ try{
           'city': city,
           'operatingHours': operatingHours,
           'businessType': businessType ?? docSnapshot.data()?['businessType'],
+          'deliveryAvailability': deliveryAvailability,  // إضافة جديدة
           // Retains old value if businessType is null
         });
 
@@ -115,101 +127,32 @@ try{
       return false;
     }
   }
+
+  // دالة جديدة للحصول على delivery availability للسيلر معين
+  static Future<bool> getSellerDeliveryAvailability(String sellerId) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(sellerId)
+          .get();
+
+      if (doc.exists && doc.data() != null) {
+        final data = doc.data()!;
+
+        // Handle both field names for backward compatibility
+        if (data.containsKey('deliveryAvailability')) {
+          return data['deliveryAvailability'] ?? false;
+        } else if (data.containsKey('deliveryAvailable')) {
+          String? deliveryStr = data['deliveryAvailable']?.toString();
+          return deliveryStr?.toLowerCase() == 'yes' || deliveryStr?.toLowerCase() == 'true';
+        }
+
+        return false;
+      }
+      return false;
+    } catch (e) {
+      print("Error fetching seller delivery availability: $e");
+      return false;
+    }
+  }
 }
-
-//functions trg3 el data mn database (read data)
-//   static Future <List<RestaurantDataModel>> getDataFromFirestore(String categoryName) async {
-//     var collectionRef = getCollectionRef().where(
-//       "eventCategory" , isEqualTo: categoryName,
-//     );
-//
-//     //3ayza arg3 data(docs) el fl collection
-//     QuerySnapshot<EventDataModel> data = await collectionRef.get();
-//
-//     // bs el data btrg3 b no3 mokhtlf shewia
-//     //Future<QuerySnapshot<EventDataModel>>
-//     // hn3mlha mapping 3shan n7wel no3ha w y loop 3ala el list of doc
-//
-//     // 3nde list of QuerySnapshot<EventDataModel> el hya f variabl el data
-//     // 3yza a7welha ll model bta3e el trg3 be yeb2a mapping
-//     List<EventDataModel> eventDataList = data.docs.map(
-//           (element) {
-//             return element.data();
-//           },
-//         )
-//         .toList();
-//     return eventDataList;
-// // ana hna 3mlt el map gwa el function l2en k future l data btrg3 mra whda bs
-//   // kol ma bndah el function btgeb data t7welha w trg3ha
-//   }
-  // static Stream<QuerySnapshot<EventDataModel>> getStreamData(String categoryName){
-  //   Query<EventDataModel> collectionRef = getCollectionRef();
-  //
-  //   if (categoryName != "All") {
-  //     collectionRef = collectionRef.where(
-  //       "eventCategory",
-  //       isEqualTo: categoryName,
-  //     );
-  //   }
-  //
-  //
-  //   return collectionRef.snapshots();
-  //   //bnrg3 el collection as stream
-  //   //once 7sal change aw update yrg3hole f wa2tha msh shart a3mle refresh
-  //
-  //   //fl stream bn3ml el map hnak fl stream builder
-  //   //l2en hwa bygeb l data 3la tol kol ma y7sal change
-  //   // msh hyro7 yndah el function 3shan ygeb data
-  //   //lazm el data tthawel mngher ma andh function
-  //
-  // }
-
-//function trg3 stream data llfavorite page
-//   static Stream<QuerySnapshot<EventDataModel>> getStreamFavoriteData(){
-//     var collectionRef = getCollectionRef().where(
-//       "isFavorite", isEqualTo : true,
-//     );
-//
-//
-//
-//     return collectionRef.snapshots();
-//     //bnrg3 el collection as stream
-//     //once 7sal change aw update yrg3hole f wa2tha msh shart a3mle refresh
-//
-//     //fl dtream bn3ml el map hnak fl stream builder
-//     //l2en hwa bygeb l data 3la tol kol ma y7sal change
-//     // msh hyro7 yndah el function 3shan ygeb data
-//     //lazm el data tthawel mngher ma andh function
-//
-//   }
-
-  // static Future<bool> deleteEvent(EventDataModel data) async{
-  //   try{
-  //     var collectionRef = getCollectionRef();
-  //
-  //     var docRef = collectionRef.doc(data.eventID);
-  //
-  //     docRef.delete();
-  //     return Future.value(true);
-  //   } catch(error){
-  //     return Future.value(false);
-  //
-  //   }
-  //
-  // }
-  // static Future<bool> updateEvent(EventDataModel data) async{
-  //   try{
-  //     var collectionRef = getCollectionRef();
-  //
-  //     var docRef = collectionRef.doc(data.eventID);
-  //
-  //     docRef.update(
-  //       data.toFireStore(),
-  //     );
-  //     return Future.value(true);
-  //   } catch(error){
-  //     return Future.value(false);
-  //
-  //   }
-  //
-  // }

@@ -23,13 +23,13 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController rePasswordController = TextEditingController();
 
-  String selectedBusinessType = 'Hotel';
+  String selectedBusinessType = 'Hotels';
   String selectedOperatingHours = '9:00 AM - 5:00 PM';
-  String selectedDeliveryAvailability = 'Yes';
+  bool deliveryAvailability = true; // تغيير من String إلى bool
   String? selectedCity;
 
   final businessTypes = [
-    'Hotel',
+    'Hotels',
     'Patisserie',
     'Bakeries',
   ];
@@ -37,10 +37,6 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
     '9:00 AM - 5:00 PM',
     '10:00 AM - 6:00 PM',
     '12:00 PM - 8:00 PM',
-  ];
-  final deliveryOptions = [
-    'Yes',
-    'No',
   ];
   final cairoCities = [
     'Giza' ,
@@ -223,25 +219,50 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                     ),
                     SizedBox(height: verticalSpacing * 1.2),
 
-                    /// Delivery Availability Dropdown
-                    DropdownButtonFormField<String>(
-                      value: selectedDeliveryAvailability,
-                      items: deliveryOptions
-                          .map((option) => DropdownMenuItem(
-                        value: option,
-                        child: Text(option),
-                      ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() => selectedDeliveryAvailability = value!);
-                      },
-                      decoration: InputDecoration(
-                        labelText: "Delivery Available",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+                    /// Delivery Availability Switch - تحديث التصميم
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Delivery Available",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                deliveryAvailability
+                                    ? "Customers can order for delivery"
+                                    : "Pickup only available",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Switch(
+                            value: deliveryAvailability,
+                            onChanged: (value) {
+                              setState(() {
+                                deliveryAvailability = value;
+                              });
+                            },
+                            activeColor: AppColors.primaryColor,
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -272,7 +293,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                               'city': selectedCity,
                               'businessType': selectedBusinessType,
                               'operatingHours': selectedOperatingHours,
-                              'deliveryAvailable': selectedDeliveryAvailability,
+                              'deliveryAvailability': deliveryAvailability,  // حفظ كـ boolean
                               'createdAt': FieldValue.serverTimestamp(),
                             });
 
@@ -280,7 +301,7 @@ class _SellerSignUpScreenState extends State<SellerSignUpScreen> {
                             Navigator.pushNamed(context, PagesRouteName.login);
                           }
                         } catch (e) {
-                          SnackBarServices.showErrorMessage("Failed to Create Account");
+                          SnackBarServices.showErrorMessage("Failed to Create Account: ${e.toString()}");
                         }
                       }
                     },

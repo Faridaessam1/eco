@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-
 import 'core/providers/cart_provider.dart';
 import 'core/routes/app_routes.dart';
 import 'core/routes/page_route_names.dart';

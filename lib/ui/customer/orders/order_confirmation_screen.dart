@@ -59,21 +59,28 @@ class OrderConfirmationScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
-              CustomElevatedButton(
-                onPressed: () {
-                  // Navigate back to home screen and clear all routes
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (context) => LayoutCustomer(),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomElevatedButton(
+                      buttonColor: AppColors.primaryColor,
+                      onPressed: () {
+                        // Navigate back to home screen and clear all routes
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => LayoutCustomer(),
+                          ),
+                              (route) => false,
+                        );
+                      },
+                      text: "Back to Home",
+                      borderRadius: 20,
+                      textColor: AppColors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
-                        (route) => false,
-                  );
-                },
-                text: "Back to Home",
-                borderRadius: 20,
-                textColor: AppColors.primaryColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
+                  ),
+                ],
               )
             ],
           ),

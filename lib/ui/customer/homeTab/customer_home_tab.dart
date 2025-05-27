@@ -127,16 +127,19 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
                       child: Row(
                         children: [
                           _buildCategoryItem(
-                              "Fast Food",
-                              AppAssets.fastFoodIcon,
+                              "Hotels",
+                              AppAssets.hotelsIcon,
                               context,
                               height,
-                              width), // Pass context, height, width
-                          _buildCategoryItem("Restaurants",
-                              AppAssets.restaurantIcon, context, height, width),
-                          _buildCategoryItem("Desserts", AppAssets.dessertIcon,
-                              context, height, width),
-                          _buildCategoryItem("Hotel", AppAssets.hotelsIcon,
+                              width),
+                          // Pass context, height, width
+                          SizedBox(width: width * 0.05), // Responsive spacing
+
+                          _buildCategoryItem("Patisserie",
+                              AppAssets.dessertIcon, context, height, width),
+                          SizedBox(width: width * 0.05), // Responsive spacing
+
+                          _buildCategoryItem("Bakeries", AppAssets.bakeriesIcon,
                               context, height, width),
                         ],
                       ),

@@ -2,13 +2,13 @@ import 'package:eco_eaters_app_3/ui/customer/cartTab/widgets/food_card_widget.da
 import 'package:eco_eaters_app_3/ui/customer/paymentMethod/payment_method.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../Data/recently_added_dish_data_model.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/cart_provider.dart';
 import '../../../core/widgets/custom_elevated_button.dart';
 import '../../../core/utils/snack_bar_services.dart';
-import '../../../core/FirebaseServices/firebase_firestore_seller.dart';  // إضافة import
+import '../../../core/FirebaseServices/firebase_firestore_seller.dart';
+import '../orders/order_confirmation_screen.dart';  // إضافة import
 
 class CartTab extends StatefulWidget {
   CartTab({super.key});
@@ -215,21 +215,33 @@ class _CartTabState extends State<CartTab> {
         SizedBox(
           width: double.infinity,
           child: CustomElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (cartProvider.currentSellerId.isEmpty) {
                 SnackBarServices.showErrorMessage(
-                    "Unable to identify seller. Please try again or re-add items to cart."
-                );
+                    "Unable to identify seller. Please try again or re-add items to cart.");
                 return;
               }
 
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PaymentMethodScreen(
+              try {
+                String orderId = await FireBaseFirestoreServicesSeller.createPickupOrder(
                   sellerId: cartProvider.currentSellerId,
-                  orderType: "pickup",
-                )),
-              );
+                  items: cartProvider.cartItems,
+                  subtotal: cartProvider.subtotal,
+                  // Add other necessary fields like serviceFee, tax, etc.
+                );
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrderConfirmationScreen(
+                      orderId: orderId,
+                      orderType: "Pickup Order",
+                    ),
+                  ),
+                );
+              } catch (e) {
+                SnackBarServices.showErrorMessage("Failed to create order. Try again.");
+              }
             },
             text: "Pickup Order",
             icon: Icons.store,

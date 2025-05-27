@@ -22,4 +22,13 @@ class FoodCardInCartTabData {
       dishId: data['dishId'] ?? 'null'
     );
   }
+  Map<String, dynamic> toMap() {
+    return {
+      'dishImage': foodImgPath,
+      'dishName': foodName,
+      'dishPrice': foodPrice,
+      'dishQuantity': foodQuantity,
+      'dishId': dishId,
+    };
+  }
 }

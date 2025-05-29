@@ -154,7 +154,7 @@ class _RestaurantFoodItemState extends State<RestaurantFoodItem> {
                       ],
                     ),
                     Text(
-                      "\$${cartProvider.subtotal.toStringAsFixed(2)}",
+                      "L.E ${cartProvider.subtotal.toStringAsFixed(2)}",
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

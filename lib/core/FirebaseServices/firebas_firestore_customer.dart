@@ -149,6 +149,7 @@ abstract class FireBaseFirestoreServicesCustomer {
             .collection('users')
             .doc(userDoc.id)
             .collection('dishes')
+            .where('isAvailable', isEqualTo: true)
             .get();
 
         for (var dishDoc in dishesSnapshot.docs) {

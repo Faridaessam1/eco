@@ -8,6 +8,7 @@ import '../../../core/providers/cart_provider.dart';
 import '../../../core/widgets/custom_elevated_button.dart';
 import '../../../core/utils/snack_bar_services.dart';
 import '../../../core/FirebaseServices/firebase_firestore_seller.dart';
+import '../AddressScreen/address_screen.dart';
 import '../orders/order_confirmation_screen.dart';  // إضافة import
 
 class CartTab extends StatefulWidget {
@@ -266,7 +267,7 @@ class _CartTabState extends State<CartTab> {
 
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => PaymentMethodScreen(
+                MaterialPageRoute(builder: (context) => AddressScreen(
                   sellerId: cartProvider.currentSellerId,
                   orderType: "delivery",
                 )),

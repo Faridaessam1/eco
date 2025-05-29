@@ -13,7 +13,6 @@ class CustomOrderContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     var mediaQuery = MediaQuery.of(context);
 
     // تحديد اللون بناءً على حالة الطلب
@@ -29,13 +28,13 @@ class CustomOrderContainer extends StatelessWidget {
         orderStatusColor = AppColors.green;
         break;
       default:
-        orderStatusColor = AppColors.grey;
+        orderStatusColor = AppColors.darkGrey;
     }
 
     return Container(
       width: mediaQuery.size.width * 0.9,
-      height: mediaQuery.size.height * 0.29,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      // تم إزالة الارتفاع الثابت ليصبح ديناميكي
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
@@ -44,7 +43,9 @@ class CustomOrderContainer extends StatelessWidget {
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Order Number and Status Row
           Row(
             children: [
               Text(
@@ -62,124 +63,124 @@ class CustomOrderContainer extends StatelessWidget {
               )
             ],
           ),
-          const SizedBox(
-            height: 5,
-          ),
-          Row(
-            children: [
-              Text(
-                orderDataModel.time,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Row(
-            children: [
-              const Text(
-                "Customer:",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.grey,
-                ),
-              ),
-              Text(
-                orderDataModel.customerName,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Row(
-            children: [
-              const Text(
-                "Address:",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.grey,
-                ),
-              ),
-              Text(
-                orderDataModel.customerAddress!,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Row(
-            children: [
-              const Text(
-                "Items:",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.grey,
-                ),
-              ),
+          const SizedBox(height: 8),
 
-              Text(
-                orderDataModel.orderItemCount!,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              orderDataModel.items.map((i) => "${i.name} x${i.quantity}").join(", "),
-              textAlign: TextAlign.left,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: AppColors.grey,
-              ),
+          // Time Row
+          Text(
+            orderDataModel.time,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: AppColors.black,
             ),
           ),
-          const SizedBox(
-            height: 5,
+          const SizedBox(height: 8),
+
+          // Customer Row
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Customer: ",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.darkGrey,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  orderDataModel.customerName,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.black,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 8),
+
+          // Address Row - الحل الأساسي للمشكلة
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Address: ",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.darkGrey,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  orderDataModel.customerAddress ?? "No address provided",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.black,
+                  ),
+                  overflow: TextOverflow.visible, // أو TextOverflow.fade
+                  maxLines: 2, // السماح بسطرين كحد أقصى
+                  softWrap: true, // السماح بالـ wrapping
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // Items Count Row
           Row(
             children: [
+              const Text(
+                "Items: ",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.darkGrey,
+                ),
+              ),
               Text(
-                "Total: ${orderDataModel.orderAmount} EGP",
+                orderDataModel.orderItemCount ?? "0",
                 style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
                   color: AppColors.black,
                 ),
               ),
             ],
           ),
-          const SizedBox(
-            height: 4,
+          const SizedBox(height: 8),
+
+          // Items Details - مع حل الـ overflow
+          Text(
+            "Details: ${orderDataModel.items.map((i) => "${i.name} x${i.quantity}").join(", ")}",
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: AppColors.darkGrey,
+            ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
           ),
+          const SizedBox(height: 10),
+
+          // Total Price Row
+          Text(
+            "Total: ${orderDataModel.orderAmount} EGP",
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              color: AppColors.black,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Update Status Button
           SizedBox(
             width: double.infinity,
             child: CustomElevatedButton(
@@ -208,27 +209,9 @@ class CustomOrderContainer extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              ListTile(
-                title: const Text("Pending"),
-                onTap: () {
-                  onUpdateStatus("Pending");
-                  Navigator.pop(context); // Close the dialog
-                },
-              ),
-              ListTile(
-                title: const Text("In Progress"),
-                onTap: () {
-                  onUpdateStatus("In Progress");
-                  Navigator.pop(context); // Close the dialog
-                },
-              ),
-              ListTile(
-                title: const Text("Completed"),
-                onTap: () {
-                  onUpdateStatus("Completed");
-                  Navigator.pop(context); // Close the dialog
-                },
-              ),
+              _buildStatusOption(context, "Pending", AppColors.red),
+              _buildStatusOption(context, "In Progress", AppColors.orange),
+              _buildStatusOption(context, "Completed", AppColors.green),
             ],
           ),
         );
@@ -236,5 +219,34 @@ class CustomOrderContainer extends StatelessWidget {
     );
   }
 
+  Widget _buildStatusOption(BuildContext context, String status, Color color) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: ListTile(
+        leading: Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        title: Text(
+          status,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: color,
+          ),
+        ),
+        onTap: () {
+          onUpdateStatus(status);
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
 }
-

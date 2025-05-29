@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../../../../Data/seller_available_dish_data_model.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../Edit Dish/edit_dish_screen.dart';
 
 class CustomAvailableDishWidget extends StatelessWidget {
   final SellerAvailableDishDataModel availableDishDataModel;
   final bool isAvailable;
   final Function(bool) onToggle;
+  final VoidCallback? onDishUpdated; // Add callback for refresh
 
   const CustomAvailableDishWidget({
     super.key,
     required this.availableDishDataModel,
     required this.isAvailable,
     required this.onToggle,
+    this.onDishUpdated, // Add optional callback
   });
 
   @override
@@ -48,6 +51,24 @@ class CustomAvailableDishWidget extends StatelessWidget {
                             width: 90,
                             height: 90,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: 90,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(12),
+                                    bottomLeft: Radius.circular(12),
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.image_not_supported,
+                                  color: Colors.grey,
+                                  size: 40,
+                                ),
+                              );
+                            },
                           ),
                         ),
                         if (!isAvailable)
@@ -110,8 +131,20 @@ class CustomAvailableDishWidget extends StatelessWidget {
                                       size: 18,
                                       color: isAvailable ? Colors.black : Colors.grey[400],
                                     ),
-                                    onPressed: isAvailable ? () {
-                                      // Edit functionality
+                                    onPressed: isAvailable ? () async {
+                                      final result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditDishPage(
+                                            dish: availableDishDataModel,
+                                          ),
+                                        ),
+                                      );
+
+                                      // If edit was successful, refresh the parent page
+                                      if (result == true && onDishUpdated != null) {
+                                        onDishUpdated!();
+                                      }
                                     } : null,
                                   ),
                                 ),

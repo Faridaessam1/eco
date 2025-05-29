@@ -107,21 +107,11 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
           "Eco Eaters",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: AppColors.primaryColor,
           ),
         ),
         centerTitle: false,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_upward, color: Colors.black),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.filter_list, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

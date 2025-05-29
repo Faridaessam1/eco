@@ -147,16 +147,6 @@ class _HomeViewState extends State<HomeView> {
             color: AppColors.green,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_rounded),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.sunny),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: mediaQuery.size.width * 0.04),
@@ -180,36 +170,7 @@ class _HomeViewState extends State<HomeView> {
                 );
               },
             ),
-            const SizedBox(height: 30),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, PagesRouteName.sellerNewDishScreen);
-                    },
-                    text: "Add New Dish",
-                    textColor: AppColors.white,
-                    icon: Icons.add,
-                    iconColor: AppColors.white,
-                    buttonColor: AppColors.green,
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: CustomTextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, PagesRouteName.sellerOrdersScreen);
-                    },
-                    text: "Today's Order",
-                    textColor: AppColors.green,
-                    icon: Icons.menu_rounded,
-                    iconColor: AppColors.green,
-                    buttonColor: AppColors.white,
-                  ),
-                ),
-              ],
-            ),
+
             const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -223,7 +184,9 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context,PagesRouteName.sellerOrdersScreen);
+                  },
                   child: const Text(
                     "View All",
                     style: TextStyle(

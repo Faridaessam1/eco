@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../core/seller services/seller_home_services.dart';
 import '../ui/seller/home/home_view.dart';
-
 class OrderDataModel {
   String id;
   String orderNumber;
@@ -16,7 +16,6 @@ class OrderDataModel {
   List<OrderItem> items;
 
   OrderDataModel({
-
     required this.id,
     required this.orderNumber,
     required this.orderStatus,
@@ -44,7 +43,7 @@ class OrderDataModel {
   }) {
     return OrderDataModel(
       id: this.id,
-      orderNumber: orderNumber ?? this.orderNumber, // Use the passed orderNumber if provided
+      orderNumber: orderNumber ?? this.orderNumber,
       orderStatus: this.orderStatus,
       orderStatusColor: this.orderStatusColor,
       orderAmount: this.orderAmount,
@@ -56,13 +55,13 @@ class OrderDataModel {
     );
   }
 
-  Map <String, dynamic> toFireStore(){
+  Map<String, dynamic> toFireStore() {
     return {
       "orderNumber": orderNumber,
       "orderStatus": orderStatus,
       "orderItemCount": orderItemCount,
       "orderDetails": orderDetails,
-      "orderStatusColor": orderStatusColor.value, // نحول الـ Color إلى int
+      "orderStatusColor": orderStatusColor.value,
       "orderAmount": orderAmount,
       "customerName": customerName,
       "customerAddress": customerAddress,
@@ -72,19 +71,26 @@ class OrderDataModel {
 
   factory OrderDataModel.fromFireStore(Map<String, dynamic> json, String docId) {
     final timestamp = json["createdAt"];
-    final time = timestamp is Timestamp ? timestamp.toDate().toString() : DateTime.now().toString();
+    final time = timestamp is Timestamp
+        ? timestamp.toDate().toString()
+        : DateTime.now().toString();
 
-    // تحويل الـ items من List<dynamic> لـ List<OrderItem>
+    // Convert items from List<dynamic> to List<OrderItem>
     final itemsJson = json["items"] as List<dynamic>? ?? [];
-    final itemsList = itemsJson.map((item) => OrderItem.fromJson(item as Map<String, dynamic>)).toList();
+    final itemsList = itemsJson
+        .map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
+        .toList();
+
+    final orderStatus = json["orderStatus"] ?? "Pending";
 
     return OrderDataModel(
       id: docId,
-      orderNumber: " ", // will be overwritten later
-      orderStatus: json["orderStatus"] ?? "Pending",
+      orderNumber: docId,
+      orderStatus: orderStatus,
       orderItemCount: (json["items"] as List<dynamic>?)?.length.toString() ?? "0",
-      orderDetails: "", // Not present in Firestore, maybe generate from items later
-      orderStatusColor: getStatusColor(json["orderStatus"] ?? "Pending"),
+      orderDetails: "", // Not present in Firestore
+      // THIS WORKS! Static method from HomeServices can be called in factory constructor
+      orderStatusColor: SellerHomeServices.getStatusColor(orderStatus),
       orderAmount: json["totalAmount"]?.toString() ?? "0.0",
       customerName: json["customerName"] ?? "Unknown",
       customerAddress: json["customerAddress"] ?? "",
@@ -92,7 +98,6 @@ class OrderDataModel {
       items: itemsList,
     );
   }
-
 }
 
 class OrderItem {
@@ -112,5 +117,13 @@ class OrderItem {
       quantity: json['quantity'] ?? 0,
       price: (json['price'] ?? 0).toDouble(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'quantity': quantity,
+      'price': price,
+    };
   }
 }

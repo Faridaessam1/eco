@@ -34,12 +34,6 @@ class _OrdersViewState extends State<OrdersView> {
             color: AppColors.green,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_rounded),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Column(
         children: [

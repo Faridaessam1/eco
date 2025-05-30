@@ -179,4 +179,35 @@ abstract class FireBaseFirestoreServicesSeller {
     return orderRef.id;
   }
 
+  static Future<void> updateDish({
+    required String sellerId,
+    required String dishId,
+    required String dishName,
+    required double dishPrice,
+  }) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(sellerId)
+        .collection('dishes')
+        .doc(dishId)
+        .update({
+      'dishName': dishName,
+      'dishPrice': dishPrice,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  static Future<void> deleteDish({
+    required String sellerId,
+    required String dishId,
+  }) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(sellerId)
+        .collection('dishes')
+        .doc(dishId)
+        .delete();
+  }
+
+
 }

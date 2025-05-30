@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../Data/restaurant_card_data.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
@@ -32,7 +31,8 @@ class RestaurantCard extends StatelessWidget {
             child: Stack(
               children: [
                 Image.network(
-                  restaurantCardData.sellerProfileImage ?? AppAssets.restaurantsCardImg,
+                  restaurantCardData.sellerProfileImage ??
+                      AppAssets.restaurantsCardImg,
                   height: imageHeight,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -57,49 +57,14 @@ class RestaurantCard extends StatelessWidget {
                   },
                 ),
 
-                // Delivery Status Badge (Top Left)
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: restaurantCardData.hasDelivery
-                          ? AppColors.primaryColor.withOpacity(0.7)
-                          : AppColors.orange.withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          restaurantCardData.hasDelivery
-                              ? Icons.delivery_dining
-                              : Icons.store,
-                          color: Colors.white,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          restaurantCardData.hasDelivery ? "Delivery" : "Pickup",
-                          style: const TextStyle(
-                            color: AppColors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
                 // Favorite Button (Bottom Right)
                 Positioned(
                   bottom: 8,
                   right: 8,
                   child: Consumer<FavoritesProvider>(
                     builder: (context, favoritesProvider, _) {
-                      final isFav = favoritesProvider.isFavorite(restaurantCardData);
+                      final isFav =
+                          favoritesProvider.isFavorite(restaurantCardData);
                       return GestureDetector(
                         onTap: () {
                           favoritesProvider.toggleFavorite(restaurantCardData);
@@ -166,65 +131,45 @@ class RestaurantCard extends StatelessWidget {
 
           const SizedBox(height: 6),
 
-          // Location and Delivery Info
+          // Location and Delivery Icon
           Row(
             children: [
-              // Location Section
               Expanded(
-                flex: 3,
                 child: Row(
                   children: [
                     Icon(
                       Icons.location_on,
-                      color: AppColors.darkGrey,
+                      color: AppColors.primaryColor,
                       size: isTablet ? 20 : 18,
                     ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        restaurantCardData.location,
-                        style: TextStyle(
-                          color: AppColors.darkGrey,
-                          fontSize: isTablet ? 18 : 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      restaurantCardData.location,
+                      style: TextStyle(
+                        color: AppColors.primaryColor,
+                        fontSize: isTablet ? 16 : 16,
+                        fontWeight: FontWeight.w400,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
-              ),
-
-              // Delivery Time Section
-              Expanded(
-                flex: 2,
-                child: Row(
-                  children: [
+                    const SizedBox(width:15),
                     Icon(
                       restaurantCardData.hasDelivery
-                          ? Icons.access_time
-                          : Icons.store_outlined,
-                      color: restaurantCardData.hasDelivery
-                          ? Colors.green
-                          : AppColors.darkGrey,
-                      size: isTablet ? 18 : 16,
+                          ? Icons.delivery_dining
+                          : Icons.store,
+                      color: AppColors.primaryColor,
+                      size: isTablet ? 20 : 18,
                     ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        restaurantCardData.deliveryStatusText,
-                        style: TextStyle(
-                          color: restaurantCardData.hasDelivery
-                              ? Colors.green
-                              : AppColors.darkGrey,
-                          fontSize: isTablet ? 14 : 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+    Text(
+    " ${restaurantCardData.hasDelivery ? "Delivery" : "Pickup"}",
+    style: TextStyle(
+    color: AppColors.primaryColor,
+    fontSize: isTablet ? 16 : 16,
+    fontWeight: FontWeight.w400,
+    ),
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    ),
                   ],
                 ),
               ),

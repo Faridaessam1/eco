@@ -11,6 +11,7 @@ class RecentlyAddedDishDataModel {
   final String? dishAdditionalInfo;
   final Timestamp? createdAt;
   final String? sellerId;
+  final bool isAvailable;
 
   RecentlyAddedDishDataModel({
     required this.dishName,
@@ -22,6 +23,7 @@ class RecentlyAddedDishDataModel {
     required this.dishAdditionalInfo,
     this.createdAt,
     this.sellerId,
+    this.isAvailable = true,
   });
 
   Map<String, dynamic> toFireStore() {
@@ -35,6 +37,7 @@ class RecentlyAddedDishDataModel {
       "dishAdditionalInfo": dishAdditionalInfo,
       "createdAt": Timestamp.now(),
       "sellerId": sellerId, // Consistent naming with the model
+      "isAvailable": isAvailable,
     };
   }
 
@@ -51,6 +54,7 @@ class RecentlyAddedDishDataModel {
       createdAt: data['createdAt'] ?? Timestamp.now(),
       dishCategory: data['dishCategory'] ?? "hotels",
       sellerId: data['sellerId'] ?? data['uid'], // Handle both field names for backward compatibility
+      isAvailable: data['isAvailable'] ?? true,
     );
   }
 }

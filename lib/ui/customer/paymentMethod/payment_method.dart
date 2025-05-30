@@ -1,8 +1,5 @@
-// lib/ui/customer/paymentMethod/payment_method.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/payment/payment_services.dart';
@@ -151,7 +148,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         try {
           await PaymentService.payWithPaypal(context);
           // After successful payment, create the order
-          await _placeOrder(context, cartProvider, orderProvider);
         } catch (e) {
           // Only show error if the widget is still mounted
           if (mounted) {

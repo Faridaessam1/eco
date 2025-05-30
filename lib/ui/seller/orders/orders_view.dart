@@ -92,7 +92,7 @@ class _OrdersViewState extends State<OrdersView> {
 
                 // Convert Firestore data to OrderDataModel list
                 final orders = snapshot.data!.docs.map((doc) {
-                  final data = doc.data() as Map<String, dynamic>; // Safely cast to Map<String, dynamic>
+                  final data = doc.data() as Map<String, dynamic>;
                   final orderData = OrderDataModel.fromFireStore(data, doc.id);
                   return orderData;
                 }).toList();
@@ -115,12 +115,13 @@ class _OrdersViewState extends State<OrdersView> {
                   itemCount: filteredOrders.length,
                   itemBuilder: (context, index) {
                     final order = filteredOrders[index];
-                    final orderNumber = index + 1; // Generate order number as 1, 2, 3, ...
+                    // Use the same format as customer UI: first 5 characters of order ID
+                    final orderNumber = order.id.substring(0, 5);
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                       child: CustomOrderContainer(
-                        orderDataModel: order.copyWith(orderNumber: orderNumber.toString()), // Pass the generated order number
+                        orderDataModel: order.copyWith(orderNumber: orderNumber), // Use the same format as customer
                         onUpdateStatus: (newStatus) {
                           updateOrderStatus(order.id, newStatus);
                         },
@@ -151,4 +152,3 @@ class _OrdersViewState extends State<OrdersView> {
   }
 
 }
-

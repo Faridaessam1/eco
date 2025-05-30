@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:multi_payment_gateway/services/paypal_service.dart';
-import 'package:multi_payment_gateway/setup_payment.dart';
 import 'package:multi_payment_gateway/transaction.dart';
 
 class PaymentService {
@@ -13,5 +12,6 @@ class PaymentService {
     );
 
     await PaypalService.instance.pay(setupPayment: paypalModel);
+
   }
 }

@@ -10,6 +10,7 @@ class DishDataModel{
   final String dishCategory;
   final String? dishAdditionalInfo;
   final Timestamp? createdAt;
+  final bool isAvailable;
 
   DishDataModel({
     required this.dishId,
@@ -20,6 +21,7 @@ class DishDataModel{
     required this.dishCategory,
     required this.dishAdditionalInfo,
     this.createdAt,
+    this.isAvailable = true,
   });
 
   Map<String, dynamic> toFireStore() {
@@ -31,6 +33,7 @@ class DishDataModel{
       "dishCategory": dishCategory,
       "dishAdditionalInfo": dishAdditionalInfo,
       "createdAt": createdAt ?? Timestamp.now(),
+      "isAvailable": isAvailable,
     };
   }
 
@@ -46,6 +49,7 @@ class DishDataModel{
       dishCategory: data["dishCategory"] ?? "",
       dishAdditionalInfo: data["dishAdditionalInfo"],
       createdAt: data["createdAt"],
+      isAvailable: data["isAvailable"],
 
     );
   }

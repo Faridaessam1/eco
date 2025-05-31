@@ -32,12 +32,6 @@ class _OrdersViewState extends State<OrdersView> {
             color: AppColors.green,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_rounded),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -88,6 +82,7 @@ class _OrdersViewState extends State<OrdersView> {
                   return const Center(child: Text("No orders available"));
                 }
 
+
                 final filteredOrders = SellerOrderServices.filterOrders(
                   snapshot.data!,
                   selectedIndex,
@@ -118,5 +113,6 @@ class _OrdersViewState extends State<OrdersView> {
     );
   }
 }
+
 
 

@@ -40,13 +40,6 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
       appBar: AppBar(
         centerTitle: true,
         title: Image.asset(AppAssets.appLogo, height: height * 0.04),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon:
-                Image.asset(AppAssets.notificationsIcon, width: 20, height: 20),
-          ),
-        ],
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -72,7 +65,7 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
                   color: AppColors.darkGreen,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: height * 0.01),
               SizedBox(
                 height: height * 0.25,
                 child: PageView.builder(
@@ -91,6 +84,7 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
                       });
                     }),
               ),
+              SizedBox(height: height * 0.01),
               Center(
                 child: SmoothPageIndicator(
                   controller: _pageController,
@@ -122,29 +116,24 @@ class _CustomerHomeTabState extends State<CustomerHomeTab> {
                       ),
                     ),
                     SizedBox(height: height * 0.02), // Responsive spacing
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _buildCategoryItem(
-                              "Hotels",
-                              AppAssets.hotelsIcon,
-                              context,
-                              height,
-                              width),
-                          // Pass context, height, width
-                          SizedBox(width: width * 0.05), // Responsive spacing
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildCategoryItem(
+                            "Hotels",
+                            AppAssets.hotelsIcon,
+                            context,
+                            height,
+                            width),
+                        // Pass context, height, width
 
-                          _buildCategoryItem("Patisserie",
-                              AppAssets.dessertIcon, context, height, width),
-                          SizedBox(width: width * 0.05), // Responsive spacing
+                        _buildCategoryItem("Patisserie",
+                            AppAssets.dessertIcon, context, height, width),
 
-                          _buildCategoryItem("Bakeries", AppAssets.bakeriesIcon,
-                              context, height, width),
-                        ],
-                      ),
+                        _buildCategoryItem("Bakeries", AppAssets.bakeriesIcon,
+                            context, height, width),
+                      ],
                     ),
-                    SizedBox(height: height * 0.02), // Responsive spacing
                   ],
                 ),
               ),

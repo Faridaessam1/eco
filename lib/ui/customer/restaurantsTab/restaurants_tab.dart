@@ -47,7 +47,6 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -55,7 +54,6 @@ class _RestaurantsTabState extends State<RestaurantsTab> {
             children: [
               Image.asset(
                 AppAssets.appLogo,
-                height: height * 0.03,
               ),
             ],
           ),

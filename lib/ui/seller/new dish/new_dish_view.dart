@@ -4,7 +4,6 @@ import 'package:eco_eaters_app_3/core/extentions/padding_ext.dart';
 import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import '../../../Data/dish_data_model.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/seller services/new_dish_services.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
@@ -51,25 +50,21 @@ class _NewDishViewState extends State<NewDishView> {
   }
 
   Future<void> _handleSaveDish() async {
-    if (!formKey.currentState!.validate()) return;
-
-    final dish = DishDataModel(
+    final result = await NewDishServices.saveDish(
+      formKey: formKey,
       dishName: _dishNameController.text.trim(),
-      dishQuantity: int.parse(_dishQuantityController.text.trim()),
-      dishPrice: double.parse(_dishPriceController.text.trim()),
+      dishQuantity: _dishQuantityController.text.trim(),
+      dishPrice: _dishPriceController.text.trim(),
       dishCategory: _dishCategoryController.value ?? "",
       dishAdditionalInfo: _dishAdditionalInfoController.text.trim(),
-      dishImage: _imageUrl ?? "",
-      dishId: '',
+      imageUrl: _imageUrl ?? "",
     );
 
-    try {
-      await NewDishServices.addDishToFirestore(dish);
-      EasyLoading.showSuccess("Dish Added Successfully!");
+    if (result.success) {
+      EasyLoading.showSuccess(result.message);
       Navigator.pushNamed(context, PagesRouteName.sellerHomeLayout);
-    } catch (e) {
-      print("❌ Failed to save dish: $e");
-      EasyLoading.showError("Failed to add dish");
+    } else {
+      EasyLoading.showError(result.message);
     }
   }
 

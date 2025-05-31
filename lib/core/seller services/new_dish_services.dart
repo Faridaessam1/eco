@@ -1,11 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../Data/dish_data_model.dart';
+
+class SaveDishResult {
+  final bool success;
+  final String message;
+
+  SaveDishResult({required this.success, required this.message});
+}
 
 class NewDishServices {
   static Future<File?> pickImage() async {
@@ -45,5 +53,68 @@ class NewDishServices {
         .doc(sellerId)
         .collection("dishes")
         .add(dish.toFireStore());
+  }
+
+  static Future<SaveDishResult> saveDish({
+    required GlobalKey<FormState> formKey,
+    required String dishName,
+    required String dishQuantity,
+    required String dishPrice,
+    required String dishCategory,
+    required String dishAdditionalInfo,
+    required String imageUrl,
+  }) async {
+    try {
+      // Validate form
+      if (!formKey.currentState!.validate()) {
+        return SaveDishResult(
+            success: false,
+            message: "Please fill all required fields"
+        );
+      }
+
+      // Parse and validate numeric values
+      int? quantity = int.tryParse(dishQuantity);
+      double? price = double.tryParse(dishPrice);
+
+      if (quantity == null) {
+        return SaveDishResult(
+            success: false,
+            message: "Please enter a valid quantity"
+        );
+      }
+
+      if (price == null) {
+        return SaveDishResult(
+            success: false,
+            message: "Please enter a valid price"
+        );
+      }
+
+      // Create dish model
+      final dish = DishDataModel(
+        dishName: dishName,
+        dishQuantity: quantity,
+        dishPrice: price,
+        dishCategory: dishCategory,
+        dishAdditionalInfo: dishAdditionalInfo,
+        dishImage: imageUrl,
+        dishId: '',
+      );
+
+      // Save to Firestore
+      await addDishToFirestore(dish);
+
+      return SaveDishResult(
+          success: true,
+          message: "Dish Added Successfully!"
+      );
+    } catch (e) {
+      print("❌ Failed to save dish: $e");
+      return SaveDishResult(
+          success: false,
+          message: "Failed to add dish"
+      );
+    }
   }
 }

@@ -1,12 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/ui/seller/seller%20available%20dish/widgets/custom_available_dish_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../../../Data/seller_available_dish_data_model.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/routes/page_route_names.dart';
 import '../../../core/seller services/seller_available_dish_services.dart';
+
 
 class SellerAvailableDish extends StatefulWidget {
   const SellerAvailableDish({super.key});
@@ -22,79 +20,8 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
   @override
   void initState() {
     super.initState();
-    _dishesFuture = fetchDishesWithImages();
-    _statsFuture = fetchStats();
-  }
-
-  Future<List<SellerAvailableDishDataModel>> fetchDishesWithImages() async {
-    final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    print("👤 Current UID: $uid");
-
-    List<SellerAvailableDishDataModel> finalDishes = [];
-
-    try {
-      final userDishesSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .collection('dishes')
-          .get();
-
-      for (var doc in userDishesSnapshot.docs) {
-        final dishData = doc.data();
-        final dishImage = dishData['dishImage'] ?? '';
-
-        if (dishImage.toString().trim().isNotEmpty) {
-          final dishModel = SellerAvailableDishDataModel(
-            id: doc.id,
-            dishImage: dishImage,
-            dishName: dishData['dishName'] ?? 'No name',
-            dishPrice: dishData['dishPrice']?.toString() ?? '0',
-            isAvailable: dishData['isAvailable'] ?? true,
-          );
-          finalDishes.add(dishModel);
-        }
-      }
-    } catch (e) {
-      print("❌ Error fetching dishes: $e");
-    }
-
-    return finalDishes;
-  }
-
-  Future<int> fetchActiveDishesCount() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    if (uid.isEmpty) return 0;
-
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('dishes')
-        .where('isAvailable', isEqualTo: true)
-        .get();
-
-    return querySnapshot.docs.length;
-  }
-
-  Future<int> fetchTotalOrdersCount() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    if (uid.isEmpty) return 0;
-
-    final ordersSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('orders')
-        .get();
-
-    return ordersSnapshot.docs.length;
-  }
-
-  Future<Map<String, int>> fetchStats() async {
-    final activeCount = await fetchActiveDishesCount();
-    final ordersCount = await fetchTotalOrdersCount();
-    return {
-      'activeDishes': activeCount,
-      'totalOrders': ordersCount,
-    };
+    _dishesFuture = AvailableDishServices.fetchDishesWithImages();
+    _statsFuture = AvailableDishServices.fetchStats();
   }
 
   @override
@@ -273,7 +200,7 @@ class _SellerAvailableDishState extends State<SellerAvailableDish> {
                           setState(() {
                             dish.isAvailable = newValue;
                           });
-                          await SellerDishesServices.updateDishAvailability(dish.id, newValue);
+                          await AvailableDishServices.updateDishAvailability(dish.id, newValue);
                         },
                       ),
                     );

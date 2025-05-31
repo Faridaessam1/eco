@@ -96,7 +96,6 @@ class _HomeViewState extends State<HomeView> {
         children: [
           _buildInsightsGrid(),
           const SizedBox(height: 30),
-          _buildActionButtons(),
           const SizedBox(height: 30),
           _buildRecentOrdersHeader(),
           const SizedBox(height: 20),
@@ -128,38 +127,6 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  /// Builds the action buttons row
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: CustomTextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, PagesRouteName.sellerNewDishScreen);
-            },
-            text: "Add New Dish",
-            textColor: AppColors.white,
-            icon: Icons.add,
-            iconColor: AppColors.white,
-            buttonColor: AppColors.green,
-          ),
-        ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: CustomTextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, PagesRouteName.sellerOrdersScreen);
-            },
-            text: "Today's Order",
-            textColor: AppColors.green,
-            icon: Icons.menu_rounded,
-            iconColor: AppColors.green,
-            buttonColor: AppColors.white,
-          ),
-        ),
-      ],
-    );
-  }
 
   /// Builds the recent orders header
   Widget _buildRecentOrdersHeader() {

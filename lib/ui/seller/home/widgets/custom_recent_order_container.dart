@@ -34,7 +34,7 @@ class CustomRecentOrderContainer extends StatelessWidget {
           Row(
             children: [
               Text(
-                "#${orderDataModel.orderNumber}",
+                "#${orderDataModel.id}",
                 style: TextStyle(
                   color: AppColors.black,
                   fontSize: 16,

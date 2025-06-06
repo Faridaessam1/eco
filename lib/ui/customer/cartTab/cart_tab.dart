@@ -1,15 +1,19 @@
 import 'package:eco_eaters_app_3/ui/customer/cartTab/widgets/food_card_widget.dart';
 import 'package:eco_eaters_app_3/ui/customer/paymentMethod/payment_method.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/cart_provider.dart';
 import '../../../core/widgets/custom_elevated_button.dart';
 import '../../../core/utils/snack_bar_services.dart';
 import '../../../core/FirebaseServices/firebase_firestore_seller.dart';
+import '../../../core/FirebaseServices/order_service.dart'; // إضافة import للـ OrderService
+import '../../../core/FirebaseServices/user_service.dart'; // إضافة import للـ UserService
 import '../AddressScreen/address_screen.dart';
-import '../orders/order_confirmation_screen.dart';  // إضافة import
+import '../orders/order_confirmation_screen.dart';
 
 class CartTab extends StatefulWidget {
   CartTab({super.key});
@@ -21,6 +25,8 @@ class CartTab extends StatefulWidget {
 class _CartTabState extends State<CartTab> {
   bool? deliveryAvailable;
   bool isLoading = true;
+  final OrderService _orderService = OrderService(); // إنشاء instance من OrderService
+  final UserService _userService = UserService(); // إنشاء instance من UserService
 
   @override
   void initState() {
@@ -57,6 +63,89 @@ class _CartTabState extends State<CartTab> {
         deliveryAvailable = false;
         isLoading = false;
       });
+    }
+  }
+
+  // Function to create order using OrderService
+  Future<void> _createOrder(String orderType) async {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      SnackBarServices.showErrorMessage("Please login to place an order");
+      return;
+    }
+
+    if (cartProvider.currentSellerId.isEmpty) {
+      SnackBarServices.showErrorMessage("Unable to identify seller. Please try again.");
+      return;
+    }
+
+    try {
+      // Show loading
+      EasyLoading.show();
+
+      // Get customer details
+      final customerDetails = await _userService.getCustomerDetails(currentUser.uid);
+
+      // Calculate order totals
+      double subtotal = cartProvider.subtotal;
+      double serviceFees;
+      if (subtotal < 100) {
+        serviceFees = 15;
+      } else if (subtotal < 200) {
+        serviceFees = 20;
+      } else {
+        serviceFees = 35;
+      }
+      double tax = subtotal * 0.14;
+      double totalAmount = subtotal + serviceFees + tax;
+
+      // Create dish ID map (you might need to adjust this based on your cart structure)
+      Map<String, String> dishIdMap = {};
+      for (var item in cartProvider.cartItems) {
+        dishIdMap[item.foodName] = item.dishId ?? ''; // Assuming dishId exists in your cart items
+      }
+
+      // Create the order
+      String orderId = await _orderService.createOrder(
+        customerId: currentUser.uid,
+        sellerId: cartProvider.currentSellerId,
+        customerName: customerDetails['name'] ?? 'Unknown Customer',
+        customerAddress: orderType == 'delivery' ? customerDetails['address'] : null,
+        customerPhone: customerDetails['phone'],
+        cartItems: cartProvider.cartItems,
+        dishIdMap: dishIdMap,
+        subtotal: subtotal,
+        serviceFee: serviceFees,
+        tax: tax,
+        totalAmount: totalAmount,
+        paymentMethod: 'Cash', // You can modify this based on your payment method selection
+        orderType: orderType,
+      );
+
+      EasyLoading.dismiss();
+
+      // Clear cart
+      cartProvider.clearCart();
+
+      // Navigate to confirmation screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OrderConfirmationScreen(
+            orderId: orderId,
+            orderType: orderType == 'pickup' ? "Pickup Order" : "Delivery Order",
+          ),
+        ),
+      );
+
+      SnackBarServices.showSuccessMessage("Order placed successfully!");
+
+    } catch (e) {
+      // Hide loading
+      EasyLoading.dismiss();
+      SnackBarServices.showErrorMessage("Failed to create order. Please try again.");
     }
   }
 
@@ -178,29 +267,14 @@ class _CartTabState extends State<CartTab> {
   }
 
   Widget _buildActionButtons(CartProvider cartProvider) {
-    // لو delivery availability = false، اعرض button واحد للـ checkout
+    // لو delivery availability = false، اعرض button واحد للـ pickup
     if (deliveryAvailable == false) {
       return SizedBox(
         width: double.infinity,
         child: CustomElevatedButton(
-          onPressed: () {
-            if (cartProvider.currentSellerId.isEmpty) {
-              SnackBarServices.showErrorMessage(
-                  "Unable to identify seller. Please try again or re-add items to cart."
-              );
-              return;
-            }
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PaymentMethodScreen(
-                sellerId: cartProvider.currentSellerId,
-                orderType: "pickup",
-              )),
-            );
-          },
-          text: "Proceed to Checkout",
-          icon: Icons.shopping_cart_checkout,
+          onPressed: () => _createOrder('pickup'), // استخدام الـ function الجديدة
+          text: "Pickup Order",
+          icon: Icons.store,
           buttonColor: AppColors.primaryColor,
           borderRadius: 20,
           textColor: AppColors.white,
@@ -216,34 +290,7 @@ class _CartTabState extends State<CartTab> {
         SizedBox(
           width: double.infinity,
           child: CustomElevatedButton(
-            onPressed: () async {
-              if (cartProvider.currentSellerId.isEmpty) {
-                SnackBarServices.showErrorMessage(
-                    "Unable to identify seller. Please try again or re-add items to cart.");
-                return;
-              }
-
-              try {
-                String orderId = await FireBaseFirestoreServicesSeller.createPickupOrder(
-                  sellerId: cartProvider.currentSellerId,
-                  items: cartProvider.cartItems,
-                  subtotal: cartProvider.subtotal,
-                  // Add other necessary fields like serviceFee, tax, etc.
-                );
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => OrderConfirmationScreen(
-                      orderId: orderId,
-                      orderType: "Pickup Order",
-                    ),
-                  ),
-                );
-              } catch (e) {
-                SnackBarServices.showErrorMessage("Failed to create order. Try again.");
-              }
-            },
+            onPressed: () => _createOrder('pickup'), // استخدام الـ function الجديدة
             text: "Pickup Order",
             icon: Icons.store,
             buttonColor: AppColors.primaryColor,
@@ -257,22 +304,7 @@ class _CartTabState extends State<CartTab> {
         SizedBox(
           width: double.infinity,
           child: CustomElevatedButton(
-            onPressed: () {
-              if (cartProvider.currentSellerId.isEmpty) {
-                SnackBarServices.showErrorMessage(
-                    "Unable to identify seller. Please try again or re-add items to cart."
-                );
-                return;
-              }
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddressScreen(
-                  sellerId: cartProvider.currentSellerId,
-                  orderType: "delivery",
-                )),
-              );
-            },
+            onPressed: () => _createOrder('delivery'), // استخدام الـ function الجديدة
             text: "Delivery Order",
             icon: Icons.delivery_dining,
             buttonColor: AppColors.primaryColor,

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../core/seller services/seller_home_services.dart';
-import '../ui/seller/home/home_view.dart';
 class OrderDataModel {
   String id;
   String orderNumber;

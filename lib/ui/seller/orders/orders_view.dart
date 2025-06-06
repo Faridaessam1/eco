@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:eco_eaters_app_3/core/constants/app_colors.dart';
 import 'package:eco_eaters_app_3/ui/seller/orders/widgets/custom_order_container.dart';
 import 'package:eco_eaters_app_3/ui/seller/orders/widgets/custom_tab_bar_item_seller.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-
 import '../../../Data/order_data_model.dart';
-import '../../../core/constants/app_colors.dart';
+import '../../../core/seller services/seller_order_services.dart';
 
 class OrdersView extends StatefulWidget {
   const OrdersView({super.key});
@@ -19,8 +17,8 @@ class _OrdersViewState extends State<OrdersView> {
 
   @override
   Widget build(BuildContext context) {
-    final sellerId = FirebaseAuth.instance.currentUser?.uid;
-    if (sellerId == null) return Container(); // Show an empty container if there's no user
+    final sellerId = SellerOrderServices.getSellerId();
+    if (sellerId == null) return Container(); // No user signed in
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -42,9 +40,7 @@ class _OrdersViewState extends State<OrdersView> {
               length: 4,
               child: TabBar(
                 onTap: (index) {
-                  setState(() {
-                    selectedIndex = index;
-                  });
+                  setState(() => selectedIndex = index);
                 },
                 isScrollable: true,
                 indicatorColor: Colors.transparent,
@@ -75,80 +71,48 @@ class _OrdersViewState extends State<OrdersView> {
           ),
           const SizedBox(height: 30),
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(sellerId)
-                  .collection('orders')
-                  .snapshots(),
+            child: StreamBuilder<List<OrderDataModel>>(
+              stream: SellerOrderServices.getOrdersStream(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text("No orders available"));
                 }
 
-                // Convert Firestore data to OrderDataModel list
-                final orders = snapshot.data!.docs.map((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
-                  final orderData = OrderDataModel.fromFireStore(data, doc.id);
-                  return orderData;
-                }).toList();
 
-                // Apply filtering based on selected tab
-                final filteredOrders = orders.where((order) {
-                  switch (selectedIndex) {
-                    case 1:
-                      return order.orderStatus == "Pending";
-                    case 2:
-                      return order.orderStatus == "In Progress";
-                    case 3:
-                      return order.orderStatus == "Completed";
-                    default:
-                      return true;
-                  }
-                }).toList();
+                final filteredOrders = SellerOrderServices.filterOrders(
+                  snapshot.data!,
+                  selectedIndex,
+                );
 
                 return ListView.builder(
                   itemCount: filteredOrders.length,
                   itemBuilder: (context, index) {
                     final order = filteredOrders[index];
-                    // Use the same format as customer UI: first 5 characters of order ID
-                    final orderNumber = order.id.substring(0, 5);
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                       child: CustomOrderContainer(
-                        orderDataModel: order.copyWith(orderNumber: orderNumber), // Use the same format as customer
+                        orderDataModel: order,
                         onUpdateStatus: (newStatus) {
-                          updateOrderStatus(order.id, newStatus);
+                          SellerOrderServices.updateOrderStatus(order.id, newStatus);
                         },
                       ),
                     );
                   },
                 );
+
               },
             ),
           )
-
         ],
       ),
     );
   }
-
-  Future<void> updateOrderStatus(String orderId, String newStatus) async {
-    final sellerId = FirebaseAuth.instance.currentUser?.uid;
-    if (sellerId == null) return;
-
-    // Update Firestore
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(sellerId)
-        .collection('orders')
-        .doc(orderId)
-        .update({'orderStatus': newStatus});
-  }
-
 }
+
+
+

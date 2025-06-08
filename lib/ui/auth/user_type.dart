@@ -90,7 +90,7 @@ class UserTypeScreen extends StatelessWidget {
                         fontSize: screenWidth * 0.04, color: Colors.black54)),
                 GestureDetector(
                   onTap:(){
-                    Navigator.pushNamed(context, PagesRouteName.onBoarding);
+                    Navigator.pushNamed(context, PagesRouteName.login);
                   },
                   child: Text(
                     " Sign in",

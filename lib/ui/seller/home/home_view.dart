@@ -75,16 +75,6 @@ class _HomeViewState extends State<HomeView> {
           color: AppColors.green,
         ),
       ),
-      actions: [
-        const IconButton(
-          icon: Icon(Icons.notifications_rounded),
-          onPressed: SellerHomeServices.handleNotificationPress,
-        ),
-        IconButton(
-          icon: Icon(Icons.sunny),
-          onPressed: SellerHomeServices.handleThemeToggle,
-        ),
-      ],
     );
   }
 

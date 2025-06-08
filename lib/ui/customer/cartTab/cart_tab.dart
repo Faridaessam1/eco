@@ -304,7 +304,17 @@ class _CartTabState extends State<CartTab> {
         SizedBox(
           width: double.infinity,
           child: CustomElevatedButton(
-            onPressed: () => _createOrder('delivery'), // استخدام الـ function الجديدة
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddressScreen(
+                    sellerId: cartProvider.currentSellerId,
+                    orderType: 'delivery',
+                  ),
+                ),
+              );
+            },
             text: "Delivery Order",
             icon: Icons.delivery_dining,
             buttonColor: AppColors.primaryColor,

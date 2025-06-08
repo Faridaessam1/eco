@@ -106,12 +106,17 @@ class _CustomerFeedbackScreenState extends State<CustomerFeedbackScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text(
-                    "Submit Feedback",
-                    style: TextStyle(
-                      color: AppColors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.pop(context);
+                      },
+                    child: Text(
+                      "Submit Feedback",
+                      style: TextStyle(
+                        color: AppColors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

@@ -80,7 +80,7 @@ class _HomeViewState extends State<HomeView> {
           icon: Icon(Icons.notifications_rounded),
           onPressed: SellerHomeServices.handleNotificationPress,
         ),
-        const IconButton(
+        IconButton(
           icon: Icon(Icons.sunny),
           onPressed: SellerHomeServices.handleThemeToggle,
         ),

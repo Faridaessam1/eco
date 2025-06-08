@@ -74,24 +74,30 @@ class _OnboardingScreenState extends State<OnBoardingScreen> {
                     ),
                   ),
                   SizedBox(height: size.height * 0.01),
-                  CustomElevatedButton(
-                    text: currentPage == 0 ? "Get Started" : "Next",
-                    buttonColor: AppColors.primaryColor,
-                    textColor: AppColors.white,
-                    borderRadius: 12,
-                    fontSize: size.width * 0.045,
-                    width: buttonWidth,
-                    height: buttonHeight,
-                    onPressed: () {
-                      if (currentPage < 3) {
-                        _pageController.nextPage(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.ease,
-                        );
-                      } else {
-                        Navigator.pushReplacementNamed(context, "/auth");
-                      }
-                    },
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomElevatedButton(
+                          text: currentPage == 0 ? "Get Started" : "Next",
+                          buttonColor: AppColors.primaryColor,
+                          textColor: AppColors.white,
+                          borderRadius: 12,
+                          fontSize: size.width * 0.045,
+                          width: buttonWidth,
+                          height: buttonHeight,
+                          onPressed: () {
+                            if (currentPage < 3) {
+                              _pageController.nextPage(
+                                duration: Duration(milliseconds: 500),
+                                curve: Curves.ease,
+                              );
+                            } else {
+                              Navigator.pushReplacementNamed(context, "/auth");
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

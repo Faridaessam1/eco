@@ -53,6 +53,7 @@ dependencies:
   provider:
   multi_payment_gateway: ^0.0.3
   flutter_dotenv:
+  shared_preferences:
 
 
 

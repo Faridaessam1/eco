@@ -41,15 +41,17 @@ class _NewDishViewState extends State<NewDishView> {
     }
   }
 
-  Future<void> _handleImageUpload() async {
-    if (_image == null) return;
-    final url = await NewDishServices.uploadImage(_image!);
-    if (url != null) {
-      setState(() => _imageUrl = url);
-    }
-  }
-
   Future<void> _handleSaveDish() async {
+    if (_image != null) {
+      // Upload the image first, and get the URL
+      final url = await NewDishServices.uploadImage(_image!);
+      if (url == null) {
+        EasyLoading.showError("Failed to upload image");
+        return; // Stop saving if image upload fails
+      }
+      _imageUrl = url;
+    }
+
     final result = await NewDishServices.saveDish(
       formKey: formKey,
       dishName: _dishNameController.text.trim(),
@@ -68,6 +70,7 @@ class _NewDishViewState extends State<NewDishView> {
     }
   }
 
+
   Widget _buildImagePicker(Size size) {
     return Container(
       width: size.width * 0.948,
@@ -75,12 +78,11 @@ class _NewDishViewState extends State<NewDishView> {
       decoration: BoxDecoration(
         color: AppColors.grey.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        image: _image != null
-            ? DecorationImage(image: FileImage(_image!), fit: BoxFit.cover)
-            : null,
+        image: _image != null ? DecorationImage(image: FileImage(_image!), fit: BoxFit.cover) : null,
         border: Border.all(color: AppColors.grey, width: 2),
       ),
-      child: Column(
+      child: _image == null
+          ? Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.insert_photo_outlined),
@@ -95,27 +97,15 @@ class _NewDishViewState extends State<NewDishView> {
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.green),
             ),
           ),
-          GestureDetector(
-            onTap: _handleImageUpload,
-            child: const Text(
-              "Upload image",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.green),
-            ),
-          ),
-          const SizedBox(height: 10),
-          _imageUrl != null
-              ? const Text(
-            "Image uploaded successfully!",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.white),
-          )
-              : const Text(
-            "No image uploaded yet",
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.white),
-          ),
         ],
+      )
+          : GestureDetector(
+        onTap: _handleImagePick, // To allow re-choosing image if needed
+        child: null, // Show only the image (already set in decoration)
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

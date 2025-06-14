@@ -82,7 +82,7 @@ class OrderService {
         tax: tax,
         totalAmount: totalAmount,
         paymentMethod: paymentMethod,
-        orderStatus: 'pending',
+        orderStatus: 'Pending',
         orderType: orderType,
         createdAt: Timestamp.now(),
         sellerName: sellerName,

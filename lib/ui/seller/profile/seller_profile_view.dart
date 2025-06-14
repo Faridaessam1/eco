@@ -548,12 +548,18 @@ class _SellerProfileViewState extends State<SellerProfileView> {
 
   void _uploadImage() async {
     if (_image == null) return;
-    await SellerProfileServices.uploadImage(
+    await SellerProfileServices.uploadAndSaveImage(
       image: _image!,
       onSuccess: (url) {
         setState(() {
           _imageUrl = url;
         });
+        EasyLoading.dismiss();
+        SnackBarServices.showSuccessMessage("Image uploaded successfully!");
+      },
+      onError: (error) {
+        EasyLoading.dismiss();
+        SnackBarServices.showErrorMessage("Failed to upload image: $error");
       },
     );
   }

@@ -2,9 +2,10 @@ import 'package:eco_eaters_app_3/ui/customer/layout/layout.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
+import '../feedbackScreen/feedback.dart';
 
 
-class OrderConfirmationScreen extends StatelessWidget {
+class OrderConfirmationScreen extends StatefulWidget {
   final String orderId;
   final String orderType;
 
@@ -13,6 +14,28 @@ class OrderConfirmationScreen extends StatelessWidget {
     required this.orderId,
     required this.orderType,
   }) : super(key: key);
+
+  @override
+  State<OrderConfirmationScreen> createState() => _OrderConfirmationScreenState();
+}
+
+class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const CustomerFeedbackScreen(),
+          ),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +63,7 @@ class OrderConfirmationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                "Your order #$orderId has been confirmed.",
+                "Your order #${widget.orderId} has been confirmed.",
                 style: const TextStyle(
                   fontSize: 16,
                   color: AppColors.darkGrey,
@@ -49,7 +72,7 @@ class OrderConfirmationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                orderType == "pickup"
+                widget.orderType == "pickup"
                     ? "You can pick up your order from the restaurant."
                     : "Your order will be delivered to your address.",
                 style: const TextStyle(

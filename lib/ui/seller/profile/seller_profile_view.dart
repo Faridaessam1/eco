@@ -5,13 +5,10 @@ import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:eco_eaters_app_3/core/utils/validation.dart';
 import 'package:eco_eaters_app_3/core/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import '../../../core/FirebaseServices/firebase_auth.dart';
-import '../../../core/FirebaseServices/firebase_firestore_seller.dart';
+
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/seller services/seller_profile_services.dart';
-import '../../../core/utils/snack_bar_services.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
 
 class SellerProfileView extends StatefulWidget {
@@ -33,7 +30,6 @@ class _SellerProfileViewState extends State<SellerProfileView> {
   final TextEditingController _contactPersonController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override

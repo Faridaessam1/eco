@@ -14,8 +14,6 @@ class CustomerOrderScreen extends StatefulWidget {
 }
 
 class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
-  final _tabs = ['All', 'Pending', 'Confirmed', 'Preparing', 'Delivered'];
-  int _selectedTabIndex = 0;
 
   @override
   void initState() {
@@ -30,7 +28,6 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(

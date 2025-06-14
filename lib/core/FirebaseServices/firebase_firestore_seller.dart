@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_eaters_app_3/Data/dish_data_model.dart';
 import 'package:eco_eaters_app_3/Data/food_card_in_cart_tab_data.dart';
-import 'package:eco_eaters_app_3/ui/customer/cartTab/widgets/food_card_widget.dart';
-import 'package:eco_eaters_app_3/ui/customer/restaurantsFoodItems/restaurants_food_items.dart';
-import 'package:eco_eaters_app_3/ui/customer/widgets/food_item_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import '../../Data/order_data_model.dart';

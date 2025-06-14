@@ -56,7 +56,7 @@ class OrderProvider with ChangeNotifier {
       // Create a map of dish names to dish IDs
       final Map<String, String> dishIdMap = {};
       for (var item in cartProvider.cartItems) {
-        dishIdMap[item.foodName] = item.dishId ?? '';
+        dishIdMap[item.foodName] = item.dishId ;
       }
 
       // Get customer details from Firestore instead of just using currentUser

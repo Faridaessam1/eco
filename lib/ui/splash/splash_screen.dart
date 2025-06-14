@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:eco_eaters_app_3/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_assets.dart';
+import '../../core/routes/page_route_names.dart';
 import '../auth/user_type.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,15 +18,17 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(
-      const Duration(seconds: 2),
-          () {
-        Navigator.pushReplacement(
+      const Duration(seconds: 3),
+      () {
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => UserTypeScreen()),
+          PagesRouteName.onBoarding,
+          (route) => false,
         );
       },
     );
   }
+
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final double logoHeight = size.height * 0.3;
@@ -36,10 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
         height: size.height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              AppColors.primaryColor.withOpacity(0.1),
-              AppColors.white
-            ],
+            colors: [AppColors.primaryColor.withOpacity(0.1), AppColors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

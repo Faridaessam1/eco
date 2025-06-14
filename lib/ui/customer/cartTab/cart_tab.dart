@@ -1,5 +1,4 @@
 import 'package:eco_eaters_app_3/ui/customer/cartTab/widgets/food_card_widget.dart';
-import 'package:eco_eaters_app_3/ui/customer/paymentMethod/payment_method.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
@@ -104,7 +103,7 @@ class _CartTabState extends State<CartTab> {
       // Create dish ID map (you might need to adjust this based on your cart structure)
       Map<String, String> dishIdMap = {};
       for (var item in cartProvider.cartItems) {
-        dishIdMap[item.foodName] = item.dishId ?? ''; // Assuming dishId exists in your cart items
+        dishIdMap[item.foodName] = item.dishId ; // Assuming dishId exists in your cart items
       }
 
       // Create the order

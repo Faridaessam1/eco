@@ -55,10 +55,10 @@ class OnBoardingPage4 extends StatelessWidget {
                   text: TextSpan(
                     style: TextStyle(fontSize: size.width * 0.035, color: Colors.black),
                     children: [
-                      TextSpan(text: "By continuing, you agree to our "),
+                      const TextSpan(text: "By continuing, you agree to our "),
                       TextSpan(
                         text: "Terms of Service",
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.primaryColor,
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
@@ -72,10 +72,10 @@ class OnBoardingPage4 extends StatelessWidget {
                           },
 
                       ),
-                      TextSpan(text: " and "),
+                      const TextSpan(text: " and "),
                       TextSpan(
                         text: "Privacy Policy",
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.primaryColor,
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,

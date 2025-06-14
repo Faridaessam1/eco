@@ -41,9 +41,6 @@ dependencies:
   animated_custom_dropdown:
   image_picker:
   cloudinary_flutter:
-  flutter_localizations:
-    sdk: flutter
-  intl: any
   smooth_page_indicator: ^1.2.1
   firebase_core: ^3.13.0
   firebase_auth: ^5.5.2
@@ -53,7 +50,8 @@ dependencies:
   provider:
   multi_payment_gateway: ^0.0.3
   flutter_dotenv:
-  shared_preferences:
+  intl:
+
 
 
 
@@ -82,7 +80,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-  generate: true
+  generate: false
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

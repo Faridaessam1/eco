@@ -1,3 +1,4 @@
+import 'package:eco_eaters_app_3/core/routes/page_route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../core/constants/app_colors.dart';
@@ -50,10 +51,10 @@ class _OnboardingScreenState extends State<OnBoardingScreen> {
                   });
                 },
                 children: [
-                  OnBoardingPage1(),
-                  OnBoardingPage2(),
-                  OnBoardingPage3(),
-                  OnBoardingPage4()
+                  const OnBoardingPage1(),
+                  const OnBoardingPage2(),
+                  const OnBoardingPage3(),
+                  const OnBoardingPage4()
                 ],
               ),
             ),
@@ -88,11 +89,11 @@ class _OnboardingScreenState extends State<OnBoardingScreen> {
                           onPressed: () {
                             if (currentPage < 3) {
                               _pageController.nextPage(
-                                duration: Duration(milliseconds: 500),
+                                duration: const Duration(milliseconds: 500),
                                 curve: Curves.ease,
                               );
                             } else {
-                              Navigator.pushReplacementNamed(context, "/auth");
+                              Navigator.pushNamed(context,PagesRouteName.userType);
                             }
                           },
                         ),
